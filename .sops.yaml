@@ -17,17 +17,13 @@ creation_rules:
     encrypted_regex: '^(apiKey|api_key|token|password|secret)$'
     age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
   
-  # Prowlarr - encrypt API key in XML
-  - path_regex: configs/prowlarr/config\.xml$
-    encrypted_regex: '^(ApiKey|SslCertPassword)$'
-    age: age1cmvfpx67qzk2g8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
-  
-  # Configarr secrets - encrypt entire file
-  - path_regex: configarr/secrets\.ya?ml$
+  # Cloudflared credentials - encrypt values only
+  - path_regex: configs/cloudflared/credentials\.json$
+    encrypted_regex: '^(AccountTag|TunnelID|TunnelName|TunnelSecret)$'
     age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
   
-  # Cloudflared credentials - encrypt entire file
-  - path_regex: configs/cloudflared/credentials\.json$
+  # Configarr secrets - encrypt entire file (no regex = full file encryption)
+  - path_regex: configarr/secrets\.ya?ml$
     age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
   
   # Generic patterns for future files
