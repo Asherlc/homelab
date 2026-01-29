@@ -121,11 +121,6 @@ http:
       entryPoints:
         - web
       service: qbittorrent
-    autoscan-local:
-      rule: "Host(`autoscan.home`)"
-      entryPoints:
-        - web
-      service: autoscan
 
   services:
     authentik:
@@ -173,7 +168,3 @@ http:
       loadBalancer:
         servers:
           - url: "http://tautulli:8181"
-    autoscan:
-      loadBalancer:
-        servers:
-          - url: "http://autoscan:3030"
