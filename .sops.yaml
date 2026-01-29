@@ -29,3 +29,11 @@ creation_rules:
   # Cloudflared credentials
   - path_regex: configs/cloudflared/credentials\.json$
     age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+
+  # Configarr secrets (entire file encrypted)
+  - path_regex: configarr/secrets\.ya?ml$
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+
+  # Cloudflared credentials (entire file encrypted)
+  - path_regex: configs/cloudflared/credentials\.json$
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd

@@ -1,8 +1,6 @@
 # git-crypt encrypted files
 
 # Configarr secrets
-**/secrets.yml filter=git-crypt diff=git-crypt
-**/secrets.yaml filter=git-crypt diff=git-crypt
 
 # Environment files
 **/.env filter=git-crypt diff=git-crypt
@@ -14,7 +12,6 @@
 **/*.key filter=git-crypt diff=git-crypt
 
 # Cloudflare tunnel credentials
-configs/cloudflared/*.json filter=git-crypt diff=git-crypt
 
 # Other secrets
 **/passwords.txt filter=git-crypt diff=git-crypt
