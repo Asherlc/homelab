@@ -1,0 +1,36 @@
+# DEPRECATED: Git-Crypt Guide
+
+**⚠️ This guide is DEPRECATED. This repository has migrated to SOPS.**
+
+**See:** [SOPS_GUIDE.md](SOPS_GUIDE.md) for current encryption documentation.
+
+---
+
+## Why We Migrated
+
+Git-crypt provides file-level encryption only - entire files are encrypted as binary blobs. This made configuration files unreadable on GitHub, defeating the purpose of version control for infrastructure-as-code.
+
+SOPS provides **partial encryption** - only sensitive values (API keys, passwords, tokens) are encrypted while the file structure remains readable. This gives us:
+
+✅ Readable configs on GitHub
+✅ Meaningful git diffs
+✅ Better code review
+✅ Easier troubleshooting
+✅ True infrastructure-as-code
+
+## Migration Completed
+
+All files previously encrypted with git-crypt have been migrated to SOPS:
+
+-  - Configarr API keys
+-  - Overseerr config (partial encryption)
+-  - Bazarr config (partial encryption)
+-  - Homarr config (partial encryption)
+-  - Prowlarr config (partial encryption)
+-  - Cloudflare credentials
+
+The git-crypt encryption key can be safely discarded as it is no longer used.
+
+---
+
+**For current encryption documentation, see:** [SOPS_GUIDE.md](SOPS_GUIDE.md)
