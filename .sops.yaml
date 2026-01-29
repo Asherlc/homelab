@@ -1,0 +1,31 @@
+# SOPS Configuration
+# Defines which files to encrypt and which keys to use
+
+creation_rules:
+  # Overseerr - encrypt specific keys
+  - path_regex: configs/overseerr/settings\.json$
+    encrypted_regex: '^(apiKey|vapidPrivate|vapidPublic|api_key)$'
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+  
+  # Bazarr - encrypt auth section
+  - path_regex: configs/bazarr/config\.yaml$
+    encrypted_regex: '^(auth|apikey|password|token|key)$'
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+  
+  # Homarr - encrypt API keys in integrations
+  - path_regex: configs/homarr/.*\.json$
+    encrypted_regex: '^(apiKey|api_key|token|password|secret)$'
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+  
+  # Prowlarr - encrypt API key in XML
+  - path_regex: configs/prowlarr/config\.xml$
+    encrypted_regex: '^(ApiKey|SslCertPassword)$'
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+  
+  # Configarr secrets - encrypt entire file
+  - path_regex: configarr/secrets\.ya?ml$
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+  
+  # Cloudflared credentials
+  - path_regex: configs/cloudflared/credentials\.json$
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd

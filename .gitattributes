@@ -26,3 +26,10 @@ configs/overseerr/settings.json filter=git-crypt diff=git-crypt
 configs/bazarr/config.yaml filter=git-crypt diff=git-crypt
 configs/homarr/default.json filter=git-crypt diff=git-crypt
 configs/prowlarr/config.xml filter=git-crypt diff=git-crypt
+
+# SOPS diff driver - show decrypted content in diffs
+# (Keep git-crypt entries above for now during migration)
+configs/overseerr/settings.json diff=sops
+configs/bazarr/config.yaml diff=sops
+configs/homarr/*.json diff=sops
+configs/prowlarr/config.xml diff=sops
