@@ -1,0 +1,38 @@
+{
+  "main": {
+    "apiKey": "REPLACE_WITH_YOUR_API_KEY",
+    "applicationTitle": "Overseerr",
+    "defaultPermissions": 32,
+    "localLogin": false,
+    "newPlexLogin": true
+  },
+  "plex": {
+    "name": "Your Plex Server",
+    "ip": "172.18.0.1",
+    "port": 32400,
+    "libraries": []
+  },
+  "radarr": [
+    {
+      "name": "Radarr",
+      "hostname": "radarr",
+      "port": 7878,
+      "apiKey": "REPLACE_WITH_RADARR_API_KEY",
+      "activeProfileName": "HD-1080p",
+      "activeDirectory": "/data/Movies",
+      "isDefault": true
+    }
+  ],
+  "sonarr": [
+    {
+      "name": "Sonarr",
+      "hostname": "sonarr",
+      "port": 8989,
+      "apiKey": "REPLACE_WITH_SONARR_API_KEY",
+      "activeProfileName": "HD-1080p",
+      "activeDirectory": "/data/TV Shows",
+      "isDefault": true
+    }
+  ],
+  "_comment": "Full configuration with real API keys is stored in /srv/appdata/overseerr/settings.json (backed up to NAS, not in git)"
+}
