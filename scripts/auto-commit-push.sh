@@ -1,5 +1,5 @@
 #!/bin/bash
-# Auto-commit and push changes
+# Auto-commit and push changes (with SOPS encryption)
 set -e
 
 REPO_DIR="/opt/homelab-config"
@@ -11,10 +11,12 @@ if [ -z "$(git status --porcelain)" ]; then
     exit 0
 fi
 
-# Unlock git-crypt if needed
-if [ -f ~/.homelab-secure/homelab-git-crypt.key ]; then
-    git-crypt unlock ~/.homelab-secure/homelab-git-crypt.key 2>/dev/null || true
-fi
+# Set SOPS key
+export SOPS_AGE_KEY_FILE=~/.sops/key.txt
+
+# Encrypt SOPS-managed files before committing
+echo "Encrypting SOPS files..."
+./scripts/sops-encrypt.sh
 
 # Stage and commit
 git add -A
