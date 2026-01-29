@@ -53,3 +53,12 @@ cd /opt/homelab-config
 ---
 
 **Managed with git-crypt** - See `docs/GIT_CRYPT_GUIDE.md` for details.
+
+## ⚠️ Services Not Version Controlled
+
+Some services use formats incompatible with SOPS or are better managed through other means:
+
+- **Prowlarr**: Managed via Configarr IaC + database backups (XML format not SOPS-compatible)
+- **Overseerr users/permissions**: Stored in SQLite database, backed up to NAS
+
+See  for database backup procedures.
