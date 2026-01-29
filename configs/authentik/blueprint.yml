@@ -1,1 +1,2413 @@
-permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.47/containers/authentik-worker/json": dial unix /var/run/docker.sock: connect: permission denied
+context: {}
+entries:
+- attrs:
+    name: authentik Self-signed Certificate
+  conditions: []
+  identifiers:
+    pk: e5317336-3e7a-4742-8e8c-cda6efdf35a9
+  model: authentik_crypto.certificatekeypair
+  permissions: []
+  state: present
+- attrs:
+    name: authentik Internal JWT Certificate
+  conditions: []
+  identifiers:
+    pk: e3dc1d8b-e3c4-4ce4-aaf8-3b8f8c1b08c4
+  model: authentik_crypto.certificatekeypair
+  permissions: []
+  state: present
+- attrs:
+    authentication: none
+    denied_action: message_continue
+    designation: stage_configuration
+    layout: stacked
+    name: default-oobe-setup
+    policy_engine_mode: any
+    slug: initial-setup
+    title: Welcome to authentik!
+  conditions: []
+  identifiers:
+    pk: 909e09b8-9185-46eb-95bd-9e841e7953f4
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: require_unauthenticated
+    denied_action: message_continue
+    designation: authentication
+    layout: stacked
+    name: Welcome to authentik!
+    policy_engine_mode: any
+    slug: default-source-authentication
+    title: Welcome to authentik!
+  conditions: []
+  identifiers:
+    pk: 1338b7a3-7f17-46bd-bcc0-3a42abaa122e
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: none
+    denied_action: message_continue
+    designation: invalidation
+    layout: stacked
+    name: Logout
+    policy_engine_mode: any
+    slug: default-invalidation-flow
+    title: Default Invalidation Flow
+  conditions: []
+  identifiers:
+    pk: be6cda44-08b1-404f-bb3a-e661417cd7bc
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: require_authenticated
+    denied_action: message_continue
+    designation: stage_configuration
+    layout: stacked
+    name: default-authenticator-static-setup
+    policy_engine_mode: any
+    slug: default-authenticator-static-setup
+    title: Setup Static OTP Tokens
+  conditions: []
+  identifiers:
+    pk: cdba1eb0-bca0-44ec-be41-4ef0e6296c1d
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: require_authenticated
+    denied_action: message_continue
+    designation: stage_configuration
+    layout: stacked
+    name: User settings
+    policy_engine_mode: any
+    slug: default-user-settings-flow
+    title: Update your info
+  conditions: []
+  identifiers:
+    pk: ef3ebd06-a477-4f33-91c2-62d5efd80f2b
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: none
+    denied_action: message_continue
+    designation: enrollment
+    layout: stacked
+    name: Welcome to authentik! Please select a username.
+    policy_engine_mode: any
+    slug: default-source-enrollment
+    title: Welcome to authentik! Please select a username.
+  conditions: []
+  identifiers:
+    pk: eb95e682-9b48-4754-946f-00fca931e22e
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: require_authenticated
+    denied_action: message_continue
+    designation: authorization
+    layout: stacked
+    name: Authorize Application
+    policy_engine_mode: any
+    slug: default-provider-authorization-explicit-consent
+    title: Redirecting to %(app)s
+  conditions: []
+  identifiers:
+    pk: d3840fb9-cedb-49f2-b638-42dbb7de2047
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: none
+    denied_action: message_continue
+    designation: authentication
+    layout: stacked
+    name: Welcome to authentik!
+    policy_engine_mode: any
+    slug: default-authentication-flow
+    title: Welcome to Asher's Server!
+  conditions: []
+  identifiers:
+    pk: bb9619b8-80e5-4346-95d4-31d6129572c2
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: none
+    denied_action: message_continue
+    designation: invalidation
+    layout: stacked
+    name: Logged out of application
+    policy_engine_mode: any
+    slug: default-provider-invalidation-flow
+    title: You've logged out of %(app)s.
+  conditions: []
+  identifiers:
+    pk: 1aa242df-7cf6-4165-952d-bc888d26d2cf
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: none
+    denied_action: message_continue
+    designation: stage_configuration
+    layout: stacked
+    name: Pre-Authentication
+    policy_engine_mode: any
+    slug: default-source-pre-authentication
+    title: Pre-authentication
+  conditions: []
+  identifiers:
+    pk: 25e16cb4-b489-44c7-bd3d-a52016ae1243
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: require_authenticated
+    denied_action: message_continue
+    designation: stage_configuration
+    layout: stacked
+    name: default-authenticator-webauthn-setup
+    policy_engine_mode: any
+    slug: default-authenticator-webauthn-setup
+    title: Setup WebAuthn
+  conditions: []
+  identifiers:
+    pk: 6beeca5b-b9e2-4a06-8deb-bdd64e017aed
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: require_authenticated
+    denied_action: message_continue
+    designation: stage_configuration
+    layout: stacked
+    name: default-authenticator-totp-setup
+    policy_engine_mode: any
+    slug: default-authenticator-totp-setup
+    title: Setup Two-Factor authentication
+  conditions: []
+  identifiers:
+    pk: 212bf11a-cdcc-4211-bfb4-dac404c4639f
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: require_authenticated
+    denied_action: message_continue
+    designation: authorization
+    layout: stacked
+    name: Authorize Application
+    policy_engine_mode: any
+    slug: default-provider-authorization-implicit-consent
+    title: Redirecting to %(app)s
+  conditions: []
+  identifiers:
+    pk: 076e21b1-8690-4353-8eb8-b1bae40c52f2
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    authentication: require_authenticated
+    denied_action: message_continue
+    designation: stage_configuration
+    layout: stacked
+    name: Change Password
+    policy_engine_mode: any
+    slug: default-password-change
+    title: Change password
+  conditions: []
+  identifiers:
+    pk: c92a4c21-2945-41f5-acc8-804ac18ecbdd
+  model: authentik_flows.flow
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 0
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 4abf239a-fc95-4500-a5d2-9244588ceacf
+    target: 1338b7a3-7f17-46bd-bcc0-3a42abaa122e
+  conditions: []
+  identifiers:
+    pk: a7c5e5c2-f966-4664-a3f6-11e8d0ae1370
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 0
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 9ffbd782-e67a-4c35-a530-09aeb1021c16
+    target: 212bf11a-cdcc-4211-bfb4-dac404c4639f
+  conditions: []
+  identifiers:
+    pk: 1f4f856f-a7c4-448b-ac81-1a0b8cc08e54
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 0
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: d959442e-82b1-4222-99e1-2c03bfdabcf6
+    target: 6beeca5b-b9e2-4a06-8deb-bdd64e017aed
+  conditions: []
+  identifiers:
+    pk: 909500ac-c03d-4a96-9cde-b05e3da6c51a
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    evaluate_on_plan: true
+    invalid_response_action: retry
+    order: 10
+    policy_engine_mode: any
+    stage: 064435a9-625c-4c5f-9b20-7ba90fa82873
+    target: 909e09b8-9185-46eb-95bd-9e841e7953f4
+  conditions: []
+  identifiers:
+    pk: 63378c94-127e-45b5-97c6-a91601ead0bc
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 20
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 3ec63024-6ae8-4b8c-9df1-2d55f204e59a
+    target: 909e09b8-9185-46eb-95bd-9e841e7953f4
+  conditions: []
+  identifiers:
+    pk: 1ce4227c-0a7d-4e60-8c95-410d7f6879d1
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    evaluate_on_plan: true
+    invalid_response_action: retry
+    order: 100
+    policy_engine_mode: any
+    stage: 00cfb728-4552-460d-a88b-da9a8eeb8fd2
+    target: 909e09b8-9185-46eb-95bd-9e841e7953f4
+  conditions: []
+  identifiers:
+    pk: 954ed0fc-a022-457d-b029-c3229e2b1573
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 10
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: ab81da34-f16b-4e44-8f87-b7871c05e258
+    target: bb9619b8-80e5-4346-95d4-31d6129572c2
+  conditions: []
+  identifiers:
+    pk: 8f871f9a-5ac1-4d67-8736-5d23995bb53f
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 20
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 1f5af916-5a9f-4044-87dc-9f267ac3d60b
+    target: bb9619b8-80e5-4346-95d4-31d6129572c2
+  conditions: []
+  identifiers:
+    pk: 9489d4ba-7768-4781-9a4b-322862435b8d
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 30
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: a21d1d2d-9117-428e-9917-c4d529f962a1
+    target: bb9619b8-80e5-4346-95d4-31d6129572c2
+  conditions: []
+  identifiers:
+    pk: 574b792b-5ba3-44a8-98eb-78240f4b67e0
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 100
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 00cfb728-4552-460d-a88b-da9a8eeb8fd2
+    target: bb9619b8-80e5-4346-95d4-31d6129572c2
+  conditions: []
+  identifiers:
+    pk: b8f7308e-acdb-406e-8b94-d6f592365e96
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 0
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 7bcc21c6-4f72-477b-9946-a6588a52b2e3
+    target: be6cda44-08b1-404f-bb3a-e661417cd7bc
+  conditions: []
+  identifiers:
+    pk: 56e80585-91fe-473e-bcb5-b53be83f1962
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 0
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 715b8cae-d270-4bc6-bd88-88ac4fe73b5d
+    target: c92a4c21-2945-41f5-acc8-804ac18ecbdd
+  conditions: []
+  identifiers:
+    pk: e2c9c014-0cfe-4057-aa82-c01968a5fb7c
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 1
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 3ec63024-6ae8-4b8c-9df1-2d55f204e59a
+    target: c92a4c21-2945-41f5-acc8-804ac18ecbdd
+  conditions: []
+  identifiers:
+    pk: dbccfc04-7f44-4595-9910-7ca46ce6c47f
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 0
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 3b3eb4f3-bce5-4142-972f-d543072308aa
+    target: cdba1eb0-bca0-44ec-be41-4ef0e6296c1d
+  conditions: []
+  identifiers:
+    pk: 44a439b6-72a6-4a1c-98d7-048452715dc8
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 0
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 5f1ed696-df6a-4a25-aab9-8215b5c0275b
+    target: d3840fb9-cedb-49f2-b638-42dbb7de2047
+  conditions: []
+  identifiers:
+    pk: e4542976-96b0-4f8e-ac5a-f27e3e34d1a1
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 0
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 5f486e23-d669-4140-9b2e-fb8de174e9ae
+    target: eb95e682-9b48-4754-946f-00fca931e22e
+  conditions: []
+  identifiers:
+    pk: 211ef614-fc02-4834-92f7-396f92672217
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 1
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: f21394c0-3982-4f84-ae6a-bec53cd87cf0
+    target: eb95e682-9b48-4754-946f-00fca931e22e
+  conditions: []
+  identifiers:
+    pk: c6abe0fc-3f3e-4d42-8b4f-19c477472cd6
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 2
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: fc095b22-5472-4a8a-8612-c1e789cf5741
+    target: eb95e682-9b48-4754-946f-00fca931e22e
+  conditions: []
+  identifiers:
+    pk: e895f9d7-f182-403e-b3da-6e6ffd4ec1c7
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 20
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 374fa58f-070e-4e58-9c45-24a2d95fab9f
+    target: ef3ebd06-a477-4f33-91c2-62d5efd80f2b
+  conditions: []
+  identifiers:
+    pk: b5bf450f-8e0d-4b72-93c4-b4799f731689
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    invalid_response_action: retry
+    order: 100
+    policy_engine_mode: any
+    re_evaluate_policies: true
+    stage: 4f3fde00-281e-4e9d-9b4e-19cfd088af98
+    target: ef3ebd06-a477-4f33-91c2-62d5efd80f2b
+  conditions: []
+  identifiers:
+    pk: aaca20b9-971a-4999-87e5-a418d1236475
+  model: authentik_flows.flowstagebinding
+  permissions: []
+  state: present
+- attrs:
+    local: true
+    name: Local Docker connection
+    url: /var/run/docker.sock
+  conditions: []
+  identifiers:
+    pk: 6dc4b338-9919-4d4d-b238-91a229daac2b
+  model: authentik_outposts.dockerserviceconnection
+  permissions: []
+  state: present
+- attrs:
+    config:
+      authentik_host: https://authentik.asherlc.com
+      authentik_host_browser: https://authentik.asherlc.com
+    managed: goauthentik.io/outposts/embedded
+    name: authentik Embedded Outpost
+    providers:
+    - 3
+    type: proxy
+  conditions: []
+  identifiers:
+    pk: da27472f-c9e1-4b2a-b5ce-665a4e19dff0
+  model: authentik_outposts.outpost
+  permissions: []
+  state: present
+- attrs:
+    action: configuration_error
+    client_ip: null
+    name: default-match-configuration-error
+  conditions: []
+  identifiers:
+    pk: b84836be-44b3-4370-bcdf-9e0e71dd0b87
+  model: authentik_policies_event_matcher.eventmatcherpolicy
+  permissions: []
+  state: present
+- attrs:
+    action: update_available
+    client_ip: null
+    name: default-match-update
+  conditions: []
+  identifiers:
+    pk: 25f4e29c-bbe2-4776-8cbd-38d69aa167e4
+  model: authentik_policies_event_matcher.eventmatcherpolicy
+  permissions: []
+  state: present
+- attrs:
+    action: policy_exception
+    client_ip: null
+    name: default-match-policy-exception
+  conditions: []
+  identifiers:
+    pk: f0d5f3a9-3eaa-423d-b24e-edc7911d7293
+  model: authentik_policies_event_matcher.eventmatcherpolicy
+  permissions: []
+  state: present
+- attrs:
+    action: property_mapping_exception
+    client_ip: null
+    name: default-match-property-mapping-exception
+  conditions: []
+  identifiers:
+    pk: 72708989-e51a-47f7-9efb-de924da9266c
+  model: authentik_policies_event_matcher.eventmatcherpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: '# This policy ensures that this flow can only be used when the user
+
+      # is in a SSO Flow (meaning they come from an external IdP)
+
+      return ak_is_sso_flow'
+    name: default-source-enrollment-if-sso
+  conditions: []
+  identifiers:
+    pk: d27b6194-99b6-4df0-b281-63df4e4ef48b
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: "from authentik.core.models import (\n    USER_ATTRIBUTE_CHANGE_EMAIL,\n\
+      \    USER_ATTRIBUTE_CHANGE_NAME,\n    USER_ATTRIBUTE_CHANGE_USERNAME\n)\nprompt_data\
+      \ = request.context.get(\"prompt_data\")\n\nif not request.user.group_attributes(request.http_request).get(\n\
+      \    USER_ATTRIBUTE_CHANGE_EMAIL, request.http_request.tenant.default_user_change_email\n\
+      ):\n    if prompt_data.get(\"email\") != request.user.email:\n        ak_message(\"\
+      Not allowed to change email address.\")\n        return False\n\nif not request.user.group_attributes(request.http_request).get(\n\
+      \    USER_ATTRIBUTE_CHANGE_NAME, request.http_request.tenant.default_user_change_name\n\
+      ):\n    if prompt_data.get(\"name\") != request.user.name:\n        ak_message(\"\
+      Not allowed to change name.\")\n        return False\n\nif not request.user.group_attributes(request.http_request).get(\n\
+      \    USER_ATTRIBUTE_CHANGE_USERNAME, request.http_request.tenant.default_user_change_username\n\
+      ):\n    if prompt_data.get(\"username\") != request.user.username:\n       \
+      \ ak_message(\"Not allowed to change username.\")\n        return False\n\n\
+      return True"
+    name: default-user-settings-authorization
+  conditions: []
+  identifiers:
+    pk: a2276534-c2c8-486f-984e-245e96b4972c
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: "flow_plan = request.context.get(\"flow_plan\")\nif not flow_plan:\n\
+      \    return True\n# If the user does not have a backend attached to it, they\
+      \ haven't\n# been authenticated yet and we need the password stage\nreturn not\
+      \ hasattr(flow_plan.context.get(\"pending_user\"), \"backend\")"
+    name: default-authentication-flow-password-stage
+  conditions: []
+  identifiers:
+    pk: c076d6a6-5cd3-4ac4-b462-cd59e648e2f7
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: '# This policy ensures that this flow can only be used when the user
+
+      # is in a SSO Flow (meaning they come from an external IdP)
+
+      return ak_is_sso_flow'
+    name: default-source-authentication-if-sso
+  conditions: []
+  identifiers:
+    pk: fb037f0a-9b45-45de-932a-b95b72386107
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: '# This policy sets the user for the currently running flow
+
+      # by injecting "pending_user"
+
+      akadmin = ak_user_by(username="akadmin")
+
+      context["flow_plan"].context["pending_user"] = akadmin
+
+      return True'
+    name: default-oobe-prefill-user
+  conditions: []
+  identifiers:
+    pk: 556ed199-4d0f-4cad-955a-24daf659c1a1
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: '# This policy ensures that the setup flow can only be
+
+      # executed when the admin user doesn''''t have a password set
+
+      akadmin = ak_user_by(username="akadmin")
+
+      return not akadmin.has_usable_password()'
+    name: default-oobe-password-usable
+  conditions: []
+  identifiers:
+    pk: 441a2eab-0dd1-458e-8c72-6d98f5f99b83
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: '# Check if we''''ve not been given a username by the external IdP
+
+      # and trigger the enrollment flow
+
+      return ''username'' not in context.get(''prompt_data'', {})'
+    name: default-source-enrollment-if-username
+  conditions: []
+  identifiers:
+    pk: 910b84c9-6f9b-41ad-9c88-9c1afff1bcc8
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: "# This policy ensures that the setup flow can only be\n# used one\
+      \ time\nfrom authentik.flows.models import Flow, FlowAuthenticationRequirement\n\
+      Flow.objects.filter(slug=\"initial-setup\").update(\n    authentication=FlowAuthenticationRequirement.REQUIRE_SUPERUSER,\n\
+      )\nreturn True"
+    name: default-oobe-flow-set-authentication
+  conditions: []
+  identifiers:
+    pk: bcdda2b4-3e65-4f83-91d4-0e91aaf476ac
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    expression: 'allowed_emails = ["ellisaclark@gmail.com", "simonpickus@gmail.com"]
+
+      return request.context.get("oauth_userinfo", {}).get("email", "").lower() in
+      allowed_emails'
+    name: google-allowed-emails
+  conditions: []
+  identifiers:
+    pk: c182cc86-39cd-4f53-8ab8-aacde2fc3600
+  model: authentik_policies_expression.expressionpolicy
+  permissions: []
+  state: present
+- attrs:
+    amount_digits: 0
+    amount_lowercase: 0
+    amount_symbols: 0
+    amount_uppercase: 0
+    check_static_rules: true
+    check_zxcvbn: true
+    error_message: Password needs to be 8 characters or longer.
+    hibp_allowed_count: 0
+    length_min: 8
+    name: default-password-change-password-policy
+    password_field: password
+    symbol_charset: '!\"#$%&''()*+,-./:;<=>?@[\]^_`{|}~ '
+    zxcvbn_score_threshold: 2
+  conditions: []
+  identifiers:
+    pk: 95e74c95-ab22-49c1-a261-e49e07861aa1
+  model: authentik_policies_password.passwordpolicy
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: fb037f0a-9b45-45de-932a-b95b72386107
+    target: 1338b7a3-7f17-46bd-bcc0-3a42abaa122e
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: a6894f38-12e2-4570-9f94-cd5b0b23827b
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: d27b6194-99b6-4df0-b281-63df4e4ef48b
+    target: eb95e682-9b48-4754-946f-00fca931e22e
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: b7b6825e-e683-460b-b3eb-d84e2e8a05e6
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: 910b84c9-6f9b-41ad-9c88-9c1afff1bcc8
+    target: 211ef614-fc02-4834-92f7-396f92672217
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 55fa16e5-00ec-44f1-a712-b1997341a19e
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: 441a2eab-0dd1-458e-8c72-6d98f5f99b83
+    target: 909e09b8-9185-46eb-95bd-9e841e7953f4
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 0682b7af-4c4d-4e2e-ae47-6b6ae3910e23
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: 556ed199-4d0f-4cad-955a-24daf659c1a1
+    target: 1ce4227c-0a7d-4e60-8c95-410d7f6879d1
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 910da796-c874-4adf-9e5c-7107e5ed3eb2
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: bcdda2b4-3e65-4f83-91d4-0e91aaf476ac
+    target: 954ed0fc-a022-457d-b029-c3229e2b1573
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 3139a9a6-10f8-47f4-84c4-2b5a0747df9d
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: b84836be-44b3-4370-bcdf-9e0e71dd0b87
+    target: f50eafff-b663-45b3-bd01-83faf3d17b25
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 9bd966b1-b433-47e1-b7ba-13368239581e
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: 25f4e29c-bbe2-4776-8cbd-38d69aa167e4
+    target: a42e0610-b143-4f33-8282-e96233383665
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 5d3452eb-ed94-4e21-93a0-54649423575d
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: f0d5f3a9-3eaa-423d-b24e-edc7911d7293
+    target: ce84f685-23ec-4c92-9737-5259df834219
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: cafb2adf-272a-42df-b2b3-26e4a07db944
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 1
+    policy: 72708989-e51a-47f7-9efb-de924da9266c
+    target: ce84f685-23ec-4c92-9737-5259df834219
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 0e334b24-c549-4577-b3d0-e0d7c4ad4c71
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    failure_result: true
+    order: 10
+    policy: c076d6a6-5cd3-4ac4-b462-cd59e648e2f7
+    target: 9489d4ba-7768-4781-9a4b-322862435b8d
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 2de49fb0-2cf8-450b-b187-60d88820c7b2
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    enabled: true
+    order: 0
+    policy: c182cc86-39cd-4f53-8ab8-aacde2fc3600
+    target: 9f1688a3-4a82-49b1-84fa-1df7e40cd9c7
+    timeout: 30
+  conditions: []
+  identifiers:
+    pk: 254acd9c-0528-4a15-b934-ed535154cb60
+  model: authentik_policies.policybinding
+  permissions: []
+  state: present
+- attrs:
+    description: authentik Proxy - User information
+    expression: "# This mapping is used by the authentik proxy. It passes extra user\
+      \ attributes,\n# which are used for example for the HTTP-Basic Authentication\
+      \ mapping.\nreturn {\n    \"ak_proxy\": {\n        \"user_attributes\": request.user.group_attributes(request),\n\
+      \        \"is_superuser\": request.user.is_superuser,\n    }\n}"
+    managed: goauthentik.io/providers/proxy/scope-proxy
+    name: 'authentik default OAuth Mapping: Proxy outpost'
+    scope_name: ak_proxy
+  conditions: []
+  identifiers:
+    pk: 4eaa7f08-b8f0-43da-822a-9a1103708f70
+  model: authentik_providers_oauth2.scopemapping
+  permissions: []
+  state: present
+- attrs:
+    expression: '# This scope is required by the OpenID-spec, and must as such exist
+      in authentik.
+
+      # The scope by itself does not grant any information
+
+      return {}'
+    managed: goauthentik.io/providers/oauth2/scope-openid
+    name: 'authentik default OAuth Mapping: OpenID ''openid'''
+    scope_name: openid
+  conditions: []
+  identifiers:
+    pk: b6900f1a-0e32-4e5c-a31a-cced7f0f77d0
+  model: authentik_providers_oauth2.scopemapping
+  permissions: []
+  state: present
+- attrs:
+    description: Email address
+    expression: "return {\n    \"email\": request.user.email,\n    \"email_verified\"\
+      : True\n}"
+    managed: goauthentik.io/providers/oauth2/scope-email
+    name: 'authentik default OAuth Mapping: OpenID ''email'''
+    scope_name: email
+  conditions: []
+  identifiers:
+    pk: 34235530-e555-4380-800c-36a9c5181eeb
+  model: authentik_providers_oauth2.scopemapping
+  permissions: []
+  state: present
+- attrs:
+    description: General Profile Information
+    expression: "return {\n    # Because authentik only saves the user's full name,\
+      \ and has no concept of first and last names,\n    # the full name is used as\
+      \ given name.\n    # You can override this behaviour in custom mappings, i.e.\
+      \ `request.user.name.split(\" \")`\n    \"name\": request.user.name,\n    \"\
+      given_name\": request.user.name,\n    \"preferred_username\": request.user.username,\n\
+      \    \"nickname\": request.user.username,\n    \"groups\": [group.name for group\
+      \ in request.user.ak_groups.all()],\n}"
+    managed: goauthentik.io/providers/oauth2/scope-profile
+    name: 'authentik default OAuth Mapping: OpenID ''profile'''
+    scope_name: profile
+  conditions: []
+  identifiers:
+    pk: c1f1342d-709b-4b17-8925-fdddf7109e45
+  model: authentik_providers_oauth2.scopemapping
+  permissions: []
+  state: present
+- attrs:
+    description: Application entitlements
+    expression: "entitlements = [entitlement.name for entitlement in request.user.app_entitlements(provider.application)]\n\
+      return {\n    \"entitlements\": entitlements,\n    \"roles\": entitlements,\n\
+      }"
+    managed: goauthentik.io/providers/oauth2/scope-entitlements
+    name: 'authentik default OAuth Mapping: Application Entitlements'
+    scope_name: entitlements
+  conditions: []
+  identifiers:
+    pk: 75c99770-b3ad-4a86-a1e8-dca0c8a0460f
+  model: authentik_providers_oauth2.scopemapping
+  permissions: []
+  state: present
+- attrs:
+    description: Access to request new tokens without interaction
+    expression: '# This scope grants the application a refresh token that can be used
+      to refresh user data
+
+      # and let the application access authentik without the users interaction
+
+      return {}'
+    managed: goauthentik.io/providers/oauth2/scope-offline_access
+    name: 'authentik default OAuth Mapping: OpenID ''offline_access'''
+    scope_name: offline_access
+  conditions: []
+  identifiers:
+    pk: f0c9ba61-55f3-4e1f-944b-b8e88b72c2c4
+  model: authentik_providers_oauth2.scopemapping
+  permissions: []
+  state: present
+- attrs:
+    description: authentik API Access on behalf of your user
+    expression: '# This scope grants the application the ability to access the authentik
+      API
+
+      # on behalf of the authorizing user
+
+      return {}'
+    managed: goauthentik.io/providers/oauth2/scope-authentik_api
+    name: 'authentik default OAuth Mapping: authentik API access'
+    scope_name: goauthentik.io/api
+  conditions: []
+  identifiers:
+    pk: 09246e7b-feac-4e8e-9c09-274d927021f7
+  model: authentik_providers_oauth2.scopemapping
+  permissions: []
+  state: present
+- attrs:
+    access_code_validity: minutes=1
+    access_token_validity: minutes=5
+    authorization_flow: 076e21b1-8690-4353-8eb8-b1bae40c52f2
+    client_id: homarr
+    client_secret: homarr-oidc-secret-change-this
+    client_type: confidential
+    include_claims_in_id_token: true
+    invalidation_flow: 1aa242df-7cf6-4165-952d-bc888d26d2cf
+    issuer_mode: per_provider
+    name: Homarr OIDC
+    redirect_uris:
+    - matching_mode: strict
+      url: https://homarr.asherlc.com/api/auth/callback/oidc
+    refresh_token_validity: days=30
+    sub_mode: user_email
+  conditions: []
+  identifiers:
+    pk: 2
+  model: authentik_providers_oauth2.oauth2provider
+  permissions: []
+  state: present
+- attrs:
+    access_code_validity: minutes=1
+    access_token_validity: hours=24
+    authorization_flow: 076e21b1-8690-4353-8eb8-b1bae40c52f2
+    client_id: lrjFL4JZ0UJdG7OvnFybUQ0wZqP2bM6873Z9XwA6
+    client_secret: ldqBQ6i9vYwQj7BqCiI8QJrXWCU4a8uCJhcm9CwWPdPs3g4GdjDVSe26lNjIavzWQzLnutHMhLnWV0lZ407avKu6GTSjsD1pIB737HzWhIpDj1iO0m6diGFYBSEq1MkF
+    client_type: confidential
+    include_claims_in_id_token: true
+    invalidation_flow: 1aa242df-7cf6-4165-952d-bc888d26d2cf
+    issuer_mode: per_provider
+    name: Forward Auth Provider
+    property_mappings:
+    - 4eaa7f08-b8f0-43da-822a-9a1103708f70
+    - b6900f1a-0e32-4e5c-a31a-cced7f0f77d0
+    - 34235530-e555-4380-800c-36a9c5181eeb
+    - c1f1342d-709b-4b17-8925-fdddf7109e45
+    - 75c99770-b3ad-4a86-a1e8-dca0c8a0460f
+    redirect_uris:
+    - matching_mode: strict
+      url: https://authentik.asherlc.com/outpost.goauthentik.io/callback?X-authentik-auth-callback=true
+    - matching_mode: strict
+      url: https://authentik.asherlc.com?X-authentik-auth-callback=true
+    refresh_token_validity: days=30
+    sub_mode: hashed_user_id
+  conditions: []
+  identifiers:
+    pk: 3
+  model: authentik_providers_oauth2.oauth2provider
+  permissions: []
+  state: present
+- attrs:
+    access_token_validity: hours=24
+    authorization_flow: 076e21b1-8690-4353-8eb8-b1bae40c52f2
+    cookie_domain: asherlc.com
+    external_host: https://authentik.asherlc.com
+    intercept_header_auth: true
+    internal_host_ssl_validation: true
+    invalidation_flow: 1aa242df-7cf6-4165-952d-bc888d26d2cf
+    mode: forward_domain
+    name: Forward Auth Provider
+    property_mappings:
+    - 4eaa7f08-b8f0-43da-822a-9a1103708f70
+    - b6900f1a-0e32-4e5c-a31a-cced7f0f77d0
+    - 34235530-e555-4380-800c-36a9c5181eeb
+    - c1f1342d-709b-4b17-8925-fdddf7109e45
+    - 75c99770-b3ad-4a86-a1e8-dca0c8a0460f
+    refresh_token_validity: days=30
+  conditions: []
+  identifiers:
+    pk: 3
+  model: authentik_providers_proxy.proxyprovider
+  permissions: []
+  state: present
+- attrs:
+    managed: goauthentik.io/providers/rac/rdp-default
+    name: 'authentik default RAC Mapping: RDP Default settings'
+    static_settings:
+      enable-font-smoothing: 'true'
+      enable-wallpaper: 'true'
+      resize-method: display-update
+  conditions: []
+  identifiers:
+    pk: c0e0b251-f7d0-4149-919d-0ab70f6dc007
+  model: authentik_providers_rac.racpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    managed: goauthentik.io/providers/rac/rdp-high-fidelity
+    name: 'authentik default RAC Mapping: RDP High Fidelity'
+    static_settings:
+      enable-desktop-composition: 'true'
+      enable-font-smoothing: 'true'
+      enable-full-window-drag: 'true'
+      enable-menu-animations: 'true'
+      enable-theming: 'true'
+      enable-wallpaper: 'true'
+  conditions: []
+  identifiers:
+    pk: eaf68d7f-7f74-4e2c-98fc-8365b57eef93
+  model: authentik_providers_rac.racpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    managed: goauthentik.io/providers/rac/ssh-default
+    name: 'authentik default RAC Mapping: SSH Default settings'
+    static_settings:
+      terminal-type: xterm-256color
+  conditions: []
+  identifiers:
+    pk: 00b284ed-c357-4060-a4cc-e3ffc5322195
+  model: authentik_providers_rac.racpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: return request.user.attributes.get('upn', request.user.email)
+    friendly_name: null
+    managed: goauthentik.io/providers/saml/upn
+    name: 'authentik default SAML Mapping: UPN'
+    saml_name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn
+  conditions: []
+  identifiers:
+    pk: 8a72723d-b3dd-4c07-b344-e555ce44d3bf
+  model: authentik_providers_saml.samlpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: return request.user.name
+    friendly_name: null
+    managed: goauthentik.io/providers/saml/name
+    name: 'authentik default SAML Mapping: Name'
+    saml_name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
+  conditions: []
+  identifiers:
+    pk: 0fb662fd-f0ce-4314-a86b-45fda41cb25a
+  model: authentik_providers_saml.samlpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: return request.user.email
+    friendly_name: null
+    managed: goauthentik.io/providers/saml/email
+    name: 'authentik default SAML Mapping: Email'
+    saml_name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress
+  conditions: []
+  identifiers:
+    pk: 8ae8de87-f9b3-4c49-84b5-f6dcddc4ea4a
+  model: authentik_providers_saml.samlpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: return request.user.username
+    friendly_name: null
+    managed: goauthentik.io/providers/saml/username
+    name: 'authentik default SAML Mapping: Username'
+    saml_name: http://schemas.goauthentik.io/2021/02/saml/username
+  conditions: []
+  identifiers:
+    pk: 309e878c-fe59-4bad-8a6c-479086aa88df
+  model: authentik_providers_saml.samlpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: return request.user.pk
+    friendly_name: null
+    managed: goauthentik.io/providers/saml/uid
+    name: 'authentik default SAML Mapping: User ID'
+    saml_name: http://schemas.goauthentik.io/2021/02/saml/uid
+  conditions: []
+  identifiers:
+    pk: 7deb7f5f-eae7-42e0-8396-ee353238540b
+  model: authentik_providers_saml.samlpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "for group in request.user.ak_groups.all():\n    yield group.name"
+    friendly_name: null
+    managed: goauthentik.io/providers/saml/groups
+    name: 'authentik default SAML Mapping: Groups'
+    saml_name: http://schemas.xmlsoap.org/claims/Group
+  conditions: []
+  identifiers:
+    pk: 82fd34ba-53af-48f1-b7a8-f76309ac09c1
+  model: authentik_providers_saml.samlpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: return request.user.username
+    friendly_name: null
+    managed: goauthentik.io/providers/saml/ms-windowsaccountname
+    name: 'authentik default SAML Mapping: WindowsAccountname (Username)'
+    saml_name: http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname
+  conditions: []
+  identifiers:
+    pk: f1e0ab68-764c-4306-9907-32e2b3bed3a2
+  model: authentik_providers_saml.samlpropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "# Some implementations require givenName and familyName to be set\n\
+      givenName, familyName = request.user.name, \" \"\nformatted = request.user.name\
+      \ + \" \"\n# This default sets givenName to the name before the first space\n\
+      # and the remainder as family name\n# if the user's name has no space the givenName\
+      \ is the entire name\n# (this might cause issues with some SCIM implementations)\n\
+      if \" \" in request.user.name:\n    givenName, _, familyName = request.user.name.partition(\"\
+      \ \")\n    formatted = request.user.name\n\n# photos supports URLs to images,\
+      \ however authentik might return data URIs\navatar = request.user.avatar\nphotos\
+      \ = None\nif \"://\" in avatar:\n    photos = [{\"value\": avatar, \"type\"\
+      : \"photo\"}]\n\nlocale = request.user.locale()\nif locale == \"\":\n    locale\
+      \ = None\n\nemails = []\nif request.user.email != \"\":\n    emails = [{\n \
+      \       \"value\": request.user.email,\n        \"type\": \"other\",\n     \
+      \   \"primary\": True,\n    }]\nreturn {\n    \"userName\": request.user.username,\n\
+      \    \"name\": {\n        \"formatted\": formatted,\n        \"givenName\":\
+      \ givenName,\n        \"familyName\": familyName,\n    },\n    \"displayName\"\
+      : request.user.name,\n    \"photos\": photos,\n    \"locale\": locale,\n   \
+      \ \"active\": request.user.is_active,\n    \"emails\": emails,\n}"
+    managed: goauthentik.io/providers/scim/user
+    name: 'authentik default SCIM Mapping: User'
+  conditions: []
+  identifiers:
+    pk: bbd4d748-3435-4192-88d5-725d1e110e6e
+  model: authentik_providers_scim.scimmapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"displayName\": group.name,\n}"
+    managed: goauthentik.io/providers/scim/group
+    name: 'authentik default SCIM Mapping: Group'
+  conditions: []
+  identifiers:
+    pk: ed467285-c81e-46d3-ae2f-8ee3dd2135ae
+  model: authentik_providers_scim.scimmapping
+  permissions: []
+  state: present
+- attrs:
+    name: authentik Read-only
+  conditions: []
+  identifiers:
+    pk: d4ece999-2b1a-4079-968e-f02db42a234b
+  model: authentik_rbac.role
+  permissions: []
+  state: present
+- attrs:
+    expression: "from authentik.core.models import USER_PATH_SERVICE_ACCOUNT, UserTypes\n\
+      \nlocalpart, _ = principal.rsplit(\"@\", 1)\nis_service_account = \"/\" in localpart\n\
+      attrs = {}\nif is_service_account:\n    attrs = {\n        \"type\": UserTypes.SERVICE_ACCOUNT,\n\
+      \        \"path\": USER_PATH_SERVICE_ACCOUNT,\n    }\nreturn attrs"
+    managed: goauthentik.io/sources/kerberos/user/default/multipart-principals-as-service-accounts
+    name: 'authentik default Kerberos User Mapping: Multipart principals as service
+      accounts'
+  conditions: []
+  identifiers:
+    pk: 78808e86-a7e0-4962-b386-c5ef1ef97672
+  model: authentik_sources_kerberos.kerberossourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "localpart, realm = principal.rsplit(\"@\", 1)\nif realm.upper() !=\
+      \ source.realm.upper():\n    raise SkipObject\nreturn {}"
+    managed: goauthentik.io/sources/kerberos/user/default/ignore-other-realms
+    name: 'authentik default Kerberos User Mapping: Ignore other realms'
+  conditions: []
+  identifiers:
+    pk: 785451f7-f499-4512-abce-2c0fb3f9c436
+  model: authentik_sources_kerberos.kerberossourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "localpart, realm = principal.rsplit(\"@\", 1)\ndenied_prefixes =\
+      \ [\"kadmin/\", \"krbtgt/\", \"K/M\", \"WELLKNOWN/\", \"kiprop/\", \"changepw/\"\
+      ]\nfor prefix in denied_prefixes:\n    if localpart.lower().startswith(prefix.lower()):\n\
+      \        raise SkipObject\nreturn {}"
+    managed: goauthentik.io/sources/kerberos/user/default/ignore-system-principals
+    name: 'authentik default Kerberos User Mapping: Ignore system principals'
+  conditions: []
+  identifiers:
+    pk: e3caf3db-7f52-4cd1-bb31-e3ce218e3f64
+  model: authentik_sources_kerberos.kerberossourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "localpart, realm = principal.rsplit(\"@\", 1)\nreturn {\n    \"groups\"\
+      : [realm.upper()]\n}"
+    managed: goauthentik.io/sources/kerberos/user/realm-as-group
+    name: 'authentik default Kerberos User Mapping: Add realm as group'
+  conditions: []
+  identifiers:
+    pk: 21be886a-0aac-4781-b7fe-2577d57b4868
+  model: authentik_sources_kerberos.kerberossourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "path_elements = []\nfor pair in dn.split(\",\"):\n    attr, _, value\
+      \ = pair.partition(\"=\")\n    # Ignore elements from the Root DSE and the canonical\
+      \ name of the object\n    if attr.lower() in [\"cn\", \"dc\"]:\n        continue\n\
+      \    path_elements.append(value)\npath_elements.reverse()\n\npath = source.get_user_path()\n\
+      if len(path_elements) > 0:\n    path = f\"{path}/{'/'.join(path_elements)}\"\
+      \nreturn {\n    \"path\": path\n}"
+    managed: goauthentik.io/sources/ldap/default-dn-path
+    name: 'authentik default LDAP Mapping: DN to User Path'
+  conditions: []
+  identifiers:
+    pk: 34bbb919-498f-41da-bef4-667c4c243ce0
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"name\": ldap.get(\"name\"),\n}"
+    managed: goauthentik.io/sources/ldap/default-name
+    name: 'authentik default LDAP Mapping: Name'
+  conditions: []
+  identifiers:
+    pk: c4eef717-9f50-4701-b4a7-5f1b23847bb7
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"email\": ldap.get(\"mail\"),\n}"
+    managed: goauthentik.io/sources/ldap/default-mail
+    name: 'authentik default LDAP Mapping: mail'
+  conditions: []
+  identifiers:
+    pk: 0d35c20e-b531-44eb-af49-18d5aef8de87
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"username\": ldap.get(\"sAMAccountName\"),\n}"
+    managed: goauthentik.io/sources/ldap/ms-samaccountname
+    name: 'authentik default Active Directory Mapping: sAMAccountName'
+  conditions: []
+  identifiers:
+    pk: eec29b46-cdb4-4110-94b6-d4fdf28cea0a
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"attributes\": {\n        \"upn\": list_flatten(ldap.get(\"\
+      userPrincipalName\")),\n    },\n}"
+    managed: goauthentik.io/sources/ldap/ms-userprincipalname
+    name: 'authentik default Active Directory Mapping: userPrincipalName'
+  conditions: []
+  identifiers:
+    pk: 836a4b6a-6b49-40a7-9014-9975fcd79a49
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"attributes\": {\n        \"givenName\": list_flatten(ldap.get(\"\
+      givenName\")),\n    },\n}"
+    managed: goauthentik.io/sources/ldap/ms-givenName
+    name: 'authentik default Active Directory Mapping: givenName'
+  conditions: []
+  identifiers:
+    pk: 935a1e06-61bf-420d-a8ff-d72cd9f9c79a
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"attributes\": {\n        \"sn\": list_flatten(ldap.get(\"\
+      sn\")),\n    },\n}"
+    managed: goauthentik.io/sources/ldap/ms-sn
+    name: 'authentik default Active Directory Mapping: sn'
+  conditions: []
+  identifiers:
+    pk: 33e92747-ddf4-4272-b307-1c1f2f47d6a0
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"username\": ldap.get(\"uid\"),\n}"
+    managed: goauthentik.io/sources/ldap/openldap-uid
+    name: 'authentik default OpenLDAP Mapping: uid'
+  conditions: []
+  identifiers:
+    pk: d4789635-676a-4d12-9480-dd5bd4f33347
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"name\": ldap.get(\"cn\"),\n}"
+    managed: goauthentik.io/sources/ldap/openldap-cn
+    name: 'authentik default OpenLDAP Mapping: cn'
+  conditions: []
+  identifiers:
+    pk: c4847c60-cb62-4f8c-b45d-2d5440ed2fbc
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    access_token_url: https://oauth2.googleapis.com/token
+    authentication_flow: 1338b7a3-7f17-46bd-bcc0-3a42abaa122e
+    authorization_url: https://accounts.google.com/o/oauth2/v2/auth
+    consumer_key: 361618439341-rajn3otmfbbarhllcu46oc995j76qr5b.apps.googleusercontent.com
+    enabled: true
+    enrollment_flow: eb95e682-9b48-4754-946f-00fca931e22e
+    group_matching_mode: identifier
+    name: Google
+    oidc_jwks:
+      keys:
+      - alg: RS256
+        e: AQAB
+        kid: 9544d0ff0590f025301643f3275bf68776765822
+        kty: RSA
+        n: n_69EDnYIbRtYFGpb7Za63ngZcx3FT3rhIUGJnpL3TpfkqI_ftvCV0LZIJHx21-g70j9DnbxKO6kwCGKFfwfxts6L1GNvzKI1VqM93J8It79_M0sSJvovw9SwCM7hGaxatdIOsY72uIWcGMuoGLNnP0MEqAAyL7XPpv1VhoWJhCbduzzjWhLwgHtCAUq7GENbyWpDmm2PhjC-DB80KfInIpav4tRb-W_lDTjw-VYx7D8lv01FCLz_uSI9qK2u_u4I2qxImUNF8UQwrr9y1BQS9PHU4cI6ZEXicT1NpKpl4KT1f5Gfvig5NF4BUgPTBrFYtCBh4mNXnwyNaRn1Qo19w
+        use: sig
+      - alg: RS256
+        e: AQAB
+        kid: 8630a71bd6ec1c61257a27ff2efd91872ecab1f6
+        kty: RSA
+        n: qsncCuXbvhrOwmYIvq1w7PIGHOpWuQhZe4TeIoHlnJiniE2uyHC7-ItAW5f3Pgw0WW6H3v4HJtRKHyHrkEQEi3OfP0XLQn2rt6z4Y6V2p1P-MOaqrs-wv0B6AiPo3Hv29lDEU6rFNSJf0qZAsthFZnUJuzvbY8rLhOW8CwrIKrSHedAQjd_GR_mccRQKeJEbKSXO4m-c9PoaPOnkyO79lK2Auny5wotb7-Hb37oPFxPPlKNOoHZand0QQDzKzXfBm6XCIV5pbH3Y6dH6PeL3L_7aRz1qTddPkXINgrvPQjY48c-ajclPJeTV_zLv6NQWVpr3Sx5V3_6Yry109Rshnw
+        use: sig
+    oidc_jwks_url: https://www.googleapis.com/oauth2/v3/certs
+    policy_engine_mode: any
+    profile_url: https://openidconnect.googleapis.com/v1/userinfo
+    provider_type: google
+    request_token_url: null
+    slug: google
+    user_matching_mode: email_link
+    user_path_template: goauthentik.io/sources/%(slug)s
+  conditions: []
+  identifiers:
+    pk: 9f1688a3-4a82-49b1-84fa-1df7e40cd9c7
+  model: authentik_sources_oauth.oauthsource
+  permissions: []
+  state: present
+- attrs:
+    identifier: '108524503550798377153'
+    source: 9f1688a3-4a82-49b1-84fa-1df7e40cd9c7
+    user: 4
+  conditions: []
+  identifiers:
+    pk: 3
+  model: authentik_sources_oauth.useroauthsourceconnection
+  permissions: []
+  state: present
+- attrs:
+    allow_friends: true
+    authentication_flow: 1338b7a3-7f17-46bd-bcc0-3a42abaa122e
+    client_id: authentik
+    enabled: true
+    enrollment_flow: eb95e682-9b48-4754-946f-00fca931e22e
+    group_matching_mode: identifier
+    name: Plex
+    plex_token: djz14hA7kExqMTBiv_u8
+    policy_engine_mode: any
+    slug: plex
+    user_matching_mode: email_link
+    user_path_template: goauthentik.io/sources/%(slug)s
+  conditions: []
+  identifiers:
+    pk: 5821e0a7-b24d-4a01-9da6-04fa19ae62c3
+  model: authentik_sources_plex.plexsource
+  permissions: []
+  state: present
+- attrs:
+    identifier: '134362649'
+    source: 5821e0a7-b24d-4a01-9da6-04fa19ae62c3
+    user: 4
+  conditions: []
+  identifiers:
+    pk: 2
+  model: authentik_sources_plex.userplexsourceconnection
+  permissions: []
+  state: present
+- attrs:
+    identifier: '134362649'
+    source: 5821e0a7-b24d-4a01-9da6-04fa19ae62c3
+    user: 5
+  conditions: []
+  identifiers:
+    pk: 1
+  model: authentik_sources_plex.userplexsourceconnection
+  permissions: []
+  state: present
+- attrs:
+    configure_flow: cdba1eb0-bca0-44ec-be41-4ef0e6296c1d
+    friendly_name: Static tokens
+    name: default-authenticator-static-setup
+    token_count: 6
+    token_length: 12
+  conditions: []
+  identifiers:
+    pk: 3b3eb4f3-bce5-4142-972f-d543072308aa
+  model: authentik_stages_authenticator_static.authenticatorstaticstage
+  permissions: []
+  state: present
+- attrs:
+    configure_flow: 212bf11a-cdcc-4211-bfb4-dac404c4639f
+    digits: '6'
+    friendly_name: TOTP Device
+    name: default-authenticator-totp-setup
+  conditions: []
+  identifiers:
+    pk: 9ffbd782-e67a-4c35-a530-09aeb1021c16
+  model: authentik_stages_authenticator_totp.authenticatortotpstage
+  permissions: []
+  state: present
+- attrs:
+    device_classes:
+    - static
+    - totp
+    - webauthn
+    - duo
+    - sms
+    - email
+    last_auth_threshold: seconds=0
+    name: default-authentication-mfa-validation
+    not_configured_action: skip
+    webauthn_user_verification: preferred
+  conditions: []
+  identifiers:
+    pk: a21d1d2d-9117-428e-9917-c4d529f962a1
+  model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+  permissions: []
+  state: present
+- attrs:
+    configure_flow: 6beeca5b-b9e2-4a06-8deb-bdd64e017aed
+    friendly_name: WebAuthn device
+    name: default-authenticator-webauthn-setup
+    resident_key_requirement: preferred
+    user_verification: preferred
+  conditions: []
+  identifiers:
+    pk: d959442e-82b1-4222-99e1-2c03bfdabcf6
+  model: authentik_stages_authenticator_webauthn.authenticatorwebauthnstage
+  permissions: []
+  state: present
+- attrs:
+    consent_expire_in: weeks=4
+    mode: expiring
+    name: default-provider-authorization-consent
+  conditions: []
+  identifiers:
+    pk: 5f1ed696-df6a-4a25-aab9-8215b5c0275b
+  model: authentik_stages_consent.consentstage
+  permissions: []
+  state: present
+- attrs:
+    case_insensitive_matching: true
+    name: default-authentication-identification
+    pretend_user_exists: true
+    show_matched_user: true
+    show_source_labels: true
+    sources:
+    - 5821e0a7-b24d-4a01-9da6-04fa19ae62c3
+    - 9f1688a3-4a82-49b1-84fa-1df7e40cd9c7
+    user_fields:
+    - email
+    - username
+  conditions: []
+  identifiers:
+    pk: ab81da34-f16b-4e44-8f87-b7871c05e258
+  model: authentik_stages_identification.identificationstage
+  permissions: []
+  state: present
+- attrs:
+    backends:
+    - authentik.core.auth.InbuiltBackend
+    - authentik.sources.kerberos.auth.KerberosBackend
+    - authentik.sources.ldap.auth.LDAPBackend
+    - authentik.core.auth.TokenBackend
+    configure_flow: c92a4c21-2945-41f5-acc8-804ac18ecbdd
+    failed_attempts_before_cancel: 5
+    name: default-authentication-password
+  conditions: []
+  identifiers:
+    pk: 1f5af916-5a9f-4044-87dc-9f267ac3d60b
+  model: authentik_stages_password.passwordstage
+  permissions: []
+  state: present
+- attrs:
+    field_key: oobe-header-text
+    initial_value: Welcome to authentik! Please set a password and email address for
+      the default admin user, akadmin.
+    label: oobe-header-text
+    name: initial-setup-field-header
+    order: 100
+    required: true
+    type: static
+  conditions: []
+  identifiers:
+    pk: 195124dc-1eab-4cc5-b678-5d758042701e
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: email
+    label: Email
+    name: initial-setup-field-email
+    order: 101
+    placeholder: Admin email
+    required: true
+    type: email
+  conditions: []
+  identifiers:
+    pk: 5903fe4e-b9f0-4577-aecd-91ef6f6d4120
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: password
+    label: Password
+    name: initial-setup-field-password
+    order: 300
+    placeholder: Password
+    required: true
+    type: password
+  conditions: []
+  identifiers:
+    pk: e4a803e7-81a2-4819-abe7-743657ace647
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: password_repeat
+    label: Password (repeat)
+    name: initial-setup-field-password-repeat
+    order: 301
+    placeholder: Password (repeat)
+    required: true
+    type: password
+  conditions: []
+  identifiers:
+    pk: ae9cdf8c-a540-4179-8700-f4d389d8f4bd
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: password
+    label: Password
+    name: default-password-change-field-password
+    order: 300
+    placeholder: Password
+    required: true
+    type: password
+  conditions: []
+  identifiers:
+    pk: dadb0c8b-bd10-438a-aca8-3f684b5999dc
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: password_repeat
+    label: Password (repeat)
+    name: default-password-change-field-password-repeat
+    order: 301
+    placeholder: Password (repeat)
+    required: true
+    type: password
+  conditions: []
+  identifiers:
+    pk: bbca52ca-f498-4052-bbce-42c3da980808
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: username
+    initial_value: "try:\n    return user.username\nexcept:\n    return ''"
+    initial_value_expression: true
+    label: Username
+    name: default-user-settings-field-username
+    order: 200
+    placeholder: Username
+    required: true
+    type: username
+  conditions: []
+  identifiers:
+    pk: 01723cb2-e191-4580-814d-35f9032a4a8b
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: name
+    initial_value: "try:\n    return user.name\nexcept:\n    return ''"
+    initial_value_expression: true
+    label: Name
+    name: default-user-settings-field-name
+    order: 201
+    placeholder: Name
+    required: true
+    type: text
+  conditions: []
+  identifiers:
+    pk: 758e1747-f899-42ae-b6b7-3fe31b5b6f5b
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: username
+    label: Username
+    name: default-source-enrollment-field-username
+    order: 100
+    placeholder: Username
+    required: true
+    type: username
+  conditions: []
+  identifiers:
+    pk: 5b83260e-cdb6-4578-bc9b-4641c40d4bc4
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: email
+    initial_value: "try:\n    return user.email\nexcept:\n    return ''"
+    initial_value_expression: true
+    label: Email
+    name: default-user-settings-field-email
+    order: 202
+    placeholder: Email
+    required: true
+    type: email
+  conditions: []
+  identifiers:
+    pk: c5ce8b1e-8b69-453f-bcd3-96a5e3f10270
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    field_key: attributes.settings.locale
+    initial_value: "try:\n    return user.attributes.get(\"settings\", {}).get(\"\
+      locale\", \"\")\nexcept:\n    return ''"
+    initial_value_expression: true
+    label: Locale
+    name: default-user-settings-field-locale
+    order: 203
+    placeholder: Locale
+    required: true
+    type: ak-locale
+  conditions: []
+  identifiers:
+    pk: 2f1802fc-2136-481e-b67c-37bbb5b9257a
+  model: authentik_stages_prompt.prompt
+  permissions: []
+  state: present
+- attrs:
+    fields:
+    - dadb0c8b-bd10-438a-aca8-3f684b5999dc
+    - bbca52ca-f498-4052-bbce-42c3da980808
+    name: default-password-change-prompt
+    validation_policies:
+    - 95e74c95-ab22-49c1-a261-e49e07861aa1
+  conditions: []
+  identifiers:
+    pk: 715b8cae-d270-4bc6-bd88-88ac4fe73b5d
+  model: authentik_stages_prompt.promptstage
+  permissions: []
+  state: present
+- attrs:
+    fields:
+    - 5b83260e-cdb6-4578-bc9b-4641c40d4bc4
+    name: default-source-enrollment-prompt
+  conditions: []
+  identifiers:
+    pk: 5f486e23-d669-4140-9b2e-fb8de174e9ae
+  model: authentik_stages_prompt.promptstage
+  permissions: []
+  state: present
+- attrs:
+    fields:
+    - 195124dc-1eab-4cc5-b678-5d758042701e
+    - 5903fe4e-b9f0-4577-aecd-91ef6f6d4120
+    - e4a803e7-81a2-4819-abe7-743657ace647
+    - ae9cdf8c-a540-4179-8700-f4d389d8f4bd
+    name: stage-default-oobe-password
+  conditions: []
+  identifiers:
+    pk: 064435a9-625c-4c5f-9b20-7ba90fa82873
+  model: authentik_stages_prompt.promptstage
+  permissions: []
+  state: present
+- attrs:
+    fields:
+    - 01723cb2-e191-4580-814d-35f9032a4a8b
+    - 758e1747-f899-42ae-b6b7-3fe31b5b6f5b
+    - c5ce8b1e-8b69-453f-bcd3-96a5e3f10270
+    - 2f1802fc-2136-481e-b67c-37bbb5b9257a
+    name: default-user-settings
+    validation_policies:
+    - a2276534-c2c8-486f-984e-245e96b4972c
+  conditions: []
+  identifiers:
+    pk: 374fa58f-070e-4e58-9c45-24a2d95fab9f
+  model: authentik_stages_prompt.promptstage
+  permissions: []
+  state: present
+- attrs:
+    geoip_binding: no_binding
+    name: default-source-authentication-login
+    network_binding: no_binding
+    remember_me_offset: seconds=0
+    session_duration: seconds=0
+  conditions: []
+  identifiers:
+    pk: 4abf239a-fc95-4500-a5d2-9244588ceacf
+  model: authentik_stages_user_login.userloginstage
+  permissions: []
+  state: present
+- attrs:
+    geoip_binding: no_binding
+    name: default-source-enrollment-login
+    network_binding: no_binding
+    remember_me_offset: seconds=0
+    session_duration: seconds=0
+  conditions: []
+  identifiers:
+    pk: fc095b22-5472-4a8a-8612-c1e789cf5741
+  model: authentik_stages_user_login.userloginstage
+  permissions: []
+  state: present
+- attrs:
+    geoip_binding: no_binding
+    name: default-authentication-login
+    network_binding: no_binding
+    remember_me_offset: seconds=0
+    session_duration: seconds=0
+  conditions: []
+  identifiers:
+    pk: 00cfb728-4552-460d-a88b-da9a8eeb8fd2
+  model: authentik_stages_user_login.userloginstage
+  permissions: []
+  state: present
+- attrs:
+    name: default-invalidation-logout
+  conditions: []
+  identifiers:
+    pk: 7bcc21c6-4f72-477b-9946-a6588a52b2e3
+  model: authentik_stages_user_logout.userlogoutstage
+  permissions: []
+  state: present
+- attrs:
+    name: default-source-enrollment-write
+    user_creation_mode: always_create
+    user_type: external
+  conditions: []
+  identifiers:
+    pk: f21394c0-3982-4f84-ae6a-bec53cd87cf0
+  model: authentik_stages_user_write.userwritestage
+  permissions: []
+  state: present
+- attrs:
+    name: default-password-change-write
+    user_creation_mode: never_create
+    user_type: external
+  conditions: []
+  identifiers:
+    pk: 3ec63024-6ae8-4b8c-9df1-2d55f204e59a
+  model: authentik_stages_user_write.userwritestage
+  permissions: []
+  state: present
+- attrs:
+    name: default-user-settings-write
+    user_creation_mode: never_create
+    user_type: external
+  conditions: []
+  identifiers:
+    pk: 4f3fde00-281e-4e9d-9b4e-19cfd088af98
+  model: authentik_stages_user_write.userwritestage
+  permissions: []
+  state: present
+- attrs:
+    attributes: {}
+    branding_favicon: /static/dist/assets/icons/icon.png
+    branding_logo: /media/logo_v2.svg
+    branding_title: Asher's Server
+    default: true
+    domain: authentik-default
+    flow_authentication: bb9619b8-80e5-4346-95d4-31d6129572c2
+    flow_invalidation: be6cda44-08b1-404f-bb3a-e661417cd7bc
+    flow_user_settings: ef3ebd06-a477-4f33-91c2-62d5efd80f2b
+  conditions: []
+  identifiers:
+    pk: d5649253-6291-418e-8db0-e52b4610e18e
+  model: authentik_brands.brand
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - RAC Provider - Mappings
+    path: system/providers-rac.yaml
+  conditions: []
+  identifiers:
+    pk: de9eab1a-761a-43df-ab67-e962092d9dbc
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - Microsoft Entra Provider - Mappings
+    path: system/providers-microsoft-entra.yaml
+  conditions: []
+  identifiers:
+    pk: 098a39a4-5548-494a-8714-f6dfc21bcf16
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - LDAP Source - Mappings
+    path: system/sources-ldap.yaml
+  conditions: []
+  identifiers:
+    pk: d611cf9c-4598-428a-af2d-a78583fd6790
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - Google Workspace Provider - Mappings
+    path: system/providers-google-workspace.yaml
+  conditions: []
+  identifiers:
+    pk: 34353a6a-a054-446e-937e-92f74f649625
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - OAuth2 Provider - Scopes
+    path: system/providers-oauth2.yaml
+  conditions: []
+  identifiers:
+    pk: 31cb3b1b-a8f0-450e-8a46-35bdb60bc819
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Source pre-authentication flow
+    path: default/flow-default-source-pre-authentication.yaml
+  conditions: []
+  identifiers:
+    pk: cfec22c7-13d9-4309-b4e6-87c11000a3c3
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Provider invalidation flow
+    path: default/flow-default-provider-invalidation.yaml
+  conditions: []
+  identifiers:
+    pk: 641fa3b8-b8c4-4687-b7f0-7ae99655c3d0
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - TOTP MFA setup flow
+    path: default/flow-default-authenticator-totp-setup.yaml
+  conditions: []
+  identifiers:
+    pk: ca4e8aad-3b7f-4240-b6f4-90e4f84be961
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Provider authorization flow (implicit consent)
+    path: default/flow-default-provider-authorization-implicit-consent.yaml
+  conditions: []
+  identifiers:
+    pk: 68bc4369-b6ab-4554-b692-a9c83d51d448
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Out-of-box-experience flow
+    path: default/flow-oobe.yaml
+  conditions: []
+  identifiers:
+    pk: 4ffe7b31-f24b-479c-b56f-8f08e1bcbb55
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - WebAuthn MFA setup flow
+    path: default/flow-default-authenticator-webauthn-setup.yaml
+  conditions: []
+  identifiers:
+    pk: c2399b13-6040-4681-a111-5646232749d2
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Events Transport & Rules
+    path: default/events-default.yaml
+  conditions: []
+  identifiers:
+    pk: bf64e1ea-4c2f-4a9a-a444-4885808a8253
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Static MFA setup flow
+    path: default/flow-default-authenticator-static-setup.yaml
+  conditions: []
+  identifiers:
+    pk: 55743875-b938-4613-b80a-ab03fafff084
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Brand
+    path: default/default-brand.yaml
+  conditions: []
+  identifiers:
+    pk: d2687217-bbb4-4ff3-b284-ca059ac376ab
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - Kerberos Source - Mappings
+    path: system/sources-kerberos.yaml
+  conditions: []
+  identifiers:
+    pk: 9b0f143d-48db-4c54-9cd8-68424afbf903
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Migration - Remove old prompt fields
+    path: migrations/migrate-prompt-name.yaml
+  conditions: []
+  identifiers:
+    pk: 2e55ba85-0dad-4096-b958-4aa7fdb09622
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - SCIM Provider - Mappings
+    path: system/providers-scim.yaml
+  conditions: []
+  identifiers:
+    pk: a7c2d6c4-8391-4633-b3e2-d8738b2a9cd5
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - SAML Provider - Mappings
+    path: system/providers-saml.yaml
+  conditions: []
+  identifiers:
+    pk: bbb00353-fbd1-4a00-a29c-4253eaf0ad5a
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: System - Proxy Provider - Scopes
+    path: system/providers-proxy.yaml
+  conditions: []
+  identifiers:
+    pk: b9574e24-d24e-4353-af5e-65f3fa25bfc8
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Source authentication flow
+    path: default/flow-default-source-authentication.yaml
+  conditions: []
+  identifiers:
+    pk: 437e4ca2-ecdd-4366-9b0d-c2f0c98867f0
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Provider authorization flow (explicit consent)
+    path: default/flow-default-provider-authorization-explicit-consent.yaml
+  conditions: []
+  identifiers:
+    pk: 3a2bbcf5-2197-4a1d-9709-93f961e92e04
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Source enrollment flow
+    path: default/flow-default-source-enrollment.yaml
+  conditions: []
+  identifiers:
+    pk: 01b80f90-0d0f-4af0-a3f3-82c1398c1e15
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - RBAC - Read-only
+    path: default/rbac-role-read-only.yaml
+  conditions: []
+  identifiers:
+    pk: 01089c44-8d1a-4627-8dc4-02a07ca0826f
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: authentik Bootstrap
+    path: system/bootstrap.yaml
+  conditions: []
+  identifiers:
+    pk: f934d8f6-4d8a-4571-9931-beb0f57da893
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Password change flow
+    path: default/flow-password-change.yaml
+  conditions: []
+  identifiers:
+    pk: 89f7d411-f63e-473b-a5fd-9675c1076e0d
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Authentication flow
+    path: default/flow-default-authentication-flow.yaml
+  conditions: []
+  identifiers:
+    pk: 2bd50e6f-b66c-4c69-98c9-9ff1275da168
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - Invalidation flow
+    path: default/flow-default-invalidation-flow.yaml
+  conditions: []
+  identifiers:
+    pk: 0f31f739-6c40-4ec1-acc0-0e061a6c80de
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    context: {}
+    enabled: true
+    name: Default - User settings flow
+    path: default/flow-default-user-settings-flow.yaml
+  conditions: []
+  identifiers:
+    pk: 299f3773-7f79-43ad-9f47-91b52e7a6704
+  model: authentik_blueprints.blueprintinstance
+  permissions: []
+  state: present
+- attrs:
+    attributes: {}
+    is_superuser: true
+    name: authentik Admins
+    users:
+    - 4
+  conditions: []
+  identifiers:
+    pk: c96bc055-b3b7-4486-8e96-1a98bc66400d
+  model: authentik_core.group
+  permissions: []
+  state: present
+- attrs:
+    attributes:
+      notes: 'An group with an auto-generated role that allows read-only permissions
+        on all objects.
+
+        '
+    name: authentik Read-only
+    roles:
+    - d4ece999-2b1a-4079-968e-f02db42a234b
+  conditions: []
+  identifiers:
+    pk: 08f628b4-c0f7-4679-9ca1-154d00541695
+  model: authentik_core.group
+  permissions: []
+  state: present
+- attrs:
+    attributes: {}
+    is_active: true
+    name: Outpost authentik Embedded Outpost Service-Account
+    path: goauthentik.io/outposts
+    type: internal_service_account
+    username: ak-outpost-da27472fc9e14b2ab5ce665a4e19dff0
+  conditions: []
+  identifiers:
+    pk: 2
+  model: authentik_core.user
+  permissions: []
+  state: present
+- attrs:
+    attributes:
+      goauthentik.io/user/sources:
+      - Plex
+    email: asherlc@asherlc.com
+    is_active: true
+    last_login: '2026-01-27T19:06:06.741644Z'
+    name: asherlc
+    path: goauthentik.io/sources/plex
+    type: internal
+    username: asherlc
+  conditions: []
+  identifiers:
+    pk: 5
+  model: authentik_core.user
+  permissions: []
+  state: present
+- attrs:
+    attributes: {}
+    email: root@example.com
+    groups:
+    - c96bc055-b3b7-4486-8e96-1a98bc66400d
+    is_active: true
+    last_login: '2026-01-28T03:34:47.018388Z'
+    name: authentik Default Admin
+    path: users
+    type: internal
+    username: akadmin
+  conditions: []
+  identifiers:
+    pk: 4
+  model: authentik_core.user
+  permissions: []
+  state: present
+- attrs:
+    meta_launch_url: https://homarr.asherlc.com
+    name: Homarr
+    open_in_new_tab: true
+    policy_engine_mode: any
+    provider: 2
+    slug: homarr
+  conditions: []
+  identifiers:
+    pk: 1ab46955-f8ab-4986-a44f-43b5db830ee0
+  model: authentik_core.application
+  permissions: []
+  state: present
+- attrs:
+    name: Domain Forward Auth
+    policy_engine_mode: any
+    provider: 3
+    slug: domain-forward-auth
+  conditions: []
+  identifiers:
+    pk: 573b6857-4295-4354-9e12-db67428a8ef1
+  model: authentik_core.application
+  permissions: []
+  state: present
+- attrs:
+    description: Autogenerated by authentik for Outpost authentik Embedded Outpost
+    identifier: ak-outpost-da27472f-c9e1-4b2a-b5ce-665a4e19dff0-api
+    intent: api
+    managed: goauthentik.io/outpost/ak-outpost-da27472f-c9e1-4b2a-b5ce-665a4e19dff0-api
+    user: 2
+  conditions: []
+  identifiers:
+    pk: b7df2966-7d39-400e-ab39-4e13f2660ced
+  model: authentik_core.token
+  permissions: []
+  state: present
+- attrs:
+    identifier: api-token
+    intent: api
+    managed: null
+    user: 4
+  conditions: []
+  identifiers:
+    pk: 4275af00-7dcf-41f9-b859-077a0cdafc88
+  model: authentik_core.token
+  permissions: []
+  state: present
+- attrs:
+    expression: "# Field reference:\n# https://developers.google.com/admin-sdk/directory/reference/rest/v1/users#User\n\
+      # Google require givenName and familyName to be set\ngivenName, familyName =\
+      \ request.user.name, \" \"\nformatted = request.user.name + \" \"\n# This default\
+      \ sets givenName to the name before the first space\n# and the remainder as\
+      \ family name\n# if the user's name has no space the givenName is the entire\
+      \ name\nif \" \" in request.user.name:\n    givenName, _, familyName = request.user.name.partition(\"\
+      \ \")\n    formatted = request.user.name\nuser = {\n    \"name\": {\n      \
+      \  \"fullName\": formatted,\n        \"familyName\": familyName.strip(),\n \
+      \       \"givenName\": givenName.strip(),\n        \"displayName\": formatted,\n\
+      \    },\n    \"suspended\": not request.user.is_active,\n}\nif not connection:\n\
+      \    user[\"password\"] = request.user.password\nreturn user"
+    managed: goauthentik.io/providers/google_workspace/user
+    name: 'authentik default Google Workspace Mapping: User'
+  conditions: []
+  identifiers:
+    pk: 64069fb7-36ca-4dd3-ab31-a7e0d62678a7
+  model: authentik_providers_google_workspace.googleworkspaceprovidermapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "# Field reference:\n# https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group\n\
+      return {\n    \"name\": group.name,\n}"
+    managed: goauthentik.io/providers/google_workspace/group
+    name: 'authentik default Google Workspace Mapping: Group'
+  conditions: []
+  identifiers:
+    pk: dce1b21b-37d5-4864-bc88-77dec5ec4238
+  model: authentik_providers_google_workspace.googleworkspaceprovidermapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "# Field reference: (note that keys have to converted to snake_case)\n\
+      # https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0\n\
+      from msgraph.generated.models.password_profile import PasswordProfile\n\nuser\
+      \ = {\n    \"display_name\": request.user.name,\n    \"account_enabled\": request.user.is_active,\n\
+      \    \"mail_nickname\": request.user.username,\n    \"user_principal_name\"\
+      : request.user.email,\n}\nif connection:\n    # If there is a connection already\
+      \ made (discover or update), we can use\n    # that connection's immutable_id...\n\
+      \    user[\"on_premises_immutable_id\"] = connection.attributes.get(\"on_premises_immutable_id\"\
+      )\nelse:\n    user[\"password_profile\"] = PasswordProfile(\n        password=request.user.password\n\
+      \    )\n    # ...otherwise we set an immutable ID based on the user's UID\n\
+      \    user[\"on_premises_immutable_id\"] = request.user.uid,\nreturn user"
+    managed: goauthentik.io/providers/microsoft_entra/user
+    name: 'authentik default Microsoft Entra Mapping: User'
+  conditions: []
+  identifiers:
+    pk: c7506c02-2784-496a-b47c-50b388497b3c
+  model: authentik_providers_microsoft_entra.microsoftentraprovidermapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "# Field reference: (note that keys have to converted to snake_case)\n\
+      # https://learn.microsoft.com/en-us/graph/api/group-post-groups?view=graph-rest-1.0&tabs=http#request-body\n\
+      return {\n    \"display_name\": group.name,\n    \"mail_enabled\": False,\n\
+      \    \"security_enabled\": True,\n    \"mail_nickname\": slugify(group.name),\n\
+      }"
+    managed: goauthentik.io/providers/microsoft_entra/group
+    name: 'authentik default Microsoft Entra Mapping: Group'
+  conditions: []
+  identifiers:
+    pk: cd67e1a6-dc37-4712-9922-3c4071c333bc
+  model: authentik_providers_microsoft_entra.microsoftentraprovidermapping
+  permissions: []
+  state: present
+- attrs:
+    mode: email
+    name: default-email-transport
+  conditions: []
+  identifiers:
+    pk: 73708385-e840-476f-aaf1-1ecb4b136e12
+  model: authentik_events.notificationtransport
+  permissions: []
+  state: present
+- attrs:
+    mode: local
+    name: default-local-transport
+  conditions: []
+  identifiers:
+    pk: b8bf5384-8500-4490-8698-d8b9df1a913a
+  model: authentik_events.notificationtransport
+  permissions: []
+  state: present
+- attrs:
+    event:
+      action: update_available
+      app: authentik.admin.tasks
+      brand:
+        app: authentik_brands
+        model_name: brand
+        name: Brand fallback
+        pk: d7b9736e44aa44cdb6bb02ee4b5b96c0
+      client_ip: null
+      context:
+        changelog: https://docs.goauthentik.io/docs/releases/2025.12#fixed-in-2025121
+        message: New version 2025.12.1 available!
+        new_version: 2025.12.1
+      created: '2026-01-27T04:01:56.777738Z'
+      expires: '2027-01-27T04:01:56.776258Z'
+      pk: 1591c319-03e7-4053-a6c6-c982e2546e6f
+      user: {}
+  conditions: []
+  identifiers:
+    pk: bf7e298a-d27a-4755-9ad0-28ee937bd029
+  model: authentik_events.notification
+  permissions: []
+  state: present
+- attrs:
+    group: c96bc055-b3b7-4486-8e96-1a98bc66400d
+    name: default-notify-configuration-error
+    severity: alert
+    transports:
+    - 73708385-e840-476f-aaf1-1ecb4b136e12
+    - b8bf5384-8500-4490-8698-d8b9df1a913a
+  conditions: []
+  identifiers:
+    pk: f50eafff-b663-45b3-bd01-83faf3d17b25
+  model: authentik_events.notificationrule
+  permissions: []
+  state: present
+- attrs:
+    group: c96bc055-b3b7-4486-8e96-1a98bc66400d
+    name: default-notify-update
+    severity: alert
+    transports:
+    - 73708385-e840-476f-aaf1-1ecb4b136e12
+    - b8bf5384-8500-4490-8698-d8b9df1a913a
+  conditions: []
+  identifiers:
+    pk: a42e0610-b143-4f33-8282-e96233383665
+  model: authentik_events.notificationrule
+  permissions: []
+  state: present
+- attrs:
+    group: c96bc055-b3b7-4486-8e96-1a98bc66400d
+    name: default-notify-exception
+    severity: alert
+    transports:
+    - 73708385-e840-476f-aaf1-1ecb4b136e12
+    - b8bf5384-8500-4490-8698-d8b9df1a913a
+  conditions: []
+  identifiers:
+    pk: ce84f685-23ec-4c92-9737-5259df834219
+  model: authentik_events.notificationrule
+  permissions: []
+  state: present
+metadata:
+  labels:
+    blueprints.goauthentik.io/generated: 'true'
+  name: authentik Export - 2026-01-29 05:22:10.538286+00:00
+version: 1
