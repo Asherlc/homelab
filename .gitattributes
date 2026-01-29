@@ -20,7 +20,6 @@ configs/cloudflared/*.json filter=git-crypt diff=git-crypt
 **/passwords.txt filter=git-crypt diff=git-crypt
 **/credentials.json filter=git-crypt diff=git-crypt
 configs/cloudflared/*.sh filter=git-crypt diff=git-crypt
-configs/overseerr/settings.json filter=git-crypt diff=git-crypt
 
 # Additional service configs with API keys
 configs/bazarr/config.yaml filter=git-crypt diff=git-crypt
