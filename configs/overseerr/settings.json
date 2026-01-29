@@ -1,9 +1,9 @@
 {
 	"clientId": "a447a697-a17d-4140-a310-bb0f48b7b528",
-	"vapidPrivate": "ENC[AES256_GCM,data:lpBd4L9ptXCT+q6G5u15wlzrW9pb6J37sBxljH30hak/4au7VarmYhrFgg==,iv:G81BUTWjJWKblwhuFrtWt8tujpJv299EY5gJMKhF2BA=,tag:mm8iHnX+GYuZyAUpshSwWw==,type:str]",
-	"vapidPublic": "ENC[AES256_GCM,data:hLIbs8LurRyL8rqRQo6d2USyAuMZ3USDp9JrdXA9d8kF5ZhYm3wP3L4HnaFScFWVfiq+iHnYbdKSz6O+69BJdmATN10s3xgA6R9KKd3t1zMXrSosLuTJ,iv:iSc8AFq6uUl2HF4F5XrUPRpDREm1Ng9l9HxO+e+Mktc=,tag:BanwJKZ+kBSjSHuHsooNnw==,type:str]",
+	"vapidPrivate": "ENC[AES256_GCM,data:4omILGGvQIY3AZRUzTx14VwEHPpCuwJDhUMS5QtY2AGLGLH6nrAlAQUlHQ==,iv:Da0NKeSUhjfns7WRlC+B8vrSz3TB6gbRGIO6oJSyO+s=,tag:0iiBFvHKwtRp40SQ7ViwEA==,type:str]",
+	"vapidPublic": "ENC[AES256_GCM,data:Q0sXsHdWs4FD05UGVPxvVkdnKNzJUiMoYGtD4zFEeeLwr9p0agze3MDzHzyAw505AWeTxIksI2HbhecEF9hmKxFuyfulATL87KN9hmYOhlZk9jTV9ZxX,iv:5Yo1Uk9bp8cPpNlGKjtYs/1cgkgyFzBcCwQaDO/dCBM=,tag:HDptAdzN/4Iu4Uw+jiLvgw==,type:str]",
 	"main": {
-		"apiKey": "ENC[AES256_GCM,data:pigcSWbUC4cHambKn765/UajlIx15jB0U/tSam5d4W15HJhTbH8cYnxgbMbR1frBHo8VjKVafAxPZ3jDfbp2JCs6mFA=,iv:MZJ7DJJHHjb+7A8ucK4rcCfRCKAdhhK0qH8SBGCaqTQ=,tag:Cz9k1Tq998eDdV21oLI8RQ==,type:str]",
+		"apiKey": "ENC[AES256_GCM,data:/CzskVnmEDkcGKIxyrb0PM1b7YBceD7coV/JDMYCvSOOvRgEAVcs0KH/ltq2vrofbLM/V73CWEdp8WG5Zp/mACW7zPA=,iv:MlHiflE9ynpaF8wtZV77OZ6SALFNQeEB3GPABcPmbd4=,tag:0YR7rU7sP4T5mPGgF+xQrQ==,type:str]",
 		"applicationTitle": "Overseerr",
 		"applicationUrl": "",
 		"csrfProtection": false,
@@ -33,14 +33,14 @@
 				"name": "Movies",
 				"enabled": true,
 				"type": "movie",
-				"lastScan": 1769683500051
+				"lastScan": 1769683800051
 			},
 			{
 				"id": "4",
 				"name": "TV Shows",
 				"enabled": true,
 				"type": "show",
-				"lastScan": 1769683500056
+				"lastScan": 1769683800064
 			}
 		],
 		"machineId": "bd2f2a7cb09c71a51dfacf2e1f8c98476f26aa7f"
@@ -51,7 +51,7 @@
 			"name": "Radarr",
 			"hostname": "radarr",
 			"port": 7878,
-			"apiKey": "ENC[AES256_GCM,data:+LnDohClvZoksSuLThA1b8KcRJSIRVnSepARtkoLEYI=,iv:YIcMDIGhS/w7HPQCof5yIPP2i7xfpE8cd/jcbP02Ahc=,tag:Owcn75X5CRjQ16COQHC/lA==,type:str]",
+			"apiKey": "ENC[AES256_GCM,data:pIuE5iFxNWYaP8zGRUM2W8jjhnPLgW6l5bOW618V4TU=,iv:njviXvrSKymwy1wLX0+V5JS3SeX02jD1MX4ULclKSQU=,tag:ErVtwPNqTI0fBLgYUVGoKw==,type:str]",
 			"useSsl": false,
 			"activeProfileId": 4,
 			"activeProfileName": "HD-1080p",
@@ -71,7 +71,7 @@
 			"name": "Sonarr",
 			"hostname": "sonarr",
 			"port": 8989,
-			"apiKey": "ENC[AES256_GCM,data:L065TCvfdVYEFpjEyJ6oYong7IdB1hPaCCco12CDx8g=,iv:a8chQhhnHNX1TLua/2P88Wm8oPN8ocEQM+rH9RG61qk=,tag:s2tUT//WkVIn7bGM5PmGfQ==,type:str]",
+			"apiKey": "ENC[AES256_GCM,data:c/Onh6kyKA7zKHkdxGqP/Z/dxj6jZ9VGcBn7ZkshZBA=,iv:xFSpm4wZcCee1bgf9mcCk88ptXQXn1vDRfN89mfWuXU=,tag:PjXVtaBCNE8Zdc6OhfkhPw==,type:str]",
 			"useSsl": false,
 			"baseUrl": "",
 			"activeProfileId": 4,
@@ -216,11 +216,11 @@
 		"age": [
 			{
 				"recipient": "age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd",
-				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB3SU1ZeExPVmU3VlpYSHVY\nTmlQUXQwUmY5Mms0bE1EQkpIdXVDZ1JtWkVnCngxKy81NE1OUFpRVXhPTitUcWkv\nSkJTbnZBN1FzdnJIRDZpb2p0RDFUelEKLS0tIEgxek1wUE14aUQvWXZxT1MyM241\nZWdlbEdlSllwRis3b05nRnRoV1RaYzgKG15Ct3GBqPw6/J6G1swW2/pOBDpDexzl\nxS+rrB5LPRsOMbb4r+pzQR4zkxHUcuRxhLDYAj2b0wuXIZ7o3TaRqA==\n-----END AGE ENCRYPTED FILE-----\n"
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBYNnRNQTdyVGN1RUI1Y3Qx\nTmFBSFZ4TVMxZktLdWRrdGQvVnFERm5MS0YwCms3OStEeUpwR1VGU1Y2UlQ2K2hM\nQkdKTzQzRzVKa3BqL3MrRWwvNWQxbUEKLS0tIEhJRVFWOWFuays4MW5BOFM0cHor\nUm1PSnZLczZWYUU2TytNN3dTeE84bjQKamPLYsyQnh/aj6HkjRWDNYWJx//+2LwD\nxA9VBu8CAAdoMWhogRGkUsbBVfbd3uPVu7g6kDrsAaY00DHE4dqgow==\n-----END AGE ENCRYPTED FILE-----\n"
 			}
 		],
-		"lastmodified": "2026-01-29T10:45:30Z",
-		"mac": "ENC[AES256_GCM,data:mht7n+p0coS/z0eR29doADIE5A5erynSrSyAijybXvJPbYN+mlpcXKok/HqLuLiF/y2twzPHrqR4+5bFXwJHcgq4K5HNaVVM8zQx6oAJ90MAZuPtEvmJM/lwdPQnEzTkdlEBqMeXck6Gu1XyfQzXupM1JI1meHBnPDo2B8joq14=,iv:XLhpHskgB7fiWd+kTQCS2drYt2sj1++gKHF2Nzfgo70=,tag:qQXjVHDhvVvmmQM5wUxsBg==,type:str]",
+		"lastmodified": "2026-01-29T10:50:30Z",
+		"mac": "ENC[AES256_GCM,data:5wWJZJU8oNLarCXfpRql3gkkEiNouTupwwW6Jpya+XAJWoQ44Q4T/p1NnkC+6xSrdrqXMcu9gpUwAa9s2KWuSgMSeZOO46E5aFliYdhEavg17U3nC5qqFrJpkAoGAd0f2z+Djcf1GT8zWENlr9wrAZSPqRLeiRLpn2898cA6b7w=,iv:XxWFbknF9XGzRpAs89McfImNI0zwGjhXtL5Hj1qMrIE=,tag:55bQq0iVGzJOAoYUqLoi/w==,type:str]",
 		"pgp": null,
 		"encrypted_regex": "^(apiKey|vapidPrivate|vapidPublic|api_key)$",
 		"version": "3.9.1"
