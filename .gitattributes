@@ -22,9 +22,6 @@ configs/cloudflared/*.json filter=git-crypt diff=git-crypt
 configs/cloudflared/*.sh filter=git-crypt diff=git-crypt
 
 # Additional service configs with API keys
-configs/bazarr/config.yaml filter=git-crypt diff=git-crypt
-configs/homarr/default.json filter=git-crypt diff=git-crypt
-configs/prowlarr/config.xml filter=git-crypt diff=git-crypt
 
 # SOPS diff driver - show decrypted content in diffs
 # (Keep git-crypt entries above for now during migration)
