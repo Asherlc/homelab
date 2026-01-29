@@ -41,7 +41,7 @@ sync_config() {
     mkdir -p "$REPO_DIR/$(dirname "$dest")"
     cp "$source" "$REPO_DIR/$dest"
 
-    # Change ownership to homelab user
+    # Change ownership to asherlc user
     chown -R asherlc:asherlc "$REPO_DIR/$(dirname "$dest")"
 }
 
@@ -57,20 +57,37 @@ sync_all_and_commit() {
     # Commit and push
     cd "$REPO_DIR"
 
-    # Check if there are changes
-    if [ -z "$(git status --porcelain)" ]; then
+    # Check if there are changes (as asherlc user)
+    if ! sudo -u asherlc git -c safe.directory="$REPO_DIR" status --porcelain | grep -q .; then
         log "No changes to commit"
         return
     fi
 
     log "Changes detected, committing..."
 
-    # Run as homelab user with SOPS key
-    su - asherlc -c "
-        export SOPS_AGE_KEY_FILE=~/.sops/key.txt
-        cd $REPO_DIR
-        ./scripts/auto-commit-push.sh
-    " >> "$LOG_FILE" 2>&1
+    # Run as asherlc user with SOPS key and safe.directory override
+    sudo -u asherlc bash << 'EOF'
+export SOPS_AGE_KEY_FILE=~/.sops/key.txt
+cd /opt/homelab-config
+
+# Use git -c to bypass safe.directory check
+git -c safe.directory=/opt/homelab-config add -A
+
+# Encrypt SOPS files
+./scripts/sops-encrypt.sh
+
+# Commit
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+git -c safe.directory=/opt/homelab-config commit -m "Auto-sync: $TIMESTAMP from $(hostname)" || exit 0
+
+# Push
+git -c safe.directory=/opt/homelab-config push origin main || {
+    echo "WARNING: Push failed"
+    exit 1
+}
+
+echo "✓ Changes committed and pushed successfully"
+EOF
 
     log "Sync complete!"
     log "=========================================="
