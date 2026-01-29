@@ -15,7 +15,6 @@ else
     for file in configs/overseerr/settings.json \
                 configs/bazarr/config.yaml \
                 configs/homarr/*.json \
-                configs/prowlarr/config.xml \
                 configarr/secrets.yml \
                 configs/cloudflared/credentials.json; do
         
