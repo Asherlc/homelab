@@ -17,6 +17,7 @@ http:
           - authorization
 
   routers:
+    # Authentik outpost (required)
     outpost:
       rule: "PathPrefix(`/outpost.goauthentik.io/`)"
       entryPoints:
@@ -24,7 +25,8 @@ http:
       service: authentik
       priority: 1000
 
-    radarr:
+    # External domains (*.asherlc.com) - WITH authentication
+    radarr-external:
       rule: "Host(`radarr.asherlc.com`)"
       entryPoints:
         - web
@@ -32,7 +34,7 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
-    sonarr:
+    sonarr-external:
       rule: "Host(`sonarr.asherlc.com`)"
       entryPoints:
         - web
@@ -40,7 +42,7 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
-    qbittorrent:
+    qbittorrent-external:
       rule: "Host(`qbittorrent.asherlc.com`)"
       entryPoints:
         - web
@@ -48,7 +50,7 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
-    prowlarr:
+    prowlarr-external:
       rule: "Host(`prowlarr.asherlc.com`)"
       entryPoints:
         - web
@@ -56,7 +58,7 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
-    dashdot:
+    dashdot-external:
       rule: "Host(`dashdot.asherlc.com`)"
       entryPoints:
         - web
@@ -64,7 +66,7 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
-    homarr:
+    homarr-external:
       rule: "Host(`homarr.asherlc.com`)"
       entryPoints:
         - web
@@ -72,6 +74,58 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+
+    # Local domains (*.home) - WITHOUT authentication
+    homarr-local:
+      rule: "Host(`homarr.home`)"
+      entryPoints:
+        - web
+      service: homarr
+    plex-local:
+      rule: "Host(`plex.home`)"
+      entryPoints:
+        - web
+      service: plex
+    sonarr-local:
+      rule: "Host(`sonarr.home`)"
+      entryPoints:
+        - web
+      service: sonarr
+    radarr-local:
+      rule: "Host(`radarr.home`)"
+      entryPoints:
+        - web
+      service: radarr
+    bazarr-local:
+      rule: "Host(`bazarr.home`)"
+      entryPoints:
+        - web
+      service: bazarr
+    prowlarr-local:
+      rule: "Host(`prowlarr.home`)"
+      entryPoints:
+        - web
+      service: prowlarr
+    overseerr-local:
+      rule: "Host(`overseerr.home`)"
+      entryPoints:
+        - web
+      service: overseerr
+    tautulli-local:
+      rule: "Host(`tautulli.home`)"
+      entryPoints:
+        - web
+      service: tautulli
+    qbittorrent-local:
+      rule: "Host(`qbittorrent.home`)"
+      entryPoints:
+        - web
+      service: qbittorrent
+    autoscan-local:
+      rule: "Host(`autoscan.home`)"
+      entryPoints:
+        - web
+      service: autoscan
 
   services:
     authentik:
@@ -103,3 +157,23 @@ http:
       loadBalancer:
         servers:
           - url: "http://homarr:7575"
+    plex:
+      loadBalancer:
+        servers:
+          - url: "http://172.17.0.1:32400"
+    bazarr:
+      loadBalancer:
+        servers:
+          - url: "http://bazarr:6767"
+    overseerr:
+      loadBalancer:
+        servers:
+          - url: "http://overseerr:5055"
+    tautulli:
+      loadBalancer:
+        servers:
+          - url: "http://tautulli:8181"
+    autoscan:
+      loadBalancer:
+        servers:
+          - url: "http://autoscan:3030"
