@@ -1,0 +1,434 @@
+services:
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker
+    restart: always
+    environment:
+      - TZ=US/Pacific
+      - PLEX_CLAIM=claim-k6m5qv-4tApjrsJt-vun
+    network_mode: host
+    volumes:
+      - /srv/appdata/plex:/config
+      - /mnt/storage/transcode:/transcode
+      - /mnt/storage/media:/data
+    devices:
+      - /dev/dri:/dev/dri 
+  
+  tautulli:
+    container_name: tautulli
+    environment:
+      PGID: "1000"
+      PUID: "1000"
+      TZ: US/Pacific
+    hostname: media
+    image: lscr.io/linuxserver/tautulli:latest
+    logging:
+      driver: json-file
+      options:
+        max-file: "10"
+        max-size: 200k
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 8181
+        published: "8181"
+        protocol: tcp
+    restart: always
+    volumes: 
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /srv/appdata/tautulli
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /mnt/storage
+        target: /storage
+        bind:
+          create_host_path: true
+  
+  plexautolanguages:
+    image: remirigal/plex-auto-languages:latest
+    restart: always
+    environment:
+      - PLEX_URL=http://plex.home:32400
+      - PLEX_TOKEN=HK9VP3eRPjEkLsx9giC_
+      - TZ=Europe/Paris
+    volumes:
+      - type: bind
+        source: /srv/appdata/buildarr
+        target: /config
+
+  sonarr:
+    container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+    ports:
+      - "8989:8989"
+    volumes:
+      - /srv/appdata/sonarr:/config
+      - /mnt/storage/media:/data
+      - /mnt/storage/downloads:/downloads
+
+  radarr:
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:latest
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+    ports:
+      - "7878:7878"
+    volumes:
+      - /srv/appdata/radarr:/config
+      - /mnt/storage/media:/data
+      - /mnt/storage/downloads:/downloads
+
+  overseerr:
+    container_name: overseerr
+    image: lscr.io/linuxserver/overseerr:latest
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+    ports:
+      - "5055:5055"
+    volumes:
+      - /srv/appdata/overseerr:/config
+
+  # profilarr:
+  #   container_name: profilarr
+  #   image: santiagosayshey/profilarr:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     - TZ=US/Pacific
+  #   ports:
+  #     - "6868:6868"
+  #   volumes:
+  #     - /srv/appdata/profilarr:/config
+
+  cloudflared:
+    container_name: cloudflared
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    volumes:
+      - /opt/docker/.cloudflared:/etc/cloudflared:ro
+
+  flaresolverr:
+    container_name: flaresolverr
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=info
+      - TZ=US/Pacific
+    ports:
+      - "8191:8191"
+
+  qbittorrent:
+    container_name: qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+      - WEBUI_PORT=8080
+    ports:
+      - "8080:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
+    volumes:
+      - /srv/appdata/qbittorrent:/config
+      - /mnt/storage/downloads:/downloads
+
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+    ports:
+      - "9696:9696"
+    volumes:
+      - /srv/appdata/prowlarr:/config
+
+  bazarr:
+    container_name: bazarr
+    image: lscr.io/linuxserver/bazarr:latest
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+    ports:
+      - "6767:6767"
+    volumes:
+      - /srv/appdata/bazarr:/config
+      - /mnt/storage/media:/data
+
+  configarr:
+    container_name: configarr
+    image: ghcr.io/raydak-labs/configarr:latest
+    restart: unless-stopped
+    user: "1000:1000"
+    environment:
+      - TZ=US/Pacific
+    volumes:
+      - /srv/appdata/configarr/config:/app/config
+      - /srv/appdata/configarr/repos:/app/repos
+    depends_on:
+      - sonarr
+      - radarr
+      - prowlarr
+
+  unpackerr:
+    container_name: unpackerr
+    image: golift/unpackerr:latest
+    restart: unless-stopped
+    environment:
+      - TZ=US/Pacific
+      - PUID=1000
+      - PGID=1000
+      - UN_SONARR_0_URL=http://sonarr:8989
+      - UN_SONARR_0_API_KEY=f82451626ae243cab47af8290d628488
+      - UN_RADARR_0_URL=http://radarr:7878
+      - UN_RADARR_0_API_KEY=ff3c65d3ab8947238c4fe80ab93ad07b
+      - UN_INTERVAL=2m
+      - UN_START_DELAY=1m
+      - UN_RETRY_DELAY=5m
+      - UN_MAX_RETRIES=3
+      - UN_PARALLEL=1
+      - UN_FILE_MODE=0644
+      - UN_DIR_MODE=0755
+    volumes:
+      - /mnt/storage/downloads:/downloads
+
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+    ports:
+      - "7575:7575"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /srv/appdata/homarr/configs:/app/data/configs
+      - /srv/appdata/homarr/icons:/app/public/icons
+      - /srv/appdata/homarr/data:/data
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /:/host/root:ro
+
+  glances:
+    container_name: glances
+    image: nicolargo/glances:latest
+    restart: unless-stopped
+    environment:
+      - TZ=US/Pacific
+      - GLANCES_OPT=-w
+    ports:
+      - "61208:61208"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/os-release:/etc/os-release:ro
+    pid: host
+
+  nginx-proxy-manager:
+    container_name: nginx-proxy-manager
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    environment:
+      - TZ=US/Pacific
+    volumes:
+      - /srv/appdata/nginx-proxy-manager/data:/data
+      - /srv/appdata/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+
+
+  authelia:
+    container_name: authelia
+    image: authelia/authelia:latest
+    restart: unless-stopped
+    environment:
+      - TZ=US/Pacific
+    ports:
+      - "9091:9091"
+    volumes:
+      - /srv/appdata/authelia:/config
+    depends_on:
+      - nginx-proxy-manager
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    environment:
+      - TZ=US/Pacific
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - /srv/appdata/mosquitto/config:/mosquitto/config
+      - /srv/appdata/mosquitto/data:/mosquitto/data
+      - /srv/appdata/mosquitto/log:/mosquitto/log
+
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    image: koenkk/zigbee2mqtt:latest
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TZ=US/Pacific
+    volumes:
+      - /srv/appdata/zigbee2mqtt:/app/data
+    depends_on:
+      - mosquitto
+
+  dashdot:
+    container_name: dashdot
+    image: mauricenino/dashdot:latest
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - '3001:3001'
+    volumes:
+      - /:/mnt/host:ro
+    environment:
+      - DASHDOT_ENABLE_CPU_TEMPS=true
+
+  # Authentik - Identity Provider
+  authentik-postgresql:
+    container_name: authentik-postgresql
+    image: docker.io/library/postgres:16-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    volumes:
+      - /srv/appdata/authentik/postgresql:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: authentik-db-password-change-me
+      POSTGRES_USER: authentik
+      POSTGRES_DB: authentik
+
+  authentik-redis:
+    container_name: authentik-redis
+    image: docker.io/library/redis:alpine
+    command: --save 60 1 --loglevel warning
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+    volumes:
+      - /srv/appdata/authentik/redis:/data
+
+  authentik-server:
+    container_name: authentik-server
+    image: ghcr.io/goauthentik/server:latest
+    restart: unless-stopped
+    command: server
+    environment:
+      AUTHENTIK_SECRET_KEY: 8af5729cf61470ea4087a6a51a1e5f2091e026e2cd0acfab31e7d6be6d2ea0cbacc7228c346e218928aeb39b34499958cecb
+      AUTHENTIK_HOST: https://authentik.asherlc.com
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: authentik-db-password-change-me
+    volumes:
+      - /srv/appdata/authentik/media:/media
+      - /srv/appdata/authentik/custom-templates:/templates
+      - /srv/appdata/authentik/media/public/custom.css:/web/dist/custom.css:ro
+      - /srv/appdata/authentik/media/flow_background_custom.png:/web/dist/assets/images/flow_background.jpg:ro
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    depends_on:
+      - authentik-postgresql
+      - authentik-redis
+
+  authentik-worker:
+    container_name: authentik-worker
+    image: ghcr.io/goauthentik/server:latest
+    restart: unless-stopped
+    command: worker
+    environment:
+      AUTHENTIK_SECRET_KEY: 8af5729cf61470ea4087a6a51a1e5f2091e026e2cd0acfab31e7d6be6d2ea0cbacc7228c346e218928aeb39b34499958cecb
+      AUTHENTIK_HOST: https://authentik.asherlc.com
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: authentik-db-password-change-me
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/appdata/authentik/media:/media
+      - /srv/appdata/authentik/certs:/certs
+      - /srv/appdata/authentik/custom-templates:/templates
+      - /srv/appdata/authentik/media/public/custom.css:/web/dist/custom.css:ro
+      - /srv/appdata/authentik/media/flow_background_custom.png:/web/dist/assets/images/flow_background.jpg:ro
+    depends_on:
+      - authentik-postgresql
+      - authentik-redis
+
+  authentik-postgres-backup:
+    container_name: authentik-postgres-backup
+    image: prodrigestivill/postgres-backup-local:16
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST=authentik-postgresql
+      - POSTGRES_DB=authentik
+      - POSTGRES_USER=authentik
+      - POSTGRES_PASSWORD=authentik-db-password-change-me
+      - SCHEDULE=@daily
+      - BACKUP_DIR=/backups
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=3
+      - HEALTHCHECK_PORT=8080
+    volumes:
+      - /mnt/storage/backups/homelab/databases:/backups
+    depends_on:
+      - authentik-postgresql
+
+  traefik:
+    container_name: traefik
+    image: traefik:v3.0
+    restart: unless-stopped
+    ports:
+      - "8888:80"
+      - "8081:8080"
+    volumes:
+      - /srv/appdata/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - /srv/appdata/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    depends_on:
+      - authentik-server

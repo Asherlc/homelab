@@ -1,0 +1,155 @@
+================================================================================
+HOMELAB BACKUP MANIFEST
+================================================================================
+
+Last Updated: January 28, 2026
+Backup Location: /mnt/storage/backups/homelab/
+
+================================================================================
+DOCUMENTATION
+================================================================================
+
+BACKUP_README.md        - Complete backup and recovery documentation (724 lines)
+QUICK_REFERENCE.md      - Quick reference card for common operations (111 lines)
+BACKUP_MANIFEST.txt     - This file - inventory of backup contents
+
+================================================================================
+BACKUP SCHEDULE
+================================================================================
+
+Main Backup Script      : Daily @ 2:00 AM (via cron)
+Configarr Sync          : Daily @ 3:00 AM (automatic)
+Authentik PostgreSQL    : Daily @ midnight (container-managed)
+
+================================================================================
+BACKED UP COMPONENTS
+================================================================================
+
+INFRASTRUCTURE-AS-CODE (IaC):
+  ✓ Configarr configuration (Sonarr/Radarr quality profiles, custom formats)
+    Location: configs/configarr/config.yml, configs/configarr/secrets.yml
+
+DATABASES:
+  ✓ Sonarr SQLite database (7-day retention)
+    Location: databases/sonarr/sonarr-YYYYMMDD-HHMMSS.db
+  ✓ Radarr SQLite database (7-day retention)
+    Location: databases/radarr/radarr-YYYYMMDD-HHMMSS.db
+  ✓ Prowlarr SQLite database (7-day retention)
+    Location: databases/prowlarr/prowlarr-YYYYMMDD-HHMMSS.db
+  ✓ Authentik PostgreSQL (7 daily, 4 weekly, 3 monthly)
+    Location: databases/ (managed by postgres-backup-local container)
+
+IDENTITY & AUTHENTICATION:
+  ✓ Authentik blueprints (flows, policies, providers, users, groups)
+    Location: configs/authentik-blueprint.yml
+
+SERVICE CONFIGURATIONS:
+  ✓ Docker Compose file
+    Location: docker/compose.yml
+  ✓ Overseerr settings
+    Location: configs/settings.json
+  ✓ Nginx Proxy Manager (proxy configs, SSL certificates)
+    Location: configs/nginx-proxy-manager/
+  ✓ qBittorrent (settings, categories)
+    Location: configs/qBittorrent.conf, configs/categories.json
+  ✓ Zigbee2mqtt configuration
+    Location: configs/configuration.yaml
+  ✓ Mosquitto MQTT broker
+    Location: configs/mosquitto/
+  ✓ Cloudflare tunnel
+    Location: configs/cloudflared/
+  ✓ Traefik reverse proxy
+    Location: configs/traefik/
+  ✓ Backup script
+    Location: homelab-backup.sh
+
+================================================================================
+NOT BACKED UP (By Design)
+================================================================================
+
+  ✗ Plex metadata (20GB - too large, easily regenerated)
+  ✗ Media files (managed by separate NAS backup strategy)
+  ✗ Download cache (temporary files)
+  ✗ Container log files (regenerated)
+
+================================================================================
+RUNNING SERVICES
+================================================================================
+
+Configarr Container     : ghcr.io/raydak-labs/configarr:latest
+  Status: Running
+  Purpose: IaC sync for Sonarr/Radarr configurations
+  Config: /srv/appdata/configarr/config/
+
+Authentik Backup        : prodrigestivill/postgres-backup-local:16
+  Status: Running
+  Purpose: Automated PostgreSQL backups
+  Output: /mnt/storage/backups/homelab/databases/
+
+================================================================================
+SENSITIVE FILES (SECURE THESE!)
+================================================================================
+
+  ! configs/configarr/secrets.yml (API keys)
+  ! configs/cloudflared/ (Cloudflare tunnel credentials)
+  ! configs/nginx-proxy-manager-letsencrypt/ (SSL private keys)
+
+Recommendation: Encrypt these files for off-site storage
+
+================================================================================
+QUICK RECOVERY COMMANDS
+================================================================================
+
+View backups:
+  ls -lh /mnt/storage/backups/homelab/
+
+Manual backup:
+  sudo /opt/scripts/homelab-backup.sh
+
+Restore Sonarr database:
+  docker stop sonarr
+  cp databases/sonarr/sonarr-YYYYMMDD-*.db /srv/appdata/sonarr/sonarr.db
+  chown 1000:1000 /srv/appdata/sonarr/sonarr.db
+  docker start sonarr
+
+Force Configarr sync:
+  docker restart configarr
+
+Check backup logs:
+  tail -50 /var/log/homelab-backup.log
+
+================================================================================
+VERIFICATION
+================================================================================
+
+To verify backups are working:
+
+1. Check last backup time:
+   ls -lt /mnt/storage/backups/homelab/databases/sonarr/
+
+2. Verify backup script ran:
+   tail -20 /var/log/homelab-backup.log
+
+3. Confirm containers running:
+   docker ps | grep -E 'configarr|authentik-postgres-backup'
+
+4. Test database integrity:
+   sqlite3 databases/sonarr/sonarr-LATEST.db "PRAGMA integrity_check;"
+
+================================================================================
+FOR COMPLETE DOCUMENTATION
+================================================================================
+
+Read: /mnt/storage/backups/homelab/BACKUP_README.md
+
+Includes:
+  - Detailed restore procedures for all services
+  - Disaster recovery guide
+  - Configuration management instructions
+  - Troubleshooting guide
+  - Security considerations
+  - Monitoring and alerting setup
+
+Quick reference: /mnt/storage/backups/homelab/QUICK_REFERENCE.md
+
+================================================================================

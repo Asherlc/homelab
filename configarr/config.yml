@@ -1,0 +1,70 @@
+# Configarr Configuration
+# Manages Sonarr, Radarr, and Prowlarr with TRaSH Guides integration
+
+# Feature toggles - enable services to manage
+sonarrEnabled: true
+radarrEnabled: true
+whisparrEnabled: false
+readarrEnabled: false
+lidarrEnabled: false
+
+# Optional: Enable telemetry to help improve Configarr
+telemetry: true
+
+# Sonarr Configuration
+sonarr:
+  main:
+    base_url: http://sonarr:8989
+    api_key: !secret SONARR_API_KEY
+    enabled: true
+
+    # Sync TRaSH Guides recommended settings
+    include:
+      # WEB-1080p quality profile with TRaSH recommendations
+      - template: sonarr-quality-definition-series
+      - template: sonarr-v4-quality-profile-web-1080p
+      - template: sonarr-v4-custom-formats-web-1080p
+
+    # Automatic cleanup of unmanaged custom formats
+    # This keeps your instance tidy by removing formats not defined in config
+    delete_unmanaged_custom_formats:
+      enabled: false  # Start with false to review what would be deleted
+      ignore: []      # Add any custom formats you want to keep manually
+
+    # Media naming configuration
+    media_naming:
+      series: default
+      season: default
+      episodes:
+        rename: true
+        standard: default
+
+# Radarr Configuration
+radarr:
+  main:
+    base_url: http://radarr:7878
+    api_key: !secret RADARR_API_KEY
+    enabled: true
+
+    # Sync TRaSH Guides recommended settings
+    include:
+      # HD Bluray + WEB quality profile with TRaSH recommendations
+      - template: radarr-quality-definition-movie
+      - template: radarr-quality-profile-hd-bluray-web
+      - template: radarr-custom-formats-hd-bluray-web
+
+    # Automatic cleanup of unmanaged custom formats
+    delete_unmanaged_custom_formats:
+      enabled: false  # Start with false to review what would be deleted
+      ignore: []      # Add any custom formats you want to keep manually
+
+    # Media naming configuration
+    media_naming:
+      folder: default
+      movie:
+        rename: true
+        standard: default
+
+# Note: Prowlarr is not directly supported by Configarr
+# Prowlarr indexer configs will be backed up via database dumps
+# and manual config file backups in the backup script

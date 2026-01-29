@@ -1,0 +1,31 @@
+# Files too large or not needed in git
+
+# Large databases
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+*.log.*
+**/logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Configarr cache
+**/repos/
+**/cfs/cache/
+
+# Media files
+*.mkv
+*.mp4
+*.avi
+*.iso
+
+# System files
+.DS_Store
+Thumbs.db
