@@ -18,7 +18,7 @@ anticaptcha:
 assrt:
     token: ""
 auth:
-    apikey: ENC[AES256_GCM,data:UCOPPYq6FV5ujnRNZ4o1uLmbCOBQG7NnffJ7E3QLQhw=,iv:7ZW2yiwDuWjOUcYfu5W6Jw92qh0vzIT8s4QzpQYDsZc=,tag:QlOhfxOpp5qVo6N+yYwhpA==,type:str]
+    apikey: ENC[AES256_GCM,data:/qqcBN+xuIL6R9uSsvIVZW/42neENZFueZUN5jYcasE=,iv:j8IvZE32QLkQY/HRLFbxxTzNCxGvg4EbikBk/GFxyso=,tag:luhfu2z6H2FS4lqU3Cef0g==,type:str]
     password: ""
     type: null
     username: ""
@@ -223,7 +223,7 @@ proxy:
     url: ""
     username: ""
 radarr:
-    apikey: ENC[AES256_GCM,data:6gWtOAmiVJsgPrX81a6Keky+pBbQAG3DItJaPXV6dNo=,iv:Pw3J8VWRMLnpEoqC2pO+PD1u3POoG+DyO+m/noKSKBI=,tag:X1RpnAv0+nC9B+HmtHJHkw==,type:str]
+    apikey: ENC[AES256_GCM,data:nMxJ7UPz7XeMY7qeo8wxFH3MBf9N/J1pXh2rMZkt53M=,iv:Hs9rSCLxLy0+dEeGawCk13C7UfHtHU5xCQuN7z80ZNk=,tag:tqWooYqUJCd5Nn8V3PnPFA==,type:str]
     base_url: ""
     defer_search_signalr: false
     excluded_tags: []
@@ -253,7 +253,7 @@ series_scores:
     video_codec: 2
     year: 90
 sonarr:
-    apikey: ENC[AES256_GCM,data:UJkRRGfr5mNex6cJpXO8Eu5SAPnoxO922hfvJ+9v4a8=,iv:w+6qimtI56PCD/Ozhizw9mMcRHOmdgkoBn/vKc6gE7c=,tag:szUgSMVf/x84CpOE0zqIyg==,type:str]
+    apikey: ENC[AES256_GCM,data:vHbVlORRr+h05WUF8FbspomUgr/4HrixB9681tvahOM=,iv:XL00n1UXQQf7lxi2mrhTLWCE8yzlUCPzjPFf/bY+CeM=,tag:FQuiU9G1qLV4SQL/83zA3w==,type:str]
     base_url: ""
     defer_search_signalr: false
     exclude_season_zero: false
@@ -330,14 +330,14 @@ sops:
         - recipient: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
           enc: |
             -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB3ZWZuSFltOG5jaGdWMzBB
-            OHRCUGNFS083ZnNaSTdOV3ZEN1J2NHlNUjJFCitiRGJCWS9HZjdSd1lzeUc4ZkFi
-            YTRJT3JwYlNWcmhoRFFxSGs4akxJSlkKLS0tIFFSZVhHdWFIT2t6WHlZOGpoQ3Vu
-            KzdkQlpTVEcxeHFPOFdONUNFeG5mVmcKUT0PD0h4/DeE8OCjpRHUmipK6TufyQv3
-            r0IL6icQdWFMZZoN7O8RCCJ2d27pM7zOx52MDbHhvBh7OtLLgnU7Dg==
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB5SmpienlWZVdPN3k4WFZ1
+            cVBFMEJiOHFEdVpDaTNNdkZ1bkdZMTBHVEZVClVEaHJJcTc3bk90c2FoeVErblZs
+            U3RHUjZXRmpSWHk5VW4vakovLzlIT3MKLS0tIGI2bUlyeTZISm12SDdiS1U4WThX
+            aGgxNzZzSzdJSUZJQWVCbzJmK3lDeDAKINgFhhuCfiIxEJgLa7aanLaJobCu9zR/
+            lZZhu2VXz4CusUEC0r7yzlQbDzUIr5SN0t5+vsDTQh9KHBXg9nSR2Q==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-02-08T02:20:30Z"
-    mac: ENC[AES256_GCM,data:Vp5pVTeeS0G34CSCbcdGM0n7HUrkxnfqYbHZr7ULmMWFRZiAWe3FisFXnCwW/eMAq85nXryIocXz7crGtYWsU71bK99Kde9fhzaJ7pIGncsLFTc/OxWa41C/my8rRZtuVqMq29nuKPKcdeh6z1cpu0ZygwgMCTjmuj5Yvd/5m0c=,iv:JyZHnyaMqvCCf6ogK8gjt98WzQXeyZtzUJlmY6mM244=,tag:+yI1pNMZksCyIyLfLd7BOg==,type:str]
+    lastmodified: "2026-02-08T02:25:30Z"
+    mac: ENC[AES256_GCM,data:z/GvglNY8EOJ/K/BFKvLDNhblijiDAoFyQHF1rmm0x39NU+CKRyMFiCcmJu3Zme7YpnThzT7uqRe7VsUfsuUeBVv3IG8YDwZHL1bzo25bGdIPd79A8gmnmxHC6x/b3a4GKCJ6JWwRA3lZCDA5U/WMdFY4m3vMZw1ed04v5Qjlgc=,iv:hZk9h7cJPtSbDCB33NGqqtM91c5MFTjje9YSGUj3O0c=,tag:G9lHRLfwrxifiMPqAobFwg==,type:str]
     pgp: []
     encrypted_regex: ^(auth|apikey|password|token|key)$
     version: 3.9.1
