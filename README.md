@@ -62,3 +62,40 @@ Some services use formats incompatible with SOPS or are better managed through o
 - **Overseerr users/permissions**: Stored in SQLite database, backed up to NAS
 
 See  for database backup procedures.
+
+## DNS Management (OpenTofu)
+
+Cloudflare DNS records for tunnel services are managed via OpenTofu in `terraform/`.
+
+### Prerequisites
+
+- OpenTofu installed (`tofu` command)
+- Cloudflare API token with **Zone:DNS:Edit** and **Zone:Zone:Read** permissions for `asherlc.com`
+
+### Adding a New Service
+
+1. Add the service to `terraform/terraform.tfvars`:
+   ```hcl
+   newservice = { description = "My new service" }
+   ```
+
+2. Add the ingress rule to `configs/cloudflared/config.yml`:
+   ```yaml
+   - hostname: newservice.asherlc.com
+     service: http://traefik:80
+     originRequest:
+       httpHostHeader: newservice.asherlc.com
+       originServerName: newservice.asherlc.com
+   ```
+
+3. Add the Traefik router and service to `configs/traefik/dynamic.yml`
+
+4. Apply the DNS changes:
+   ```bash
+   cd /opt/homelab-config/terraform
+   export TF_VAR_cloudflare_api_token="your-token"
+   tofu plan     # review changes
+   tofu apply    # apply changes
+   ```
+
+5. Restart cloudflared: `sudo docker restart cloudflared`
