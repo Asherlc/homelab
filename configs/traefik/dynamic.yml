@@ -66,6 +66,14 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+    zigbee-external:
+      rule: "Host(`zigbee2mqtt.asherlc.com`)"
+      entryPoints:
+        - web
+      service: zigbee2mqtt
+      middlewares:
+        - add-forward-headers
+        - authentik
     homarr-external:
       rule: "Host(`homarr.asherlc.com`)"
       entryPoints:
@@ -116,6 +124,11 @@ http:
       entryPoints:
         - web
       service: tautulli
+    zigbee2mqtt-local:
+      rule: "Host(`zigbee2mqtt.home`)"
+      entryPoints:
+        - web
+      service: zigbee2mqtt
     qbittorrent-local:
       rule: "Host(`qbittorrent.home`)"
       entryPoints:
@@ -164,6 +177,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://overseerr:5055"
+    zigbee2mqtt:
+      loadBalancer:
+        servers:
+          - url: "http://172.17.0.1:8090"
     tautulli:
       loadBalancer:
         servers:
