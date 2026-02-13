@@ -32,3 +32,9 @@ Thumbs.db
 # Exclude utility scripts with API tokens
 configs/cloudflared/*.sh
 configs/prowlarr/config.xml
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate*
+terraform/.terraform.lock.hcl
+terraform/crash.log
