@@ -73,7 +73,14 @@ http:
       service: zigbee2mqtt
       middlewares:
         - add-forward-headers
-zigbee-alias-external:      rule: "Host(`zigbee.asherlc.com`)"      entryPoints:        - web      service: zigbee2mqtt      middlewares:        - add-forward-headers        - authentik
+    zigbee-alias-external:
+      rule: "Host(`zigbee.asherlc.com`)"
+      entryPoints:
+        - web
+      service: zigbee2mqtt
+      middlewares:
+        - add-forward-headers
+        - authentik
         - authentik
     homarr-external:
       rule: "Host(`homarr.asherlc.com`)"
