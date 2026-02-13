@@ -38,6 +38,7 @@ ingress:
     originRequest:
       httpHostHeader: zigbee2mqtt.asherlc.com
       originServerName: zigbee2mqtt.asherlc.com
+- hostname: zigbee.asherlc.com    service: http://traefik:80    originRequest:      httpHostHeader: zigbee.asherlc.com      originServerName: zigbee.asherlc.com
   - hostname: homarr.asherlc.com
     service: http://traefik:80
     originRequest:

@@ -10,4 +10,5 @@ services = {
   dashdot      = { description = "Server dashboard" }
   homarr       = { description = "Homepage" }
   zigbee2mqtt  = { description = "Zigbee device management" }
+  zigbee       = { description = "Zigbee device management (alias)" }
 }
