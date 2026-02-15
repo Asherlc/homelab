@@ -70,13 +70,30 @@ Cloudflare DNS records for tunnel services are managed via OpenTofu in `terrafor
 ### Prerequisites
 
 - OpenTofu installed (`tofu` command)
-- Cloudflare API token with **Zone:DNS:Edit** and **Zone:Zone:Read** permissions for `asherlc.com`
+- Cloudflare API token stored in `terraform/.env` (see below)
+
+### Cloudflare API Token
+
+The Cloudflare API token is stored in `/opt/homelab-config/terraform/.env` with permissions 600.
+
+**To use the token:**
+```bash
+cd /opt/homelab-config/terraform
+source .env  # Loads TF_VAR_cloudflare_api_token
+```
+
+The token has **Zone:DNS:Edit** and **Zone:Zone:Read** permissions for `asherlc.com`.
+
+**⚠️ IMPORTANT:** The `.env` file is in `.gitignore` and will not be committed to git. Back up this file or document the token in a password manager.
 
 ### Adding a New Service
 
 1. Add the service to `terraform/terraform.tfvars`:
    ```hcl
-   newservice = { description = "My new service" }
+   services = {
+     existing = { description = "..." }
+     newservice = { description = "My new service" }
+   }
    ```
 
 2. Add the ingress rule to `configs/cloudflared/config.yml`:
@@ -88,14 +105,60 @@ Cloudflare DNS records for tunnel services are managed via OpenTofu in `terrafor
        originServerName: newservice.asherlc.com
    ```
 
-3. Add the Traefik router and service to `configs/traefik/dynamic.yml`
+3. Add the Traefik router and service to `configs/traefik/dynamic.yml`:
+   ```yaml
+   routers:
+     newservice-external:
+       rule: "Host(`newservice.asherlc.com`)"
+       entryPoints:
+         - web
+       service: newservice
+       middlewares:
+         - add-forward-headers
+         - authentik  # if authentication required
+   
+   services:
+     newservice:
+       loadBalancer:
+         servers:
+           - url: "http://service-name:port"
+   ```
 
 4. Apply the DNS changes:
    ```bash
    cd /opt/homelab-config/terraform
-   export TF_VAR_cloudflare_api_token="your-token"
-   tofu plan     # review changes
-   tofu apply    # apply changes
+   source .env            # Load API token
+   tofu plan              # Review changes
+   tofu apply             # Apply changes (will prompt for confirmation)
+   # Or: tofu apply -auto-approve
    ```
 
-5. Restart cloudflared: `sudo docker restart cloudflared`
+5. Restart cloudflared to pick up new ingress rules:
+   ```bash
+   docker restart cloudflared
+   ```
+
+6. Verify DNS resolution:
+   ```bash
+   nslookup newservice.asherlc.com
+   # Should resolve to Cloudflare IPs (104.21.x.x, 172.67.x.x)
+   ```
+
+### Example: Adding Pi-hole
+
+This was the workflow used to add `pihole.asherlc.com`:
+
+```bash
+# 1. Added to terraform.tfvars
+pihole = { description = "DNS ad-blocker" }
+
+# 2. Applied DNS record
+cd /opt/homelab-config/terraform
+source .env
+tofu apply -auto-approve
+
+# 3. Verified resolution
+nslookup pihole.asherlc.com  # → 104.21.64.245, 172.67.156.169
+```
+
+The Cloudflare Tunnel and Traefik configurations were already in place.
