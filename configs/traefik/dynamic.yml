@@ -17,17 +17,15 @@ http:
           - authorization
 
   routers:
-    # Authentik outpost (required)
     outpost:
-      rule: "PathPrefix(`/outpost.goauthentik.io/`)"
+      rule: "PathPrefix(\`/outpost.goauthentik.io/\`)"
       entryPoints:
         - web
       service: authentik
       priority: 1000
 
-    # External domains (*.asherlc.com) - WITH authentication
     radarr-external:
-      rule: "Host(`radarr.asherlc.com`)"
+      rule: "Host(\`radarr.asherlc.com\`)"
       entryPoints:
         - web
       service: radarr
@@ -35,7 +33,7 @@ http:
         - add-forward-headers
         - authentik
     sonarr-external:
-      rule: "Host(`sonarr.asherlc.com`)"
+      rule: "Host(\`sonarr.asherlc.com\`)"
       entryPoints:
         - web
       service: sonarr
@@ -43,7 +41,7 @@ http:
         - add-forward-headers
         - authentik
     qbittorrent-external:
-      rule: "Host(`qbittorrent.asherlc.com`)"
+      rule: "Host(\`qbittorrent.asherlc.com\`)"
       entryPoints:
         - web
       service: qbittorrent
@@ -51,7 +49,7 @@ http:
         - add-forward-headers
         - authentik
     prowlarr-external:
-      rule: "Host(`prowlarr.asherlc.com`)"
+      rule: "Host(\`prowlarr.asherlc.com\`)"
       entryPoints:
         - web
       service: prowlarr
@@ -59,7 +57,7 @@ http:
         - add-forward-headers
         - authentik
     dashdot-external:
-      rule: "Host(`dashdot.asherlc.com`)"
+      rule: "Host(\`dashdot.asherlc.com\`)"
       entryPoints:
         - web
       service: dashdot
@@ -67,81 +65,92 @@ http:
         - add-forward-headers
         - authentik
     zigbee-external:
-      rule: "Host(`zigbee2mqtt.asherlc.com`)"
+      rule: "Host(\`zigbee2mqtt.asherlc.com\`)"
       entryPoints:
         - web
       service: zigbee2mqtt
       middlewares:
         - add-forward-headers
     zigbee-alias-external:
-      rule: "Host(`zigbee.asherlc.com`)"
+      rule: "Host(\`zigbee.asherlc.com\`)"
       entryPoints:
         - web
       service: zigbee2mqtt
       middlewares:
         - add-forward-headers
         - authentik
-        - authentik
     homarr-external:
-      rule: "Host(`homarr.asherlc.com`)"
+      rule: "Host(\`homarr.asherlc.com\`)"
       entryPoints:
         - web
       service: homarr
+      middlewares:
+        - add-forward-headers
+        - authentik
+    pihole-external:
+      rule: "Host(\`pihole.asherlc.com\`)"
+      entryPoints:
+        - web
+      service: pihole
       middlewares:
         - add-forward-headers
         - authentik
 
-    # Local domains (*.home) - WITHOUT authentication
     homarr-local:
-      rule: "Host(`homarr.home`)"
+      rule: "Host(\`homarr.home\`)"
       entryPoints:
         - web
       service: homarr
     plex-local:
-      rule: "Host(`plex.home`)"
+      rule: "Host(\`plex.home\`)"
       entryPoints:
         - web
       service: plex
     sonarr-local:
-      rule: "Host(`sonarr.home`)"
+      rule: "Host(\`sonarr.home\`)"
       entryPoints:
         - web
       service: sonarr
     radarr-local:
-      rule: "Host(`radarr.home`)"
+      rule: "Host(\`radarr.home\`)"
       entryPoints:
         - web
       service: radarr
     bazarr-local:
-      rule: "Host(`bazarr.home`)"
+      rule: "Host(\`bazarr.home\`)"
       entryPoints:
         - web
       service: bazarr
     prowlarr-local:
-      rule: "Host(`prowlarr.home`)"
+      rule: "Host(\`prowlarr.home\`)"
       entryPoints:
         - web
       service: prowlarr
     overseerr-local:
-      rule: "Host(`overseerr.home`)"
+      rule: "Host(\`overseerr.home\`)"
       entryPoints:
         - web
       service: overseerr
     tautulli-local:
-      rule: "Host(`tautulli.home`)"
+      rule: "Host(\`tautulli.home\`)"
       entryPoints:
         - web
       service: tautulli
     zigbee2mqtt-local:
-      rule: "Host(`zigbee2mqtt.home`)"
+      rule: "Host(\`zigbee2mqtt.home\`)"
       entryPoints:
         - web
       service: zigbee2mqtt
     qbittorrent-local:
-      rule: "Host(`qbittorrent.home`)"
+      rule: "Host(\`qbittorrent.home\`)"
       entryPoints:
         - web
       service: qbittorrent
+    pihole-local:
+      rule: "Host(\`pihole.home\`)"
+      entryPoints:
+        - web
+      service: pihole
 
   services:
     authentik:
@@ -193,3 +202,7 @@ http:
       loadBalancer:
         servers:
           - url: "http://tautulli:8181"
+    pihole:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.218:80"
