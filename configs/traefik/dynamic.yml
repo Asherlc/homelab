@@ -15,16 +15,6 @@ http:
           - X-authentik-name
           - X-authentik-uid
           - authorization
-    pihole-redirect:
-      redirectRegex:
-        regex: "^http://pihole\\.asherlc\\.com/?$"
-        replacement: "http://pihole.asherlc.com/admin"
-        permanent: true
-    pihole-redirect-home:
-      redirectRegex:
-        regex: "^http://pihole\\.home/?$"
-        replacement: "http://pihole.home/admin"
-        permanent: true
 
   routers:
     outpost:
@@ -33,24 +23,6 @@ http:
         - web
       service: authentik
       priority: 1000
-
-    pihole-external:
-      rule: Host(`pihole.asherlc.com`)
-      entryPoints:
-        - web
-      service: pihole
-      middlewares:
-        - pihole-redirect
-        - add-forward-headers
-        - authentik
-
-    pihole-local:
-      rule: Host(`pihole.home`)
-      entryPoints:
-        - web
-      service: pihole
-      middlewares:
-        - pihole-redirect-home
 
     radarr-external:
       rule: Host(`radarr.asherlc.com`)
@@ -115,6 +87,14 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+    pihole-external:
+      rule: Host(`pihole.asherlc.com`)
+      entryPoints:
+        - web
+      service: pihole
+      middlewares:
+        - add-forward-headers
+        - authentik
 
     homarr-local:
       rule: Host(`homarr.home`)
@@ -166,6 +146,11 @@ http:
       entryPoints:
         - web
       service: qbittorrent
+    pihole-local:
+      rule: Host(`pihole.home`)
+      entryPoints:
+        - web
+      service: pihole
 
   services:
     authentik:
