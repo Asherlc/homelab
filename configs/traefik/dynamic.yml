@@ -15,10 +15,6 @@ http:
           - X-authentik-name
           - X-authentik-uid
           - authorization
-    pihole-redirect:
-      redirectRegex:
-        regex: ^(https?://[^/]+)/?$
-        replacement: ${1}/admin/
 
   routers:
     outpost:
@@ -27,6 +23,38 @@ http:
         - web
       service: authentik
       priority: 1000
+
+    pihole-redirect-external:
+      rule: Host(`pihole.asherlc.com`) && Path(`/`)
+      entryPoints:
+        - web
+      middlewares:
+        - add-forward-headers
+        - authentik
+      service: pihole-redirect
+      priority: 100
+
+    pihole-external:
+      rule: Host(`pihole.asherlc.com`)
+      entryPoints:
+        - web
+      service: pihole
+      middlewares:
+        - add-forward-headers
+        - authentik
+
+    pihole-redirect-local:
+      rule: Host(`pihole.home`) && Path(`/`)
+      entryPoints:
+        - web
+      service: pihole-redirect
+      priority: 100
+
+    pihole-local:
+      rule: Host(`pihole.home`)
+      entryPoints:
+        - web
+      service: pihole
 
     radarr-external:
       rule: Host(`radarr.asherlc.com`)
@@ -91,15 +119,6 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
-    pihole-external:
-      rule: Host(`pihole.asherlc.com`)
-      entryPoints:
-        - web
-      service: pihole
-      middlewares:
-        - pihole-redirect
-        - add-forward-headers
-        - authentik
 
     homarr-local:
       rule: Host(`homarr.home`)
@@ -151,13 +170,6 @@ http:
       entryPoints:
         - web
       service: qbittorrent
-    pihole-local:
-      rule: Host(`pihole.home`)
-      entryPoints:
-        - web
-      service: pihole
-      middlewares:
-        - pihole-redirect
 
   services:
     authentik:
@@ -165,6 +177,10 @@ http:
         servers:
           - url: http://authentik-server:9000
         passHostHeader: true
+    pihole-redirect:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.218/admin/
     radarr:
       loadBalancer:
         servers:
