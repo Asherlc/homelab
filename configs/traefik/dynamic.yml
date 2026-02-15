@@ -15,6 +15,16 @@ http:
           - X-authentik-name
           - X-authentik-uid
           - authorization
+    pihole-redirect:
+      redirectRegex:
+        regex: "^http://pihole\\.asherlc\\.com/?$"
+        replacement: "http://pihole.asherlc.com/admin"
+        permanent: true
+    pihole-redirect-home:
+      redirectRegex:
+        regex: "^http://pihole\\.home/?$"
+        replacement: "http://pihole.home/admin"
+        permanent: true
 
   routers:
     outpost:
@@ -24,37 +34,23 @@ http:
       service: authentik
       priority: 1000
 
-    pihole-redirect-external:
-      rule: Host(`pihole.asherlc.com`) && Path(`/`)
-      entryPoints:
-        - web
-      middlewares:
-        - add-forward-headers
-        - authentik
-      service: pihole-redirect
-      priority: 100
-
     pihole-external:
       rule: Host(`pihole.asherlc.com`)
       entryPoints:
         - web
       service: pihole
       middlewares:
+        - pihole-redirect
         - add-forward-headers
         - authentik
-
-    pihole-redirect-local:
-      rule: Host(`pihole.home`) && Path(`/`)
-      entryPoints:
-        - web
-      service: pihole-redirect
-      priority: 100
 
     pihole-local:
       rule: Host(`pihole.home`)
       entryPoints:
         - web
       service: pihole
+      middlewares:
+        - pihole-redirect-home
 
     radarr-external:
       rule: Host(`radarr.asherlc.com`)
@@ -177,10 +173,6 @@ http:
         servers:
           - url: http://authentik-server:9000
         passHostHeader: true
-    pihole-redirect:
-      loadBalancer:
-        servers:
-          - url: http://192.168.1.218/admin/
     radarr:
       loadBalancer:
         servers:
