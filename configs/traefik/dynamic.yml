@@ -15,6 +15,11 @@ http:
           - X-authentik-name
           - X-authentik-uid
           - authorization
+    pihole-redirect:
+      redirectRegex:
+        regex: "^(https?://[^/]+)/?$"
+        replacement: "${1}/admin/"
+        permanent: false
 
   routers:
     outpost:
@@ -93,6 +98,7 @@ http:
         - web
       service: pihole
       middlewares:
+        - pihole-redirect
         - add-forward-headers
         - authentik
 
@@ -151,6 +157,8 @@ http:
       entryPoints:
         - web
       service: pihole
+      middlewares:
+        - pihole-redirect
 
   services:
     authentik:
