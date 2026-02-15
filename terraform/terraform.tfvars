@@ -11,4 +11,5 @@ services = {
   homarr       = { description = "Homepage" }
   zigbee2mqtt  = { description = "Zigbee device management" }
   zigbee       = { description = "Zigbee device management (alias)" }
+  pihole       = { description = "DNS ad-blocker" }
 }
