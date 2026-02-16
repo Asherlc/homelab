@@ -123,7 +123,7 @@ services:
     container_name: cloudflared
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
-    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    command: tunnel --no-autoupdate run
     volumes:
       - /opt/docker/.cloudflared:/etc/cloudflared:ro
 
