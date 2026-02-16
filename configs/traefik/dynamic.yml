@@ -87,6 +87,14 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+    scrypted-external:
+      rule: Host(`scrypted.asherlc.com`)
+      entryPoints:
+        - web
+      service: scrypted
+      middlewares:
+        - add-forward-headers
+        - authentik
     pihole-external:
       rule: Host(`pihole.asherlc.com`)
       entryPoints:
@@ -146,6 +154,11 @@ http:
       entryPoints:
         - web
       service: qbittorrent
+    scrypted-local:
+      rule: Host(`scrypted.home`)
+      entryPoints:
+        - web
+      service: scrypted
     pihole-local:
       rule: Host(`pihole.home`)
       entryPoints:
@@ -202,6 +215,10 @@ http:
       loadBalancer:
         servers:
           - url: http://tautulli:8181
+    scrypted:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.89:11080
     pihole:
       loadBalancer:
         servers:
