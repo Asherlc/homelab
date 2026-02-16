@@ -48,4 +48,9 @@ ingress:
     originRequest:
       httpHostHeader: homarr.asherlc.com
       originServerName: homarr.asherlc.com
+  - hostname: scrypted.asherlc.com
+    service: http://traefik:80
+    originRequest:
+      httpHostHeader: scrypted.asherlc.com
+      originServerName: scrypted.asherlc.com
   - service: http_status:404

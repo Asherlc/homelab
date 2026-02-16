@@ -12,4 +12,5 @@ services = {
   zigbee2mqtt  = { description = "Zigbee device management" }
   zigbee       = { description = "Zigbee device management (alias)" }
   pihole       = { description = "DNS ad-blocker" }
+  scrypted     = { description = "Home automation video integration" }
 }
