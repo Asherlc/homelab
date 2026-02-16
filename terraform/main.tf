@@ -28,3 +28,44 @@ resource "cloudflare_record" "tunnel_services" {
   proxied = true
   comment = "Managed by Terraform - ${each.value.description}"
 }
+
+# Cloudflare Tunnel configuration (ingress rules)
+resource "cloudflare_zero_trust_tunnel_cloudflared_config" "homelab" {
+  account_id = var.cloudflare_account_id
+  tunnel_id  = var.tunnel_id
+
+  config {
+    # Unprotected services (direct routing)
+    dynamic "ingress_rule" {
+      for_each = {
+        for k, v in var.services : k => v
+        if v.tunnel_enabled && !v.use_traefik
+      }
+      content {
+        hostname = "${ingress_rule.key}.${var.domain}"
+        service  = ingress_rule.value.tunnel_backend
+      }
+    }
+
+    # Protected services (via Traefik with Authentik)
+    dynamic "ingress_rule" {
+      for_each = {
+        for k, v in var.services : k => v
+        if v.tunnel_enabled && v.use_traefik
+      }
+      content {
+        hostname = "${ingress_rule.key}.${var.domain}"
+        service  = "http://traefik:80"
+        origin_request {
+          http_host_header   = "${ingress_rule.key}.${var.domain}"
+          origin_server_name = "${ingress_rule.key}.${var.domain}"
+        }
+      }
+    }
+
+    # Catch-all rule (required by Cloudflare)
+    ingress_rule {
+      service = "http_status:404"
+    }
+  }
+}

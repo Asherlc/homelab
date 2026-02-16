@@ -4,6 +4,12 @@ variable "cloudflare_api_token" {
   sensitive   = true
 }
 
+variable "cloudflare_account_id" {
+  description = "Cloudflare account ID"
+  type        = string
+  default     = "8e5b2f62ffe8ebdd48e725d325a6d51e"
+}
+
 variable "domain" {
   description = "Base domain name"
   type        = string
@@ -17,8 +23,11 @@ variable "tunnel_id" {
 }
 
 variable "services" {
-  description = "Map of subdomain -> service config for tunnel routing"
+  description = "Map of subdomain -> service config"
   type = map(object({
-    description = string
+    description    = string
+    tunnel_enabled = bool
+    tunnel_backend = optional(string)
+    use_traefik    = optional(bool, false)
   }))
 }
