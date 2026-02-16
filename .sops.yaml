@@ -15,12 +15,7 @@ creation_rules:
   # Homarr - encrypt API keys and secrets
   - path_regex: configs/homarr/.*\.json$
     encrypted_regex: '^(apiKey|api_key|token|password|secret)$'
-    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
-  
-  # Cloudflared credentials - encrypt values only
-  - path_regex: configs/cloudflared/credentials\.json$
-    encrypted_regex: '^(AccountTag|TunnelID|TunnelName|TunnelSecret)$'
-    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+    age: age1cmvfpx67qzk2g8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
   
   # Configarr secrets - encrypt entire file (no regex = full file encryption)
   - path_regex: configarr/secrets\.ya?ml$
