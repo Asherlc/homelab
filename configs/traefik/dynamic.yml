@@ -24,6 +24,14 @@ http:
       service: authentik
       priority: 1000
 
+    authentik-external:
+      rule: Host(`authentik.asherlc.com`)
+      entryPoints:
+        - web
+      service: authentik
+      middlewares:
+        - add-forward-headers
+
     radarr-external:
       rule: Host(`radarr.asherlc.com`)
       entryPoints:

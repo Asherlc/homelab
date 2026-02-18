@@ -1,12 +1,11 @@
 {
 	"clientId": "a447a697-a17d-4140-a310-bb0f48b7b528",
-	"vapidPrivate": "ENC[AES256_GCM,data:kB5srAHST6qpDsY++3KB+40MXrJlHtO/4lZ56k6wFzkJUNz6pPwaXtnCUQ==,iv:KdL8D/sgq6TBhkt28qttsxJaJp5BO51b+58maWo9kno=,tag:gE5h2eFQsDpcZnqCBHwOtg==,type:str]",
-	"vapidPublic": "ENC[AES256_GCM,data:/TRD4PxNiLgitfiHrGiAu8wdy5F136rg/pGSb3G4RtzVqii+x7sOcK09EHo5eVBuCsth7MbF3FzvkQjwVDm4xF8GfVutwxI6Xg5qAhcU5B+k8Ufh2oGd,iv:lmLpP8pDPzCAMhoq17E5nFN315FJrW7c9qs+VW1rEkw=,tag:UF6tB029w7xxy7x9gF9/zw==,type:str]",
+	"vapidPrivate": "ENC[AES256_GCM,data:yR9zdANjhT5gTlK7UYQngjOcmzWF1qPhxk/AamS3Git4+joua9kFaSeb/A==,iv:2krkLhPyRaWr8sWT7HhsKWJMgGFqBs2hw5qiKZ87P1c=,tag:Vs+ftZ+VBgnVujs1lRb/zg==,type:str]",
+	"vapidPublic": "ENC[AES256_GCM,data:AKs7AIxQPcn8g6NvJEY1g2GT1Bbaj5ElgKnuG2TLKAeGOeNur9O6QeQoHPNaR0VU/0oPGbF5uCZqEvNmIk3rIoMwwWXNfzNlaVRLw5KXz/dtQ+DiPwxm,iv:jckxr5q9lBPsG8ZH8fDFMRKVIrRTWfzHPO5Rv43TDTQ=,tag:i1pGqlR1z2n3v5OfXJ1RVA==,type:str]",
 	"main": {
-		"apiKey": "ENC[AES256_GCM,data:MR+Rze1fvSTkdQxRrltpPjwmxSlYshmvt/JJsslxEaQ9ky0/pARHyPiTV084sOSJtfiijhVg/siBjvGX7r1MIx3APAE=,iv:ZfVDRwxyaP7Z0LAbjj1JhwcIekQ2T7PyomDSaPuRfbI=,tag:JXAdnnlfRq1BJzxDl7ALxA==,type:str]",
-		"applicationTitle": "Overseerr",
+		"apiKey": "ENC[AES256_GCM,data:G3cUHyVbbgf/XTYAsKxy9ImofbWSFQghNFV931uwacxYaZ5M5m55EwFE+ntW74YG3LlFG9eQPX2C1TyHdFien3NOl8Y=,iv:Kvlv/XVnxV25RsAFjrMZXYrtJ7OD+t/Z3ZdB2OW+KTE=,tag:BK9D39x/+cEylYviACAYfQ==,type:str]",
+		"applicationTitle": "Seerr",
 		"applicationUrl": "",
-		"csrfProtection": false,
 		"cacheImages": false,
 		"defaultPermissions": 32,
 		"defaultQuotas": {
@@ -14,13 +13,20 @@
 			"tv": {}
 		},
 		"hideAvailable": false,
+		"hideBlocklisted": false,
 		"localLogin": false,
+		"mediaServerLogin": true,
 		"newPlexLogin": true,
-		"region": "",
+		"discoverRegion": "",
+		"streamingRegion": "US",
 		"originalLanguage": "",
-		"trustProxy": false,
+		"blocklistedTags": "",
+		"blocklistedTagsLimit": 50,
+		"mediaServerType": 1,
 		"partialRequestsEnabled": true,
-		"locale": "en"
+		"enableSpecialEpisodes": false,
+		"locale": "en",
+		"youtubeUrl": ""
 	},
 	"plex": {
 		"name": "Asher's Plex",
@@ -33,25 +39,41 @@
 				"name": "Movies",
 				"enabled": true,
 				"type": "movie",
-				"lastScan": 1771274700044
+				"lastScan": 1771392900014
 			},
 			{
 				"id": "4",
 				"name": "TV Shows",
 				"enabled": true,
 				"type": "show",
-				"lastScan": 1771274700049
+				"lastScan": 1771392900018
 			}
 		],
 		"machineId": "bd2f2a7cb09c71a51dfacf2e1f8c98476f26aa7f"
 	},
+	"jellyfin": {
+		"name": "",
+		"ip": "",
+		"port": 8096,
+		"useSsl": false,
+		"urlBase": "",
+		"externalHostname": "",
+		"jellyfinForgotPasswordUrl": "",
+		"libraries": [],
+		"serverId": "",
+		"apiKey": ""
+	},
 	"tautulli": {},
+	"metadataSettings": {
+		"tv": "tmdb",
+		"anime": "tmdb"
+	},
 	"radarr": [
 		{
 			"name": "Radarr",
 			"hostname": "radarr",
 			"port": 7878,
-			"apiKey": "ENC[AES256_GCM,data:DgatTh3Pz3qbeG5DTUYjsRgXsZYu2Qhwvi/8I8dMRn8=,iv:yyqjrE5IR1LVKdhqHWcsuSDCwMinPix6GGPY6CbhltI=,tag:k1kNC6bhv8+bykvjYzdX2w==,type:str]",
+			"apiKey": "ENC[AES256_GCM,data:NiqTmAtoMjrIT8MlQU9LteGnbzsc4Il4n7Gd6ty4hhQ=,iv:y9eAiUVww6WmDrh+oScS6H3Rx2ZBeAD0OYKrGMThwpg=,tag:Ijv2vewtSgiNAMBX32cQxw==,type:str]",
 			"useSsl": false,
 			"activeProfileId": 4,
 			"activeProfileName": "HD-1080p",
@@ -71,7 +93,7 @@
 			"name": "Sonarr",
 			"hostname": "sonarr",
 			"port": 8989,
-			"apiKey": "ENC[AES256_GCM,data:pq3a2mmBZZ37NRVmHBU6T6AhW94k0PFwB+4F6fl1Npg=,iv:Xoq+HkSlFgvBRLd39E87PFPDvcM+m6KHU7Wx1PynPnE=,tag:eig0nL1dnApryy4Y5t+P6w==,type:str]",
+			"apiKey": "ENC[AES256_GCM,data:/b7JMRoQrWJUQ5t+CW0BcVUwp4QJO1ObYxZPkbvOluo=,iv:ThP34XPWwJuIx+NPhTzCFB/I2IwHrLFmRCgDc6RcPH0=,tag:+pQrPU+ijjST/Qar7ctPWA==,type:str]",
 			"useSsl": false,
 			"baseUrl": "",
 			"activeProfileId": 4,
@@ -96,7 +118,9 @@
 		"agents": {
 			"email": {
 				"enabled": false,
+				"embedPoster": true,
 				"options": {
+					"userEmailRequired": false,
 					"emailFrom": "",
 					"smtpHost": "",
 					"smtpPort": 587,
@@ -104,26 +128,22 @@
 					"ignoreTls": false,
 					"requireTls": false,
 					"allowSelfSigned": false,
-					"senderName": "Overseerr"
+					"senderName": "Seerr"
 				}
 			},
 			"discord": {
 				"enabled": false,
+				"embedPoster": true,
 				"types": 0,
 				"options": {
 					"webhookUrl": "",
+					"webhookRoleId": "",
 					"enableMentions": true
-				}
-			},
-			"lunasea": {
-				"enabled": false,
-				"types": 0,
-				"options": {
-					"webhookUrl": ""
 				}
 			},
 			"slack": {
 				"enabled": false,
+				"embedPoster": true,
 				"types": 0,
 				"options": {
 					"webhookUrl": ""
@@ -131,15 +151,18 @@
 			},
 			"telegram": {
 				"enabled": false,
+				"embedPoster": true,
 				"types": 0,
 				"options": {
 					"botAPI": "",
 					"chatId": "",
+					"messageThreadId": "",
 					"sendSilently": false
 				}
 			},
 			"pushbullet": {
 				"enabled": false,
+				"embedPoster": false,
 				"types": 0,
 				"options": {
 					"accessToken": ""
@@ -147,6 +170,7 @@
 			},
 			"pushover": {
 				"enabled": false,
+				"embedPoster": true,
 				"types": 0,
 				"options": {
 					"accessToken": "",
@@ -156,6 +180,7 @@
 			},
 			"webhook": {
 				"enabled": false,
+				"embedPoster": true,
 				"types": 0,
 				"options": {
 					"webhookUrl": "",
@@ -164,14 +189,26 @@
 			},
 			"webpush": {
 				"enabled": false,
+				"embedPoster": true,
 				"options": {}
 			},
 			"gotify": {
 				"enabled": false,
+				"embedPoster": false,
 				"types": 0,
 				"options": {
 					"url": "",
-					"token": ""
+					"token": "",
+					"priority": 0
+				}
+			},
+			"ntfy": {
+				"enabled": false,
+				"embedPoster": true,
+				"types": 0,
+				"options": {
+					"url": "",
+					"topic": ""
 				}
 			}
 		}
@@ -204,10 +241,43 @@
 		"download-sync-reset": {
 			"schedule": "0 0 1 * * *"
 		},
+		"jellyfin-recently-added-scan": {
+			"schedule": "0 */5 * * * *"
+		},
+		"jellyfin-full-scan": {
+			"schedule": "0 0 3 * * *"
+		},
 		"image-cache-cleanup": {
 			"schedule": "0 0 5 * * *"
+		},
+		"process-blocklisted-tags": {
+			"schedule": "0 30 1 */7 * *"
 		}
 	},
+	"network": {
+		"csrfProtection": false,
+		"forceIpv4First": false,
+		"trustProxy": false,
+		"proxy": {
+			"enabled": false,
+			"hostname": "",
+			"port": 8080,
+			"useSsl": false,
+			"user": "",
+			"password": "",
+			"bypassFilter": "",
+			"bypassLocalAddresses": true
+		},
+		"dnsCache": {
+			"enabled": false,
+			"forceMinTtl": 0,
+			"forceMaxTtl": -1
+		}
+	},
+	"migrations": [
+		"0007_migrate_arr_tags",
+		"0008_migrate_blacklist_to_blocklist"
+	],
 	"sops": {
 		"kms": null,
 		"gcp_kms": null,
@@ -216,11 +286,11 @@
 		"age": [
 			{
 				"recipient": "age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd",
-				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAraFUvK2FvSkpZU3V2UnlD\nTVpHY3dxbDdzSXpQNTV0Ti9YSWt6WTBxbGs0ClhxVkt3UURnMHlOWXNvdk5sVVpX\nUHhGUlV3dS9CV0pPcloySytEYWhUTkEKLS0tIG5QUng2WnNRM2ZWN1I5VTdQS0kr\nL29xWko1dkthSFpWdHRWNFROZjJYYVUK9KMWrBxnqDzSHitjC2sG2uTOnx7FAvnH\naz/hXSVmSuHjLooMCa8JI8Xv8NBEp9MOq3IdnwkCGLhlqzCzvWYrGA==\n-----END AGE ENCRYPTED FILE-----\n"
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBHK2JjQS8xOENMVGxmTGhx\nUjJUMHJ5UnBMUEVXVy9uay93TGpsU1plU1VzCnpROTIwYlJwVVdVRjhCdy9IdWNH\nd0VxT3U3QkRzYndsVXRjS2V5eUp2ajgKLS0tIFp1Yks3VThha2Zjall3dDU2SkIv\nUnJTaUJvU2F5dXN2RUtUSHkvV29oQUkKCNj8+vp7EhpiVlQHfHhYbIzzzeC6ZNTZ\n73QWcDgbgbjoVI19KoVvrugX26PC9F6e9Jl/0AkPidtht8astLcM6Q==\n-----END AGE ENCRYPTED FILE-----\n"
 			}
 		],
-		"lastmodified": "2026-02-16T20:45:30Z",
-		"mac": "ENC[AES256_GCM,data:Te4zlXnJlPelYurbF0/gxxDVuXJYGsFVkVgq1627Z9gASxy23mKZZHRlQeKZd5aFKvF8kbQpprbhpbuy94gRCvHUnq3NZiP3uAQlIJTabcqfPEukoy7oaDQyVFncR4Qu45q7rCWNCFn0fCpMuFaTNHKj1nNdXqng1ScT9Y/bLVg=,iv:v9SS+667k/DnP0m7YreWQUNCB0uQNzxwjGlWehJVnQQ=,tag:OnGyh7Bm9mGm5zZKV2F8bw==,type:str]",
+		"lastmodified": "2026-02-18T05:36:16Z",
+		"mac": "ENC[AES256_GCM,data:KkuGdhGHM6zNjHAuDWt/wwB3Bsp/E8gFQL1isIzBduuVrnvOL+PIwFxDADyYn98tGJP/1AE3aBebaWyNiaSjnQn+RwsPKLEozR+/4YLEOB7c3XWCk+oPxgXxvR1X03ta22L7R4jzeMvqyBIqhKc0npNzuD18GPKM/7ACpSFxvYQ=,iv:R9fqJCJWSXgbfJD0wJnr0CWcBb1H/vmbWBSjeRC95/o=,tag:wD3LziiIPRXJPPBaRsrYDQ==,type:str]",
 		"pgp": null,
 		"encrypted_regex": "^(apiKey|vapidPrivate|vapidPublic|api_key)$",
 		"version": "3.9.1"

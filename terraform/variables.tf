@@ -25,9 +25,17 @@ variable "tunnel_id" {
 variable "services" {
   description = "Map of subdomain -> service config"
   type = map(object({
-    description    = string
-    tunnel_enabled = bool
-    tunnel_backend = optional(string)
-    use_traefik    = optional(bool, false)
+    description     = string
+    type            = string  # "media" or "home" or "system"
+    tunnel_enabled  = bool
+    require_auth    = bool
+    backend_url     = optional(string)
+    restricted      = optional(bool, false)
   }))
+}
+
+variable "authentik_api_token" {
+  description = "Authentik API token"
+  type        = string
+  sensitive   = true
 }

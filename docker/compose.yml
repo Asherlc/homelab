@@ -97,7 +97,7 @@ services:
 
   overseerr:
     container_name: overseerr
-    image: lscr.io/linuxserver/overseerr:latest
+    image: ghcr.io/seerr-team/seerr:latest
     restart: always
     environment:
       - PUID=1000
@@ -106,7 +106,7 @@ services:
     ports:
       - "5055:5055"
     volumes:
-      - /srv/appdata/overseerr:/config
+      - /srv/appdata/overseerr:/app/config
 
   # profilarr:
   #   container_name: profilarr
