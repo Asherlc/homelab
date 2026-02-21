@@ -106,7 +106,6 @@ http:
       middlewares:
         - add-forward-headers
         - scrypted-basic-auth
-        - authentik
     pihole-external:
       rule: Host(`pihole.asherlc.com`)
       entryPoints:
