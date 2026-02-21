@@ -15,6 +15,10 @@ http:
           - X-authentik-name
           - X-authentik-uid
           - authorization
+    scrypted-basic-auth:
+      headers:
+        customRequestHeaders:
+          Authorization: "Basic YXV0aGVudGlrOmgyVTk7MjhDYzc1JQ=="
 
   routers:
     outpost:
@@ -103,6 +107,7 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+        - scrypted-basic-auth
     pihole-external:
       rule: Host(`pihole.asherlc.com`)
       entryPoints:
