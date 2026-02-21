@@ -105,8 +105,8 @@ http:
       service: scrypted
       middlewares:
         - add-forward-headers
-        - authentik
         - scrypted-basic-auth
+        - authentik
     pihole-external:
       rule: Host(`pihole.asherlc.com`)
       entryPoints:
