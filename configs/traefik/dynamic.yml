@@ -115,6 +115,14 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+    calibre-external:
+      rule: Host(`calibre.asherlc.com`)
+      entryPoints:
+        - web
+      service: calibre
+      middlewares:
+        - add-forward-headers
+        - authentik
 
     homarr-local:
       rule: Host(`homarr.home`)
@@ -176,6 +184,11 @@ http:
       entryPoints:
         - web
       service: pihole
+    calibre-local:
+      rule: Host(`calibre.home`)
+      entryPoints:
+        - web
+      service: calibre
 
   services:
     authentik:
@@ -235,3 +248,7 @@ http:
       loadBalancer:
         servers:
           - url: http://192.168.1.218:80
+    calibre:
+      loadBalancer:
+        servers:
+          - url: http://nas.local:8083
