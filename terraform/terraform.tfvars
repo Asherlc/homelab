@@ -67,6 +67,14 @@ services = {
     backend_url     = "http://qbittorrent:8080"
   }
 
+  calibre = {
+    description     = "eBook library manager"
+    type            = "media"
+    tunnel_enabled  = true
+    require_auth    = true
+    backend_url     = "http://nas.local:8083"
+  }
+
   # Home Automation Services
   homarr = {
     description     = "Homepage"
@@ -117,5 +125,13 @@ services = {
     tunnel_enabled  = false
     require_auth    = false
     backend_url     = "http://pihole:80"
+  }
+
+  frigate = {
+    description    = "Frigate NVR"
+    type           = "home"
+    tunnel_enabled = true
+    require_auth   = true
+    backend_url    = "http://frigate.home:5000"
   }
 }

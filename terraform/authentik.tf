@@ -42,6 +42,60 @@ resource "authentik_application" "homarr" {
   group             = "Home"
 }
 
+# Calibre Web LDAP provider
+data "authentik_flow" "default_authentication_flow" {
+  slug = "default-authentication-flow"
+}
+
+resource "authentik_provider_ldap" "calibre" {
+  name         = "Calibre Web LDAP"
+  base_dn      = "dc=ldap,dc=goauthentik,dc=io"
+  bind_flow    = data.authentik_flow.default_authentication_flow.id
+  unbind_flow  = data.authentik_flow.default_provider_invalidation_flow.id
+  search_mode  = "cached"
+}
+
+# Calibre Web application
+resource "authentik_application" "calibre" {
+  name              = "Calibre Web"
+  slug              = "calibre-web"
+  protocol_provider = authentik_provider_ldap.calibre.id
+  meta_launch_url   = "https://calibre.asherlc.com"
+  open_in_new_tab   = true
+  group             = "Media"
+}
+
+# LDAP Outpost for Calibre Web
+resource "authentik_outpost" "ldap" {
+  name               = "LDAP Outpost"
+  type               = "ldap"
+  service_connection = authentik_service_connection_docker.local.id
+  protocol_providers = [
+    authentik_provider_ldap.calibre.id
+  ]
+
+  config = jsonencode({
+    log_level                      = "info"
+    docker_network                 = null
+    docker_map_ports               = true
+    docker_labels                  = null
+    container_image                = null
+    kubernetes_replicas            = 1
+    kubernetes_namespace           = "authentik"
+    kubernetes_ingress_annotations = {}
+    kubernetes_ingress_secret_name = "authentik-outpost-tls"
+    kubernetes_service_type        = "ClusterIP"
+    kubernetes_disabled_components = []
+    kubernetes_image_pull_secrets  = []
+  })
+}
+
+# Docker service connection for outpost
+resource "authentik_service_connection_docker" "local" {
+  name  = "Local Docker"
+  local = true
+}
+
 # Groups with user memberships
 # User IDs: asherlc=5, ellis=6, akadmin=4
 resource "authentik_group" "admins" {
