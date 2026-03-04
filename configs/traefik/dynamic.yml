@@ -216,6 +216,9 @@ http:
         - web
       service: frigate
 
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true
   services:
     authentik:
       loadBalancer:
@@ -280,8 +283,9 @@ http:
           - url: http://nas.local:8083
     nas:
       loadBalancer:
+        serversTransport: insecureTransport
         servers:
-          - url: http://nas.local:5000
+          - url: https://nas.local:5001
 
     frigate:
       loadBalancer:
