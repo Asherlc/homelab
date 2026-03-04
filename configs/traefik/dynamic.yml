@@ -204,7 +204,6 @@ http:
       service: nas
       middlewares:
         - add-forward-headers
-        - authentik
     nas-local:
       rule: Host(`nas.home`)
       entryPoints:
