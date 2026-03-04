@@ -281,7 +281,6 @@ http:
           - url: http://nas.local:8083
     nas:
       loadBalancer:
-        passHostHeader: false
         servers:
           - url: http://nas.local:5000
 
