@@ -197,6 +197,20 @@ http:
       entryPoints:
         - web
       service: calibre
+    nas-external:
+      rule: Host(`nas.asherlc.com`)
+      entryPoints:
+        - web
+      service: nas
+      middlewares:
+        - add-forward-headers
+        - authentik
+    nas-local:
+      rule: Host(`nas.home`)
+      entryPoints:
+        - web
+      service: nas
+
     frigate-local:
       rule: Host(`frigate.home`)
       entryPoints:
@@ -265,6 +279,12 @@ http:
       loadBalancer:
         servers:
           - url: http://nas.local:8083
+    nas:
+      loadBalancer:
+        passHostHeader: false
+        servers:
+          - url: http://nas.local:5000
+
     frigate:
       loadBalancer:
         servers:

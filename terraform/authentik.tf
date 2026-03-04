@@ -124,3 +124,29 @@ resource "authentik_group" "restricted_access" {
   name  = "Restricted Services Access"
   users = [5]  # Only asherlc - can access zigbee (Ellis excluded)
 }
+
+# Synology DSM OIDC provider
+
+resource "authentik_provider_oauth2" "synology_dsm" {
+  name               = "Synology DSM"
+  client_id          = "synology-dsm"
+  authorization_flow = data.authentik_flow.default_authorization_flow.id
+  invalidation_flow  = data.authentik_flow.default_provider_invalidation_flow.id
+  allowed_redirect_uris = [
+    {
+      matching_mode = "strict"
+      url           = "https://nas.asherlc.com/webman/sso/SSOOidc.cgi"
+    }
+  ]
+  signing_key = "e5317336-3e7a-4742-8e8c-cda6efdf35a9"
+}
+
+# Synology DSM application
+resource "authentik_application" "synology_dsm" {
+  name              = "Synology DSM"
+  slug              = "dsm"
+  protocol_provider = authentik_provider_oauth2.synology_dsm.id
+  meta_launch_url   = "https://nas.asherlc.com"
+  open_in_new_tab   = true
+  group             = "Home"
+}

@@ -127,6 +127,14 @@ services = {
     backend_url     = "http://pihole:80"
   }
 
+  nas = {
+    description    = "Synology NAS DSM"
+    type           = "home"
+    tunnel_enabled = true
+    require_auth   = true
+    backend_url    = "http://nas.local:5000"
+  }
+
   frigate = {
     description    = "Frigate NVR"
     type           = "home"
