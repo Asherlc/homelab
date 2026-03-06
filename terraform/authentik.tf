@@ -135,10 +135,15 @@ resource "authentik_provider_oauth2" "synology_dsm" {
   allowed_redirect_uris = [
     {
       matching_mode = "strict"
-      url           = "https://nas.asherlc.com/webman/sso/SSOOidc.cgi"
+      url           = "https://nas.asherlc.com/webman/ssoclient/token_relay.html"
     }
   ]
-  signing_key = "e5317336-3e7a-4742-8e8c-cda6efdf35a9"
+  signing_key        = "e5317336-3e7a-4742-8e8c-cda6efdf35a9"
+  property_mappings  = [
+    "b6900f1a-0e32-4e5c-a31a-cced7f0f77d0",
+    "34235530-e555-4380-800c-36a9c5181eeb",
+    "c1f1342d-709b-4b17-8925-fdddf7109e45",
+  ]
 }
 
 # Synology DSM application

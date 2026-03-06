@@ -162,6 +162,13 @@ http:
       entryPoints:
         - web
       service: prowlarr
+    overseerr-external:
+      rule: Host(`seerr.asherlc.com`) || Host(`overseerr.asherlc.com`)
+      entryPoints:
+        - web
+      service: overseerr
+      middlewares:
+        - add-forward-headers
     overseerr-local:
       rule: Host(`overseerr.home`)
       entryPoints:
