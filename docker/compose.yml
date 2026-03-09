@@ -409,7 +409,7 @@ services:
       POSTGRES_PASSWORD: openwearables-db-password-change-me
       POSTGRES_DB: open-wearables
     volumes:
-      - /srv/appdata/openwearables/postgresql:/var/lib/postgresql/data
+      - /srv/appdata/openwearables/postgresql:/var/lib/postgresql
 
   openwearables-redis:
     container_name: openwearables-redis
