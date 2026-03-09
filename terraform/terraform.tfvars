@@ -150,4 +150,21 @@ services = {
     require_auth   = true
     backend_url    = "http://frigate.home:5000"
   }
+
+  # Health & Wearables
+  openwearables = {
+    description    = "Wearable health data platform"
+    type           = "home"
+    tunnel_enabled = true
+    require_auth   = true
+    backend_url    = "http://openwearables-frontend:3000"
+  }
+
+  openwearables-api = {
+    description    = "Wearable health data API"
+    type           = "home"
+    tunnel_enabled = true
+    require_auth   = true
+    backend_url    = "http://openwearables-backend:8000"
+  }
 }

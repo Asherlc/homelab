@@ -392,6 +392,154 @@ services:
     depends_on:
       - authentik-postgresql
 
+  # OpenWearables - Wearable Health Data Platform
+  # Source cloned to /opt/open-wearables on the server
+  openwearables-db:
+    container_name: openwearables-db
+    image: docker.io/library/postgres:18
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    environment:
+      POSTGRES_USER: open-wearables
+      POSTGRES_PASSWORD: openwearables-db-password-change-me
+      POSTGRES_DB: open-wearables
+    volumes:
+      - /srv/appdata/openwearables/postgresql:/var/lib/postgresql/data
+
+  openwearables-redis:
+    container_name: openwearables-redis
+    image: docker.io/library/redis:8
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+
+  openwearables-backend:
+    container_name: openwearables-backend
+    image: openwearables-backend:latest
+    restart: unless-stopped
+    command: scripts/start/app.sh
+    environment:
+      - TZ=US/Pacific
+      - ENVIRONMENT=production
+      - DB_HOST=openwearables-db
+      - DB_PORT=5432
+      - DB_NAME=open-wearables
+      - DB_USER=open-wearables
+      - DB_PASSWORD=openwearables-db-password-change-me
+      - REDIS_HOST=openwearables-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - SECRET_KEY=VlkzGHkg4Fv0nUhLaBaEqzhFUF-RFGVBYdZt1PylDa38WO0he4PIdTorTSjDFZHdlDrPOCUTIKh1vmXHYmhcGQ
+      - ADMIN_EMAIL=admin@admin.com
+      - ADMIN_PASSWORD=your-secure-password
+      - SENTRY_ENABLED=False
+      - CORS_ORIGINS=["https://openwearables.asherlc.com","http://openwearables.home","http://localhost:3100"]
+      - FRONTEND_URL=https://openwearables.asherlc.com
+      - SERVER_HOST=https://openwearables-api.asherlc.com
+      # Wearable provider credentials (add your OAuth keys as you connect devices)
+      - GARMIN_CLIENT_ID=
+      - GARMIN_CLIENT_SECRET=
+      - GARMIN_REDIRECT_URI=https://openwearables-api.asherlc.com/api/v1/providers/garmin/callback
+      - WHOOP_CLIENT_ID=
+      - WHOOP_CLIENT_SECRET=
+      - WHOOP_REDIRECT_URI=https://openwearables-api.asherlc.com/api/v1/providers/whoop/callback
+      - STRAVA_CLIENT_ID=
+      - STRAVA_CLIENT_SECRET=
+      - STRAVA_REDIRECT_URI=https://openwearables-api.asherlc.com/api/v1/providers/strava/callback
+      - POLAR_CLIENT_ID=
+      - POLAR_CLIENT_SECRET=
+      - POLAR_REDIRECT_URI=https://openwearables-api.asherlc.com/api/v1/providers/polar/callback
+      - SUUNTO_CLIENT_ID=
+      - SUUNTO_CLIENT_SECRET=
+      - SUUNTO_REDIRECT_URI=https://openwearables-api.asherlc.com/api/v1/providers/suunto/callback
+    ports:
+      - "8500:8000"
+    depends_on:
+      openwearables-db:
+        condition: service_healthy
+      openwearables-redis:
+        condition: service_healthy
+
+  openwearables-celery:
+    container_name: openwearables-celery
+    image: openwearables-backend:latest
+    restart: unless-stopped
+    command: scripts/start/worker.sh
+    environment:
+      - TZ=US/Pacific
+      - ENVIRONMENT=production
+      - DB_HOST=openwearables-db
+      - DB_PORT=5432
+      - DB_NAME=open-wearables
+      - DB_USER=open-wearables
+      - DB_PASSWORD=openwearables-db-password-change-me
+      - REDIS_HOST=openwearables-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - SECRET_KEY=VlkzGHkg4Fv0nUhLaBaEqzhFUF-RFGVBYdZt1PylDa38WO0he4PIdTorTSjDFZHdlDrPOCUTIKh1vmXHYmhcGQ
+    depends_on:
+      - openwearables-backend
+
+  openwearables-beat:
+    container_name: openwearables-beat
+    image: openwearables-backend:latest
+    restart: unless-stopped
+    command: scripts/start/beat.sh
+    environment:
+      - TZ=US/Pacific
+      - ENVIRONMENT=production
+      - DB_HOST=openwearables-db
+      - DB_PORT=5432
+      - DB_NAME=open-wearables
+      - DB_USER=open-wearables
+      - DB_PASSWORD=openwearables-db-password-change-me
+      - REDIS_HOST=openwearables-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - SECRET_KEY=VlkzGHkg4Fv0nUhLaBaEqzhFUF-RFGVBYdZt1PylDa38WO0he4PIdTorTSjDFZHdlDrPOCUTIKh1vmXHYmhcGQ
+    depends_on:
+      - openwearables-backend
+
+  openwearables-postgres-backup:
+    container_name: openwearables-postgres-backup
+    image: prodrigestivill/postgres-backup-local:16
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST=openwearables-db
+      - POSTGRES_DB=open-wearables
+      - POSTGRES_USER=open-wearables
+      - POSTGRES_PASSWORD=openwearables-db-password-change-me
+      - SCHEDULE=@daily
+      - BACKUP_DIR=/backups
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=3
+      - HEALTHCHECK_PORT=8081
+    volumes:
+      - /mnt/storage/backups/homelab/databases:/backups
+    depends_on:
+      - openwearables-db
+
+  openwearables-frontend:
+    container_name: openwearables-frontend
+    image: openwearables-frontend:latest
+    restart: unless-stopped
+    environment:
+      - TZ=US/Pacific
+    ports:
+      - "3100:3000"
+    depends_on:
+      - openwearables-backend
+
   traefik:
     container_name: traefik
     image: traefik:v3.0
