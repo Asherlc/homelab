@@ -21,6 +21,12 @@
 - `scripts/` — automation scripts (backup, encryption, build)
 - `.sops.yaml` — SOPS encryption rules (Age key)
 
+**IMPORTANT**: Repo config files are NOT the live files. Traefik reads from `/srv/appdata/traefik/dynamic.yml`, not `configs/traefik/dynamic.yml`. After editing Traefik config, you must copy it:
+```bash
+sudo cp /opt/homelab-config/configs/traefik/dynamic.yml /srv/appdata/traefik/dynamic.yml
+sudo docker restart traefik
+```
+
 ## Cloudflare Tunnel
 - Tunnel ID: `2dd6f4cb-7842-47f1-8c49-7e1c2af9aca9`
 - Credentials file on server: `/opt/docker/.cloudflared/credentials.json`
