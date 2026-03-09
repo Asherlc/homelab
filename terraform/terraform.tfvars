@@ -156,7 +156,7 @@ services = {
     description    = "Wearable health data platform"
     type           = "home"
     tunnel_enabled = true
-    require_auth   = true
+    require_auth   = false
     backend_url    = "http://openwearables-frontend:3000"
   }
 
@@ -164,7 +164,7 @@ services = {
     description    = "Wearable health data API"
     type           = "home"
     tunnel_enabled = true
-    require_auth   = true
+    require_auth   = false
     backend_url    = "http://openwearables-backend:8000"
   }
 }

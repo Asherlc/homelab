@@ -230,7 +230,6 @@ http:
       service: openwearables
       middlewares:
         - add-forward-headers
-        - authentik
     openwearables-api-external:
       rule: Host(`openwearables-api.asherlc.com`)
       entryPoints:
@@ -238,7 +237,6 @@ http:
       service: openwearables-api
       middlewares:
         - add-forward-headers
-        - authentik
     openwearables-local:
       rule: Host(`openwearables.home`)
       entryPoints:
