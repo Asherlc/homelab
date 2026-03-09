@@ -3,16 +3,20 @@
 # Run this once for initial setup, and again to pick up upstream updates
 set -e
 
-REPO_URL="https://github.com/the-momentum/open-wearables.git"
+REPO_URL="https://github.com/Asherlc/open-wearables.git"
+UPSTREAM_URL="https://github.com/the-momentum/open-wearables.git"
 BUILD_DIR="/tmp/open-wearables-build"
 VITE_API_URL="${VITE_API_URL:-https://openwearables-api.asherlc.com}"
 
-echo "==> Cloning/updating OpenWearables source..."
+BRANCH="${BRANCH:-feat/withings-provider}"
+
+echo "==> Cloning/updating OpenWearables source (fork, branch: $BRANCH)..."
 if [ -d "$BUILD_DIR" ]; then
-    cd "$BUILD_DIR" && git pull
+    cd "$BUILD_DIR" && git fetch origin && git checkout "$BRANCH" && git pull origin "$BRANCH"
 else
-    git clone "$REPO_URL" "$BUILD_DIR"
+    git clone -b "$BRANCH" "$REPO_URL" "$BUILD_DIR"
     cd "$BUILD_DIR"
+    git remote add upstream "$UPSTREAM_URL" 2>/dev/null || true
 fi
 
 echo "==> Building backend image..."
