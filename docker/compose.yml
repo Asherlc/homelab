@@ -424,7 +424,9 @@ services:
 
   openwearables-backend:
     container_name: openwearables-backend
-    image: openwearables-backend:latest
+    image: ghcr.io/asherlc/openwearables-backend:feat-withings-provider
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
     command: scripts/start/app.sh
     environment:
@@ -461,6 +463,9 @@ services:
       - SUUNTO_CLIENT_ID=
       - SUUNTO_CLIENT_SECRET=
       - SUUNTO_REDIRECT_URI=https://openwearables-api.asherlc.com/api/v1/oauth/suunto/callback
+      - WITHINGS_CLIENT_ID=594b0da64fed95e369e1eb255ceaf59e4dccfb06e734d74c06b0d8a0b02b1792
+      - WITHINGS_CLIENT_SECRET=
+      - WITHINGS_REDIRECT_URI=https://openwearables-api.asherlc.com/api/v1/oauth/withings/callback
     ports:
       - "8500:8000"
     depends_on:
@@ -471,7 +476,9 @@ services:
 
   openwearables-celery:
     container_name: openwearables-celery
-    image: openwearables-backend:latest
+    image: ghcr.io/asherlc/openwearables-backend:feat-withings-provider
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
     command: scripts/start/worker.sh
     environment:
@@ -491,7 +498,9 @@ services:
 
   openwearables-beat:
     container_name: openwearables-beat
-    image: openwearables-backend:latest
+    image: ghcr.io/asherlc/openwearables-backend:feat-withings-provider
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
     command: scripts/start/beat.sh
     environment:
@@ -531,7 +540,9 @@ services:
 
   openwearables-frontend:
     container_name: openwearables-frontend
-    image: openwearables-frontend:latest
+    image: ghcr.io/asherlc/openwearables-frontend:feat-withings-provider
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
     environment:
       - TZ=US/Pacific
@@ -552,4 +563,15 @@ services:
       - /srv/appdata/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
     depends_on:
       - authentik-server
-# Final test
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    restart: unless-stopped
+    environment:
+      - TZ=US/Pacific
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_LABEL_ENABLE=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
