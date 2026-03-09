@@ -11,14 +11,6 @@ services = {
   }
 
   # Media Services
-  overseerr = {
-    description     = "Media requests (Overseerr)"
-    type            = "media"
-    tunnel_enabled  = true
-    require_auth    = false
-    backend_url     = "http://overseerr:5055"
-  }
-
   seerr = {
     description     = "Media requests (Seerr)"
     type            = "media"
