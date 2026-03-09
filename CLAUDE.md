@@ -21,6 +21,18 @@
 - `scripts/` — automation scripts (backup, encryption, build)
 - `.sops.yaml` — SOPS encryption rules (Age key)
 
+## Cloudflare Tunnel
+- Tunnel ID: `2dd6f4cb-7842-47f1-8c49-7e1c2af9aca9`
+- Credentials file on server: `/opt/docker/.cloudflared/credentials.json`
+- Config file on server: `/opt/docker/.cloudflared/config.yml` (minimal — just `tunnel:` and `credentials-file:`)
+- Ingress rules are **remotely managed** via Terraform (`cloudflare_zero_trust_tunnel_cloudflared_config` resource), not in the local config.yml
+- Cloudflared still needs the local `config.yml` with the tunnel ID to authenticate — it then fetches ingress rules from the Cloudflare API
+- The wildcard `*.asherlc.com → traefik:80` means new services only need a DNS CNAME record — no cloudflared config changes needed
+- Terraform env: `source /opt/homelab-config/terraform/.env` (has `TF_VAR_cloudflare_api_token` and `TF_VAR_authentik_api_token`)
+
+## PostgreSQL
+- PostgreSQL 18+ changed the Docker mount point: use `/var/lib/postgresql` (not `/var/lib/postgresql/data`) so Postgres can create its own versioned subdirectory
+
 ## Conventions
 - Services use `image:` references, not `build:` — for build-from-source projects, create a build script in `scripts/` that tags locally
 - App data stored at `/srv/appdata/<service>/` on the server
