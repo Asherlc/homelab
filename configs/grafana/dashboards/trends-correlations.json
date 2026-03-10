@@ -1,0 +1,343 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "name": "Workouts",
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+        "enable": true,
+        "iconColor": "rgba(255, 96, 96, 0.8)",
+        "rawQuery": "SELECT er.start_datetime AS time, INITCAP(REPLACE(er.type, '_', ' ')) || ' (' || (er.duration_seconds / 60) || ' min)' AS text, er.type AS tags FROM event_record er JOIN data_source ds ON er.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND er.category = 'workout' AND $__timeFilter(er.start_datetime)",
+        "target": {
+          "rawSql": "SELECT er.start_datetime AS time, INITCAP(REPLACE(er.type, '_', ' ')) || ' (' || (er.duration_seconds / 60) || ' min)' AS text, er.type AS tags FROM event_record er JOIN data_source ds ON er.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND er.category = 'workout' AND $__timeFilter(er.start_datetime)",
+          "editorMode": "code",
+          "rawQuery": true,
+          "refId": "Anno",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        }
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 2,
+  "links": [],
+  "panels": [
+    {
+      "title": "Weight + Workout Days",
+      "description": "Weight trend with red vertical lines marking workout days. Look for patterns after active periods.",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "masskg",
+          "decimals": 1,
+          "color": { "mode": "fixed", "fixedColor": "blue" },
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 6,
+            "spanNulls": true,
+            "showPoints": "always",
+            "fillOpacity": 5
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Weight\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 41\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+        "format": "time_series",
+        "refId": "A",
+        "editorMode": "code",
+        "rawQuery": true,
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+      }]
+    },
+    {
+      "title": "Body Fat % vs Weekly Exercise Hours",
+      "description": "Does more exercise correlate with lower body fat? Blue = body fat trend, green bars = weekly hours.",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 10 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 5,
+            "spanNulls": true,
+            "showPoints": "always"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Body Fat %" },
+            "properties": [
+              { "id": "unit", "value": "percent" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } },
+              { "id": "custom.axisPlacement", "value": "left" },
+              { "id": "custom.fillOpacity", "value": 5 },
+              { "id": "decimals", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Exercise Hours" },
+            "properties": [
+              { "id": "unit", "value": "h" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "custom.drawStyle", "value": "bars" },
+              { "id": "custom.fillOpacity", "value": 50 },
+              { "id": "custom.lineWidth", "value": 0 },
+              { "id": "custom.pointSize", "value": 0 },
+              { "id": "custom.showPoints", "value": "never" },
+              { "id": "decimals", "value": 1 }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Body Fat %\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 42\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        },
+        {
+          "rawSql": "SELECT date_trunc('week', er.start_datetime) + interval '3 days' AS time,\n  SUM(er.duration_seconds) / 3600.0 AS \"Exercise Hours\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nGROUP BY date_trunc('week', er.start_datetime)\nORDER BY time",
+          "format": "time_series",
+          "refId": "B",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        }
+      ]
+    },
+    {
+      "title": "Muscle Mass vs Weekly Exercise Hours",
+      "description": "Is exercise volume correlated with muscle mass changes? Purple = muscle, green bars = hours.",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 10 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 5,
+            "spanNulls": true,
+            "showPoints": "always"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Muscle Mass" },
+            "properties": [
+              { "id": "unit", "value": "masskg" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "purple" } },
+              { "id": "custom.axisPlacement", "value": "left" },
+              { "id": "custom.fillOpacity", "value": 5 },
+              { "id": "decimals", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Exercise Hours" },
+            "properties": [
+              { "id": "unit", "value": "h" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "custom.drawStyle", "value": "bars" },
+              { "id": "custom.fillOpacity", "value": 50 },
+              { "id": "custom.lineWidth", "value": 0 },
+              { "id": "custom.pointSize", "value": 0 },
+              { "id": "custom.showPoints", "value": "never" },
+              { "id": "decimals", "value": 1 }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Muscle Mass\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 49\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        },
+        {
+          "rawSql": "SELECT date_trunc('week', er.start_datetime) + interval '3 days' AS time,\n  SUM(er.duration_seconds) / 3600.0 AS \"Exercise Hours\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nGROUP BY date_trunc('week', er.start_datetime)\nORDER BY time",
+          "format": "time_series",
+          "refId": "B",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        }
+      ]
+    },
+    {
+      "title": "Hydration: Workout Days vs Rest Days",
+      "description": "Are you drinking more water on days you exercise?",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 20 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ml",
+          "decimals": 0,
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "WITH workout_dates AS (\n  SELECT date_trunc('day', er.start_datetime) AS workout_day\n  FROM event_record er\n  JOIN data_source ds ON er.data_source_id = ds.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND er.category = 'workout'\n    AND $__timeFilter(er.start_datetime)\n  GROUP BY 1\n)\nSELECT\n  CASE WHEN wd.workout_day IS NOT NULL THEN 'Workout Day' ELSE 'Rest Day' END AS \"Day Type\",\n  AVG(dps.value) AS \"Avg Hydration\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nLEFT JOIN workout_dates wd ON date_trunc('day', dps.recorded_at) = wd.workout_day\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 507\n  AND $__timeFilter(dps.recorded_at)\nGROUP BY 1\nORDER BY 1",
+        "format": "table",
+        "refId": "A",
+        "editorMode": "code",
+        "rawQuery": true,
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+      }]
+    },
+    {
+      "title": "Avg Weight Change: After Workout vs After Rest",
+      "description": "How does weight change the day after a workout compared to rest days? Negative = weight loss.",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 20 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "masskg",
+          "decimals": 2,
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "WITH daily_weight AS (\n  SELECT date_trunc('day', dps.recorded_at) AS day,\n    dps.value AS weight,\n    LAG(dps.value) OVER (ORDER BY dps.recorded_at) AS prev_weight\n  FROM data_point_series dps\n  JOIN data_source ds ON dps.data_source_id = ds.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND dps.series_type_definition_id = 41\n    AND $__timeFilter(dps.recorded_at)\n),\nworkout_dates AS (\n  SELECT date_trunc('day', er.start_datetime) AS workout_day\n  FROM event_record er\n  JOIN data_source ds ON er.data_source_id = ds.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND er.category = 'workout'\n    AND $__timeFilter(er.start_datetime)\n  GROUP BY 1\n)\nSELECT\n  CASE WHEN wd.workout_day IS NOT NULL THEN 'Day After Workout' ELSE 'Day After Rest' END AS \"Day Type\",\n  AVG(dw.weight - dw.prev_weight) AS \"Avg Weight Change\"\nFROM daily_weight dw\nLEFT JOIN workout_dates wd ON dw.day - interval '1 day' = wd.workout_day\nWHERE dw.prev_weight IS NOT NULL\nGROUP BY 1\nORDER BY 1",
+        "format": "table",
+        "refId": "A",
+        "editorMode": "code",
+        "rawQuery": true,
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+      }]
+    },
+    {
+      "title": "Workout Intensity vs Next-Day Weight",
+      "description": "Calories burned in workout vs weight change the following day. Each point is a workout.",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 20 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "calories" }, "properties": [{ "id": "unit", "value": "kcal" }, { "id": "decimals", "value": 0 }] },
+          { "matcher": { "id": "byName", "options": "weight_change" }, "properties": [{ "id": "unit", "value": "masskg" }, { "id": "decimals", "value": 2 }] },
+          { "matcher": { "id": "byName", "options": "duration_min" }, "properties": [{ "id": "unit", "value": "min" }] }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "date", "desc": true }]
+      },
+      "targets": [{
+        "rawSql": "WITH daily_weight AS (\n  SELECT date_trunc('day', dps.recorded_at) AS day, dps.value AS weight\n  FROM data_point_series dps\n  JOIN data_source ds ON dps.data_source_id = ds.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND dps.series_type_definition_id = 41\n    AND $__timeFilter(dps.recorded_at)\n)\nSELECT\n  date_trunc('day', er.start_datetime) AS \"date\",\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"type\",\n  er.duration_seconds / 60 AS \"duration_min\",\n  wd.energy_burned AS \"calories\",\n  wd.heart_rate_avg AS \"avg_hr\",\n  ROUND((next_w.weight - curr_w.weight)::numeric, 2) AS \"weight_change\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nLEFT JOIN daily_weight curr_w ON date_trunc('day', er.start_datetime) = curr_w.day\nLEFT JOIN daily_weight next_w ON date_trunc('day', er.start_datetime) + interval '1 day' = next_w.day\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime DESC",
+        "format": "table",
+        "refId": "A",
+        "editorMode": "code",
+        "rawQuery": true,
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+      }]
+    },
+    {
+      "title": "Weekly Scorecard",
+      "description": "Week-by-week view of all key metrics side by side.",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "avg_weight" }, "properties": [{ "id": "unit", "value": "masskg" }, { "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "avg_body_fat" }, "properties": [{ "id": "unit", "value": "percent" }, { "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "avg_muscle" }, "properties": [{ "id": "unit", "value": "masskg" }, { "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "exercise_hrs" }, "properties": [{ "id": "unit", "value": "h" }, { "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "calories_burned" }, "properties": [{ "id": "unit", "value": "kcal" }, { "id": "decimals", "value": 0 }] },
+          { "matcher": { "id": "byName", "options": "avg_hydration" }, "properties": [{ "id": "unit", "value": "ml" }, { "id": "decimals", "value": 0 }] },
+          { "matcher": { "id": "byName", "options": "weight_delta" }, "properties": [{ "id": "unit", "value": "masskg" }, { "id": "decimals", "value": 2 }] }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "week", "desc": true }]
+      },
+      "targets": [{
+        "rawSql": "WITH weekly_body AS (\n  SELECT date_trunc('week', dps.recorded_at) AS week,\n    AVG(CASE WHEN dps.series_type_definition_id = 41 THEN dps.value END) AS avg_weight,\n    AVG(CASE WHEN dps.series_type_definition_id = 42 THEN dps.value END) AS avg_body_fat,\n    AVG(CASE WHEN dps.series_type_definition_id = 49 THEN dps.value END) AS avg_muscle,\n    AVG(CASE WHEN dps.series_type_definition_id = 507 THEN dps.value END) AS avg_hydration\n  FROM data_point_series dps\n  JOIN data_source ds ON dps.data_source_id = ds.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND dps.series_type_definition_id IN (41, 42, 49, 507)\n    AND $__timeFilter(dps.recorded_at)\n  GROUP BY 1\n),\nweekly_exercise AS (\n  SELECT date_trunc('week', er.start_datetime) AS week,\n    COUNT(*) AS workouts,\n    SUM(er.duration_seconds) / 3600.0 AS exercise_hrs,\n    SUM(wd.energy_burned) AS calories_burned\n  FROM event_record er\n  JOIN data_source ds ON er.data_source_id = ds.id\n  JOIN event_record_detail erd ON erd.record_id = er.id\n  LEFT JOIN workout_details wd ON wd.record_id = er.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND er.category = 'workout'\n    AND $__timeFilter(er.start_datetime)\n  GROUP BY 1\n)\nSELECT\n  b.week,\n  b.avg_weight,\n  b.avg_weight - LAG(b.avg_weight) OVER (ORDER BY b.week) AS weight_delta,\n  b.avg_body_fat,\n  b.avg_muscle,\n  b.avg_hydration,\n  COALESCE(e.workouts, 0) AS workouts,\n  COALESCE(e.exercise_hrs, 0) AS exercise_hrs,\n  e.calories_burned\nFROM weekly_body b\nLEFT JOIN weekly_exercise e ON b.week = e.week\nORDER BY b.week DESC",
+        "format": "table",
+        "refId": "A",
+        "editorMode": "code",
+        "rawQuery": true,
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+      }]
+    },
+    {
+      "title": "7-Day Rolling Average: Weight vs Lean-to-Fat Ratio",
+      "description": "Smoothed weight trend alongside the ratio of lean mass to fat mass. Rising ratio = improving body composition.",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 36 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Weight (7d avg)" },
+            "properties": [
+              { "id": "unit", "value": "masskg" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } },
+              { "id": "custom.axisPlacement", "value": "left" },
+              { "id": "decimals", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Lean/Fat Ratio" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "decimals", "value": 2 }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT dps.recorded_at AS time,\n  AVG(dps.value) OVER (ORDER BY dps.recorded_at ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS \"Weight (7d avg)\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 41\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        },
+        {
+          "rawSql": "WITH lean AS (\n  SELECT dps.recorded_at, dps.value AS lean\n  FROM data_point_series dps\n  JOIN data_source ds ON dps.data_source_id = ds.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND dps.series_type_definition_id = 44\n    AND $__timeFilter(dps.recorded_at)\n),\nfat AS (\n  SELECT dps.recorded_at, dps.value AS fat\n  FROM data_point_series dps\n  JOIN data_source ds ON dps.data_source_id = ds.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND dps.series_type_definition_id = 48\n    AND $__timeFilter(dps.recorded_at)\n)\nSELECT l.recorded_at AS time,\n  CASE WHEN f.fat > 0 THEN l.lean / f.fat ELSE NULL END AS \"Lean/Fat Ratio\"\nFROM lean l\nJOIN fat f ON l.recorded_at = f.recorded_at\nORDER BY l.recorded_at",
+          "format": "time_series",
+          "refId": "B",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["health", "correlations"],
+  "templating": { "list": [] },
+  "time": { "from": "now-30d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Trends & Correlations",
+  "uid": "trends-correlations"
+}

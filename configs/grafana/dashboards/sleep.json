@@ -1,0 +1,239 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "title": "No Sleep Data Yet",
+      "description": "Sleep data will appear here once synced from Withings or another provider. Connect a sleep-tracking device to populate this dashboard.",
+      "type": "text",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "### Sleep data will populate automatically once synced from Withings or another provider.\nConnect a sleep-tracking wearable to see sleep duration, stages, and efficiency."
+      }
+    },
+    {
+      "title": "Sleep Duration",
+      "description": "Total sleep duration per night",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 3 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "min",
+          "decimals": 0,
+          "color": { "mode": "fixed", "fixedColor": "dark-blue" },
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 6,
+            "spanNulls": true,
+            "showPoints": "always",
+            "fillOpacity": 10,
+            "thresholdsStyle": { "mode": "dashed" }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 360 },
+              { "color": "green", "value": 420 },
+              { "color": "yellow", "value": 540 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "SELECT er.start_datetime AS time, sd.sleep_total_duration_minutes AS \"Sleep Duration\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN sleep_details sd ON sd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'sleep'\n  AND (sd.is_nap IS NULL OR sd.is_nap = false)\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+        "format": "time_series",
+        "refId": "A",
+        "editorMode": "code",
+        "rawQuery": true,
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+      }]
+    },
+    {
+      "title": "Sleep Stages",
+      "description": "Breakdown of sleep stages per night: deep, REM, light, awake",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 12 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "min",
+          "decimals": 0,
+          "custom": {
+            "lineWidth": 0,
+            "pointSize": 0,
+            "drawStyle": "bars",
+            "stacking": { "mode": "normal" },
+            "fillOpacity": 80,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Deep" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "dark-blue" } }] },
+          { "matcher": { "id": "byName", "options": "REM" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "purple" } }] },
+          { "matcher": { "id": "byName", "options": "Light" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "light-blue" } }] },
+          { "matcher": { "id": "byName", "options": "Awake" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] }
+        ]
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT er.start_datetime AS time, sd.sleep_deep_minutes AS \"Deep\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN sleep_details sd ON sd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'sleep'\n  AND (sd.is_nap IS NULL OR sd.is_nap = false)\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+          "format": "time_series", "refId": "A", "editorMode": "code", "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        },
+        {
+          "rawSql": "SELECT er.start_datetime AS time, sd.sleep_rem_minutes AS \"REM\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN sleep_details sd ON sd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'sleep'\n  AND (sd.is_nap IS NULL OR sd.is_nap = false)\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+          "format": "time_series", "refId": "B", "editorMode": "code", "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        },
+        {
+          "rawSql": "SELECT er.start_datetime AS time, sd.sleep_light_minutes AS \"Light\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN sleep_details sd ON sd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'sleep'\n  AND (sd.is_nap IS NULL OR sd.is_nap = false)\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+          "format": "time_series", "refId": "C", "editorMode": "code", "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        },
+        {
+          "rawSql": "SELECT er.start_datetime AS time, sd.sleep_awake_minutes AS \"Awake\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN sleep_details sd ON sd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'sleep'\n  AND (sd.is_nap IS NULL OR sd.is_nap = false)\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+          "format": "time_series", "refId": "D", "editorMode": "code", "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        }
+      ]
+    },
+    {
+      "title": "Sleep Efficiency",
+      "description": "Percentage of time in bed actually spent sleeping. Higher is better.",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 12 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "min": 0,
+          "max": 100,
+          "color": { "mode": "fixed", "fixedColor": "green" },
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 6,
+            "spanNulls": true,
+            "showPoints": "always",
+            "fillOpacity": 10,
+            "thresholdsStyle": { "mode": "dashed" }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 75 },
+              { "color": "green", "value": 85 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "SELECT er.start_datetime AS time, sd.sleep_efficiency_score AS \"Efficiency\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN sleep_details sd ON sd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'sleep'\n  AND (sd.is_nap IS NULL OR sd.is_nap = false)\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+        "format": "time_series",
+        "refId": "A",
+        "editorMode": "code",
+        "rawQuery": true,
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+      }]
+    },
+    {
+      "title": "Sleep vs Next-Day Weight Change",
+      "description": "Does better sleep correlate with weight trends? Shows sleep duration alongside weight delta.",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 21 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 6,
+            "spanNulls": true,
+            "showPoints": "always"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Sleep Hours" },
+            "properties": [
+              { "id": "unit", "value": "h" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "dark-blue" } },
+              { "id": "custom.axisPlacement", "value": "left" },
+              { "id": "decimals", "value": 1 }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Weight Change" },
+            "properties": [
+              { "id": "unit", "value": "masskg" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "custom.drawStyle", "value": "bars" },
+              { "id": "custom.fillOpacity", "value": 50 },
+              { "id": "custom.lineWidth", "value": 0 },
+              { "id": "custom.showPoints", "value": "never" },
+              { "id": "decimals", "value": 2 }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT er.start_datetime AS time,\n  sd.sleep_total_duration_minutes / 60.0 AS \"Sleep Hours\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN sleep_details sd ON sd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'sleep'\n  AND (sd.is_nap IS NULL OR sd.is_nap = false)\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+          "format": "time_series", "refId": "A", "editorMode": "code", "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        },
+        {
+          "rawSql": "WITH daily_weight AS (\n  SELECT date_trunc('day', dps.recorded_at) AS day, dps.value AS weight,\n    dps.value - LAG(dps.value) OVER (ORDER BY dps.recorded_at) AS delta\n  FROM data_point_series dps\n  JOIN data_source ds ON dps.data_source_id = ds.id\n  WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n    AND dps.series_type_definition_id = 41\n    AND $__timeFilter(dps.recorded_at)\n)\nSELECT day AS time, delta AS \"Weight Change\"\nFROM daily_weight\nWHERE delta IS NOT NULL\nORDER BY day",
+          "format": "time_series", "refId": "B", "editorMode": "code", "rawQuery": true,
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+        }
+      ]
+    },
+    {
+      "title": "Sleep Log",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 30 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "total_min" }, "properties": [{ "id": "unit", "value": "min" }] },
+          { "matcher": { "id": "byName", "options": "deep" }, "properties": [{ "id": "unit", "value": "min" }] },
+          { "matcher": { "id": "byName", "options": "rem" }, "properties": [{ "id": "unit", "value": "min" }] },
+          { "matcher": { "id": "byName", "options": "light" }, "properties": [{ "id": "unit", "value": "min" }] },
+          { "matcher": { "id": "byName", "options": "awake" }, "properties": [{ "id": "unit", "value": "min" }] },
+          { "matcher": { "id": "byName", "options": "efficiency" }, "properties": [{ "id": "unit", "value": "percent" }, { "id": "decimals", "value": 0 }] }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "night", "desc": true }]
+      },
+      "targets": [{
+        "rawSql": "SELECT\n  er.start_datetime AS \"night\",\n  sd.sleep_total_duration_minutes AS \"total_min\",\n  sd.sleep_deep_minutes AS \"deep\",\n  sd.sleep_rem_minutes AS \"rem\",\n  sd.sleep_light_minutes AS \"light\",\n  sd.sleep_awake_minutes AS \"awake\",\n  sd.sleep_efficiency_score AS \"efficiency\",\n  CASE WHEN sd.is_nap THEN 'Nap' ELSE 'Night' END AS \"type\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN sleep_details sd ON sd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'sleep'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime DESC",
+        "format": "table",
+        "refId": "A",
+        "editorMode": "code",
+        "rawQuery": true,
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" }
+      }]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["health", "sleep"],
+  "templating": { "list": [] },
+  "time": { "from": "now-30d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Sleep",
+  "uid": "sleep"
+}
