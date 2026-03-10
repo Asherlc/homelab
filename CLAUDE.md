@@ -68,3 +68,7 @@ sudo docker restart traefik
 ## User Preferences
 - Execute deployments directly on the server rather than giving instructions
 - Auth handled via Authentik SSO, not per-app credentials
+- **Always read README.md first** before making infrastructure changes — it documents the canonical workflow
+- **Always verify deployments yourself** (e.g. `curl -s -o /dev/null -w "%{http_code}" https://<service>.asherlc.com`) before telling the user it's working
+- **Never edit files directly on the server or use scp** — always edit locally, commit, push to GitHub, then `git pull` on the server. The auto-sync script on the server will overwrite direct server edits.
+- **Never bypass the deployment workflow** — the correct flow is: local edit → commit → push → ssh pull → docker compose up

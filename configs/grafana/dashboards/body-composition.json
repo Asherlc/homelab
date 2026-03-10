@@ -1,0 +1,282 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "title": "Current Stats",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "blue", "value": null }]
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Weight" }, "properties": [{ "id": "unit", "value": "masskg" }, { "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "Body Fat" }, "properties": [{ "id": "unit", "value": "percent" }, { "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "Muscle" }, "properties": [{ "id": "unit", "value": "masskg" }, { "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "BMI" }, "properties": [{ "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "Lean Mass" }, "properties": [{ "id": "unit", "value": "masskg" }, { "id": "decimals", "value": 1 }] },
+          { "matcher": { "id": "byName", "options": "Hydration" }, "properties": [{ "id": "unit", "value": "ml" }, { "id": "decimals", "value": 0 }] }
+        ]
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{
+        "rawSql": "SELECT\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 41 ORDER BY recorded_at DESC LIMIT 1) AS \"Weight\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 42 ORDER BY recorded_at DESC LIMIT 1) AS \"Body Fat\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 49 ORDER BY recorded_at DESC LIMIT 1) AS \"Muscle\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 43 ORDER BY recorded_at DESC LIMIT 1) AS \"BMI\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 44 ORDER BY recorded_at DESC LIMIT 1) AS \"Lean Mass\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 507 ORDER BY recorded_at DESC LIMIT 1) AS \"Hydration\"",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "title": "Weight",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 5 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "masskg",
+          "decimals": 1,
+          "color": { "mode": "fixed", "fixedColor": "blue" },
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 6,
+            "spanNulls": true,
+            "showPoints": "always",
+            "fillOpacity": 8
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Weight\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 41\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+        "format": "time_series",
+        "refId": "A"
+      }]
+    },
+    {
+      "title": "Body Fat %",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 5 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "color": { "mode": "fixed", "fixedColor": "orange" },
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 6,
+            "spanNulls": true,
+            "showPoints": "always",
+            "fillOpacity": 8
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Body Fat %\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 42\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+        "format": "time_series",
+        "refId": "A"
+      }]
+    },
+    {
+      "title": "Body Composition",
+      "description": "Lean mass, fat mass, and skeletal muscle mass over time",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "masskg",
+          "decimals": 1,
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 5,
+            "spanNulls": true,
+            "showPoints": "always"
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Lean Mass" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byName", "options": "Fat Mass" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "Muscle Mass" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "purple" } }] }
+        ]
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Lean Mass\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 44\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "A"
+        },
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Fat Mass\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 48\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "B"
+        },
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Muscle Mass\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 49\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "title": "BMI",
+      "description": "BMI with healthy range thresholds (18.5-25 normal, 25-30 overweight, 30+ obese)",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 1,
+          "color": { "mode": "fixed", "fixedColor": "yellow" },
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 6,
+            "spanNulls": true,
+            "showPoints": "always",
+            "thresholdsStyle": { "mode": "dashed" }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "green", "value": 18.5 },
+              { "color": "yellow", "value": 25 },
+              { "color": "red", "value": 30 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"BMI\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 43\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+        "format": "time_series",
+        "refId": "A"
+      }]
+    },
+    {
+      "title": "Hydration",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 23 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ml",
+          "decimals": 0,
+          "color": { "mode": "fixed", "fixedColor": "super-light-blue" },
+          "custom": {
+            "lineWidth": 2,
+            "pointSize": 6,
+            "spanNulls": true,
+            "showPoints": "always",
+            "fillOpacity": 15,
+            "drawStyle": "bars",
+            "barAlignment": 0
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Hydration\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 507\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+        "format": "time_series",
+        "refId": "A"
+      }]
+    },
+    {
+      "title": "Weight Change (30d)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 32 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "masskg",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "colorMode": "value", "graphMode": "area", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{
+        "rawSql": "SELECT now() AS time,\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 41 ORDER BY recorded_at DESC LIMIT 1)\n  -\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 41 AND recorded_at <= now() - interval '30 days' ORDER BY recorded_at DESC LIMIT 1)\n  AS \"Weight Change\"",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "title": "Body Fat Change (30d)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 32 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "colorMode": "value", "graphMode": "area", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{
+        "rawSql": "SELECT now() AS time,\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 42 ORDER BY recorded_at DESC LIMIT 1)\n  -\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 42 AND recorded_at <= now() - interval '30 days' ORDER BY recorded_at DESC LIMIT 1)\n  AS \"Body Fat Change\"",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "title": "Muscle Change (30d)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 32 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "masskg",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0 },
+              { "color": "green", "value": 0.5 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "colorMode": "value", "graphMode": "area", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{
+        "rawSql": "SELECT now() AS time,\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 49 ORDER BY recorded_at DESC LIMIT 1)\n  -\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 49 AND recorded_at <= now() - interval '30 days' ORDER BY recorded_at DESC LIMIT 1)\n  AS \"Muscle Change\"",
+        "format": "table",
+        "refId": "A"
+      }]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["health", "body"],
+  "templating": { "list": [] },
+  "time": { "from": "now-30d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Body Composition",
+  "uid": "body-composition"
+}

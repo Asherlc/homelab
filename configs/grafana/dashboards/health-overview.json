@@ -9,7 +9,7 @@
       "title": "Weight",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
-      "datasource": { "type": "postgres", "uid": "" },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
       "fieldConfig": {
         "defaults": {
           "unit": "masskg",
@@ -33,7 +33,7 @@
       "title": "Body Fat %",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
-      "datasource": { "type": "postgres", "uid": "" },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
@@ -57,7 +57,7 @@
       "title": "Body Composition",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
-      "datasource": { "type": "postgres", "uid": "" },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
       "fieldConfig": {
         "defaults": {
           "unit": "masskg",
@@ -96,7 +96,7 @@
       "title": "BMI",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
-      "datasource": { "type": "postgres", "uid": "" },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
       "fieldConfig": {
         "defaults": {
           "unit": "none",
@@ -130,7 +130,7 @@
       "title": "Latest Stats",
       "type": "stat",
       "gridPos": { "h": 4, "w": 24, "x": 0, "y": 16 },
-      "datasource": { "type": "postgres", "uid": "" },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
       "fieldConfig": {
         "defaults": {
           "thresholds": {
@@ -156,7 +156,7 @@
       "title": "Workouts",
       "type": "table",
       "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
-      "datasource": { "type": "postgres", "uid": "" },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
       "fieldConfig": {
         "defaults": {},
         "overrides": [
@@ -170,7 +170,7 @@
         "sortBy": [{ "displayName": "date", "desc": true }]
       },
       "targets": [{
-        "rawSql": "SELECT\n  er.start_datetime AS \"date\",\n  er.type AS \"type\",\n  er.source_name AS \"device\",\n  er.duration_seconds AS \"duration\",\n  wd.distance,\n  wd.energy_burned,\n  wd.heart_rate_avg AS \"avg_hr\",\n  wd.heart_rate_max AS \"max_hr\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime DESC",
+        "rawSql": "SELECT\n  er.start_datetime AS \"date\",\n  er.type AS \"type\",\n  er.source_name AS \"device\",\n  er.duration_seconds AS \"duration\",\n  wd.distance,\n  wd.energy_burned,\n  wd.heart_rate_avg AS \"avg_hr\",\n  wd.heart_rate_max AS \"max_hr\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime DESC",
         "format": "table",
         "refId": "A"
       }]
@@ -179,7 +179,7 @@
       "title": "Workout Duration by Type",
       "type": "barchart",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
-      "datasource": { "type": "postgres", "uid": "" },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
       "fieldConfig": {
         "defaults": {
           "unit": "s",
@@ -198,7 +198,7 @@
       "title": "Hydration",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
-      "datasource": { "type": "postgres", "uid": "" },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
       "fieldConfig": {
         "defaults": {
           "unit": "ml",
