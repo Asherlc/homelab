@@ -2,13 +2,15 @@ apiVersion: 1
 
 datasources:
   - name: OpenWearables
-    type: postgres
+    type: grafana-postgresql-datasource
+    uid: P8AF694444D512DF3
     url: openwearables-db:5432
     database: open-wearables
     user: open-wearables
     secureJsonData:
       password: openwearables-db-password-change-me
     jsonData:
+      database: open-wearables
       sslmode: disable
       postgresVersion: 1600
       timescaledb: false

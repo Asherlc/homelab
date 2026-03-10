@@ -255,6 +255,7 @@ http:
       service: grafana
       middlewares:
         - add-forward-headers
+        - authentik
     grafana-local:
       rule: Host(`grafana.home`)
       entryPoints:
