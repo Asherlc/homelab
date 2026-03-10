@@ -159,4 +159,13 @@ services = {
     require_auth   = false
     backend_url    = "http://openwearables-backend:8000"
   }
+
+
+  grafana = {
+    description    = "Health data dashboards"
+    type           = "home"
+    tunnel_enabled = true
+    require_auth   = false
+    backend_url    = "http://grafana:3000"
+  }
 }

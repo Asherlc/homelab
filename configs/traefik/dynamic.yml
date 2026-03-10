@@ -248,6 +248,19 @@ http:
         - web
       service: openwearables-api
 
+    grafana-external:
+      rule: Host(`grafana.asherlc.com`)
+      entryPoints:
+        - web
+      service: grafana
+      middlewares:
+        - add-forward-headers
+    grafana-local:
+      rule: Host(`grafana.home`)
+      entryPoints:
+        - web
+      service: grafana
+
   serversTransports:
     insecureTransport:
       insecureSkipVerify: true
@@ -331,3 +344,8 @@ http:
       loadBalancer:
         servers:
           - url: http://openwearables-backend:8000
+
+    grafana:
+      loadBalancer:
+        servers:
+          - url: http://grafana:3000
