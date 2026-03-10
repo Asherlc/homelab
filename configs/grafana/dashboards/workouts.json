@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -8,124 +10,415 @@
     {
       "title": "Summary",
       "type": "stat",
-      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 0 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "thresholds": {
             "mode": "absolute",
-            "steps": [{ "color": "green", "value": null }]
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
           }
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "Total Workouts" }, "properties": [{ "id": "decimals", "value": 0 }] },
-          { "matcher": { "id": "byName", "options": "Total Hours" }, "properties": [{ "id": "unit", "value": "h" }, { "id": "decimals", "value": 1 }] },
-          { "matcher": { "id": "byName", "options": "Total Distance" }, "properties": [{ "id": "unit", "value": "lengthkm" }, { "id": "decimals", "value": 1 }] },
-          { "matcher": { "id": "byName", "options": "Total Calories" }, "properties": [{ "id": "unit", "value": "kcal" }, { "id": "decimals", "value": 0 }] },
-          { "matcher": { "id": "byName", "options": "Avg Heart Rate" }, "properties": [{ "id": "unit", "value": "bpm" }, { "id": "decimals", "value": 0 }] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Workouts"
+            },
+            "properties": [
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Hours"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "h"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Distance"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "lengthkm"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Calories"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "kcal"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg Heart Rate"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bpm"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
         ]
       },
-      "options": { "colorMode": "background", "graphMode": "none", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "targets": [{
-        "rawSql": "SELECT\n  COUNT(*) AS \"Total Workouts\",\n  SUM(er.duration_seconds) / 3600.0 AS \"Total Hours\",\n  SUM(wd.distance) / 1000.0 AS \"Total Distance\",\n  SUM(wd.energy_burned) AS \"Total Calories\",\n  AVG(wd.heart_rate_avg) AS \"Avg Heart Rate\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)",
-        "format": "table",
-        "refId": "A"
-      }]
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  COUNT(*) AS \"Total Workouts\",\n  SUM(er.duration_seconds) / 3600.0 AS \"Total Hours\",\n  SUM(wd.distance) / 1000.0 AS \"Total Distance\",\n  SUM(wd.energy_burned) AS \"Total Calories\",\n  AVG(wd.heart_rate_avg) AS \"Avg Heart Rate\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Workout Log",
       "type": "table",
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 5 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {},
         "overrides": [
-          { "matcher": { "id": "byName", "options": "duration" }, "properties": [{ "id": "unit", "value": "s" }] },
-          { "matcher": { "id": "byName", "options": "distance" }, "properties": [{ "id": "unit", "value": "lengthm" }, { "id": "decimals", "value": 0 }] },
-          { "matcher": { "id": "byName", "options": "calories" }, "properties": [{ "id": "unit", "value": "kcal" }, { "id": "decimals", "value": 0 }] },
-          { "matcher": { "id": "byName", "options": "avg_hr" }, "properties": [{ "id": "unit", "value": "bpm" }] },
-          { "matcher": { "id": "byName", "options": "max_hr" }, "properties": [{ "id": "unit", "value": "bpm" }] },
-          { "matcher": { "id": "byName", "options": "avg_speed" }, "properties": [{ "id": "unit", "value": "velocitykmh" }, { "id": "decimals", "value": 1 }] },
-          { "matcher": { "id": "byName", "options": "elevation" }, "properties": [{ "id": "unit", "value": "lengthm" }, { "id": "decimals", "value": 0 }] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "lengthm"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "calories"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "kcal"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "avg_hr"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bpm"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max_hr"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bpm"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "avg_speed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "velocitykmh"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "elevation"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "lengthm"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
         ]
       },
       "options": {
         "showHeader": true,
-        "sortBy": [{ "displayName": "date", "desc": true }]
+        "sortBy": [
+          {
+            "displayName": "date",
+            "desc": true
+          }
+        ]
       },
-      "targets": [{
-        "rawSql": "SELECT\n  er.start_datetime AS \"date\",\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"type\",\n  er.source_name AS \"source\",\n  er.duration_seconds AS \"duration\",\n  wd.distance,\n  wd.energy_burned AS \"calories\",\n  wd.heart_rate_avg AS \"avg_hr\",\n  wd.heart_rate_max AS \"max_hr\",\n  wd.average_speed * 3.6 AS \"avg_speed\",\n  wd.total_elevation_gain AS \"elevation\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime DESC",
-        "format": "table",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT\n  er.start_datetime AS \"date\",\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"type\",\n  er.source_name AS \"source\",\n  er.duration_seconds AS \"duration\",\n  wd.distance,\n  wd.energy_burned AS \"calories\",\n  wd.heart_rate_avg AS \"avg_hr\",\n  wd.heart_rate_max AS \"max_hr\",\n  wd.average_speed * 3.6 AS \"avg_speed\",\n  wd.total_elevation_gain AS \"elevation\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime DESC",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Duration by Workout Type",
       "type": "piechart",
-      "gridPos": { "h": 9, "w": 8, "x": 0, "y": 15 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 15
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "color": { "mode": "palette-classic" }
+          "color": {
+            "mode": "palette-classic"
+          }
         },
         "overrides": []
       },
       "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "values": ["percent"] },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "percent"
+          ]
+        },
         "pieType": "donut",
-        "reduceOptions": { "calcs": ["sum"] }
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ]
+        }
       },
-      "targets": [{
-        "rawSql": "SELECT\n  er.start_datetime AS time,\n  er.duration_seconds AS \"duration\",\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"metric\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
-        "format": "table",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT\n  er.start_datetime AS time,\n  er.duration_seconds AS \"duration\",\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"metric\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Workout Count by Type",
       "type": "barchart",
-      "gridPos": { "h": 9, "w": 8, "x": 8, "y": 15 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 8,
+        "y": 15
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" }
+          "color": {
+            "mode": "palette-classic"
+          }
         },
         "overrides": []
       },
-      "options": { "xTickLabelRotation": -45 },
-      "targets": [{
-        "rawSql": "SELECT\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"Workout Type\",\n  COUNT(*) AS \"Count\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nGROUP BY er.type\nORDER BY \"Count\" DESC",
-        "format": "table",
-        "refId": "A"
-      }]
+      "options": {
+        "xTickLabelRotation": -45
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"Workout Type\",\n  COUNT(*) AS \"Count\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nGROUP BY er.type\nORDER BY \"Count\" DESC",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Calories by Workout Type",
       "type": "barchart",
-      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 15 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 15
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "kcal",
           "decimals": 0,
-          "color": { "mode": "palette-classic" }
+          "color": {
+            "mode": "palette-classic"
+          }
         },
         "overrides": []
       },
-      "options": { "xTickLabelRotation": -45 },
-      "targets": [{
-        "rawSql": "SELECT\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"Workout Type\",\n  SUM(wd.energy_burned) AS \"Calories\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\n  AND wd.energy_burned IS NOT NULL\nGROUP BY er.type\nORDER BY \"Calories\" DESC",
-        "format": "table",
-        "refId": "A"
-      }]
+      "options": {
+        "xTickLabelRotation": -45
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  INITCAP(REPLACE(er.type, '_', ' ')) AS \"Workout Type\",\n  SUM(wd.energy_burned) AS \"Calories\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\n  AND wd.energy_burned IS NOT NULL\nGROUP BY er.type\nORDER BY \"Calories\" DESC",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Heart Rate Over Time",
       "description": "Average and max heart rate per workout",
       "type": "timeseries",
-      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 24 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "bpm",
@@ -138,33 +431,84 @@
           }
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "Avg HR" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }] },
-          { "matcher": { "id": "byName", "options": "Max HR" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg HR"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max HR"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
         ]
       },
       "targets": [
         {
           "rawSql": "SELECT er.start_datetime AS time, wd.heart_rate_avg AS \"Avg HR\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND wd.heart_rate_avg IS NOT NULL\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
           "format": "time_series",
-          "refId": "A"
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
         },
         {
           "rawSql": "SELECT er.start_datetime AS time, wd.heart_rate_max AS \"Max HR\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND wd.heart_rate_max IS NOT NULL\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
           "format": "time_series",
-          "refId": "B"
+          "refId": "B",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
         }
       ]
     },
     {
       "title": "Distance per Workout",
       "type": "timeseries",
-      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 24 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "lengthkm",
           "decimals": 1,
-          "color": { "mode": "fixed", "fixedColor": "blue" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
           "custom": {
             "lineWidth": 0,
             "pointSize": 8,
@@ -175,37 +519,72 @@
         },
         "overrides": []
       },
-      "targets": [{
-        "rawSql": "SELECT er.start_datetime AS time, wd.distance / 1000.0 AS \"Distance\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND wd.distance IS NOT NULL\n  AND wd.distance > 0\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
-        "format": "time_series",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT er.start_datetime AS time, wd.distance / 1000.0 AS \"Distance\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nJOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND wd.distance IS NOT NULL\n  AND wd.distance > 0\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime",
+          "format": "time_series",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Weekly Workout Volume",
       "description": "Total workout hours per week",
       "type": "barchart",
-      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 33 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "h",
           "decimals": 1,
-          "color": { "mode": "fixed", "fixedColor": "green" }
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          }
         },
         "overrides": []
       },
-      "targets": [{
-        "rawSql": "SELECT\n  date_trunc('week', er.start_datetime) AS \"Week\",\n  SUM(er.duration_seconds) / 3600.0 AS \"Hours\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nGROUP BY date_trunc('week', er.start_datetime)\nORDER BY \"Week\"",
-        "format": "table",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT\n  date_trunc('week', er.start_datetime) AS \"Week\",\n  SUM(er.duration_seconds) / 3600.0 AS \"Hours\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nGROUP BY date_trunc('week', er.start_datetime)\nORDER BY \"Week\"",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     }
   ],
   "schemaVersion": 39,
-  "tags": ["health", "workouts"],
-  "templating": { "list": [] },
-  "time": { "from": "now-90d", "to": "now" },
+  "tags": [
+    "health",
+    "workouts"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "browser",
   "title": "Workouts",

@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -8,12 +10,23 @@
     {
       "title": "Weight",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "masskg",
-          "color": { "mode": "fixed", "fixedColor": "blue" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
           "custom": {
             "lineWidth": 2,
             "pointSize": 5,
@@ -23,21 +36,40 @@
         },
         "overrides": []
       },
-      "targets": [{
-        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Weight (kg)\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 41\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
-        "format": "time_series",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Weight (kg)\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 41\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Body Fat %",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "color": { "mode": "fixed", "fixedColor": "orange" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
           "custom": {
             "lineWidth": 2,
             "pointSize": 5,
@@ -47,17 +79,33 @@
         },
         "overrides": []
       },
-      "targets": [{
-        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Body Fat %\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 42\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
-        "format": "time_series",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Body Fat %\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 42\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Body Composition",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "masskg",
@@ -69,140 +117,387 @@
           }
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "Lean Mass" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
-          { "matcher": { "id": "byName", "options": "Fat Mass" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
-          { "matcher": { "id": "byName", "options": "Muscle Mass" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "purple" } }] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lean Mass"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Fat Mass"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Muscle Mass"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          }
         ]
       },
       "targets": [
         {
           "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Lean Mass\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 44\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
           "format": "time_series",
-          "refId": "A"
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
         },
         {
           "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Fat Mass\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 48\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
           "format": "time_series",
-          "refId": "B"
+          "refId": "B",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
         },
         {
           "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Muscle Mass\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 49\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
           "format": "time_series",
-          "refId": "C"
+          "refId": "C",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
         }
       ]
     },
     {
       "title": "BMI",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "none",
-          "color": { "mode": "fixed", "fixedColor": "yellow" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "yellow"
+          },
           "custom": {
             "lineWidth": 2,
             "pointSize": 5,
             "spanNulls": true,
             "showPoints": "always",
-            "thresholdsStyle": { "mode": "dashed" }
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "green", "value": 18.5 },
-              { "color": "yellow", "value": 25 },
-              { "color": "red", "value": 30 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 18.5
+              },
+              {
+                "color": "yellow",
+                "value": 25
+              },
+              {
+                "color": "red",
+                "value": 30
+              }
             ]
           }
         },
         "overrides": []
       },
-      "targets": [{
-        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"BMI\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 43\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
-        "format": "time_series",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"BMI\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 43\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Latest Stats",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 16 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "thresholds": {
             "mode": "absolute",
-            "steps": [{ "color": "blue", "value": null }]
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
           }
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "Weight (kg)" }, "properties": [{ "id": "unit", "value": "masskg" }] },
-          { "matcher": { "id": "byName", "options": "Body Fat %" }, "properties": [{ "id": "unit", "value": "percent" }] },
-          { "matcher": { "id": "byName", "options": "Muscle (kg)" }, "properties": [{ "id": "unit", "value": "masskg" }] },
-          { "matcher": { "id": "byName", "options": "BMI" }, "properties": [{ "id": "unit", "value": "none" }] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Weight (kg)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "masskg"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Body Fat %"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Muscle (kg)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "masskg"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "BMI"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          }
         ]
       },
-      "options": { "colorMode": "background", "graphMode": "none", "textMode": "auto" },
-      "targets": [{
-        "rawSql": "SELECT\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 41 ORDER BY recorded_at DESC LIMIT 1) AS \"Weight (kg)\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 42 ORDER BY recorded_at DESC LIMIT 1) AS \"Body Fat %\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 49 ORDER BY recorded_at DESC LIMIT 1) AS \"Muscle (kg)\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 43 ORDER BY recorded_at DESC LIMIT 1) AS \"BMI\"",
-        "format": "table",
-        "refId": "A"
-      }]
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 41 ORDER BY recorded_at DESC LIMIT 1) AS \"Weight (kg)\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 42 ORDER BY recorded_at DESC LIMIT 1) AS \"Body Fat %\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 49 ORDER BY recorded_at DESC LIMIT 1) AS \"Muscle (kg)\",\n  (SELECT value FROM data_point_series dps JOIN data_source ds ON dps.data_source_id = ds.id WHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59' AND dps.series_type_definition_id = 43 ORDER BY recorded_at DESC LIMIT 1) AS \"BMI\"",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Workouts",
       "type": "table",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {},
         "overrides": [
-          { "matcher": { "id": "byName", "options": "duration" }, "properties": [{ "id": "unit", "value": "s" }] },
-          { "matcher": { "id": "byName", "options": "distance" }, "properties": [{ "id": "unit", "value": "lengthm" }] },
-          { "matcher": { "id": "byName", "options": "energy_burned" }, "properties": [{ "id": "unit", "value": "kcal" }] }
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "distance"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "lengthm"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "energy_burned"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "kcal"
+              }
+            ]
+          }
         ]
       },
       "options": {
         "showHeader": true,
-        "sortBy": [{ "displayName": "date", "desc": true }]
+        "sortBy": [
+          {
+            "displayName": "date",
+            "desc": true
+          }
+        ]
       },
-      "targets": [{
-        "rawSql": "SELECT\n  er.start_datetime AS \"date\",\n  er.type AS \"type\",\n  er.source_name AS \"device\",\n  er.duration_seconds AS \"duration\",\n  wd.distance,\n  wd.energy_burned,\n  wd.heart_rate_avg AS \"avg_hr\",\n  wd.heart_rate_max AS \"max_hr\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime DESC",
-        "format": "table",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT\n  er.start_datetime AS \"date\",\n  er.type AS \"type\",\n  er.source_name AS \"device\",\n  er.duration_seconds AS \"duration\",\n  wd.distance,\n  wd.energy_burned,\n  wd.heart_rate_avg AS \"avg_hr\",\n  wd.heart_rate_max AS \"max_hr\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nJOIN event_record_detail erd ON erd.record_id = er.id\nLEFT JOIN workout_details wd ON wd.record_id = er.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nORDER BY er.start_datetime DESC",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Workout Duration by Type",
       "type": "barchart",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "color": { "mode": "palette-classic" }
+          "color": {
+            "mode": "palette-classic"
+          }
         },
         "overrides": []
       },
-      "options": { "xTickLabelRotation": -45 },
-      "targets": [{
-        "rawSql": "SELECT\n  er.type AS \"Workout Type\",\n  SUM(er.duration_seconds) AS \"Total Duration\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nGROUP BY er.type\nORDER BY \"Total Duration\" DESC",
-        "format": "table",
-        "refId": "A"
-      }]
+      "options": {
+        "xTickLabelRotation": -45
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  er.type AS \"Workout Type\",\n  SUM(er.duration_seconds) AS \"Total Duration\"\nFROM event_record er\nJOIN data_source ds ON er.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND er.category = 'workout'\n  AND $__timeFilter(er.start_datetime)\nGROUP BY er.type\nORDER BY \"Total Duration\" DESC",
+          "format": "table",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     },
     {
       "title": "Hydration",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
-      "datasource": { "type": "grafana-postgresql-datasource", "uid": "P8AF694444D512DF3" },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "P8AF694444D512DF3"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "ml",
-          "color": { "mode": "fixed", "fixedColor": "super-light-blue" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "super-light-blue"
+          },
           "custom": {
             "lineWidth": 2,
             "pointSize": 5,
@@ -213,17 +508,33 @@
         },
         "overrides": []
       },
-      "targets": [{
-        "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Hydration (mL)\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 507\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
-        "format": "time_series",
-        "refId": "A"
-      }]
+      "targets": [
+        {
+          "rawSql": "SELECT dps.recorded_at AS time, dps.value AS \"Hydration (mL)\"\nFROM data_point_series dps\nJOIN data_source ds ON dps.data_source_id = ds.id\nWHERE ds.user_id = '8737f98d-647a-4e0e-9f6e-c9df5da82d59'\n  AND dps.series_type_definition_id = 507\n  AND $__timeFilter(dps.recorded_at)\nORDER BY dps.recorded_at",
+          "format": "time_series",
+          "refId": "A",
+          "editorMode": "code",
+          "rawQuery": true,
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "P8AF694444D512DF3"
+          }
+        }
+      ]
     }
   ],
   "schemaVersion": 39,
-  "tags": ["health", "wearables"],
-  "templating": { "list": [] },
-  "time": { "from": "now-30d", "to": "now" },
+  "tags": [
+    "health",
+    "wearables"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "browser",
   "title": "Health Overview",
