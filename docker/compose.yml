@@ -564,6 +564,26 @@ services:
     depends_on:
       - authentik-server
 
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      - TZ=US/Pacific
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    ports:
+      - "3200:3000"
+    volumes:
+      - /srv/appdata/grafana:/var/lib/grafana
+      - /opt/homelab-config/configs/grafana/provisioning:/etc/grafana/provisioning
+      - /opt/homelab-config/configs/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      openwearables-db:
+        condition: service_healthy
+
   watchtower:
     container_name: watchtower
     image: containrrr/watchtower:latest
