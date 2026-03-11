@@ -168,4 +168,12 @@ services = {
     require_auth   = false
     backend_url    = "http://grafana:3000"
   }
+
+  dofek = {
+    description    = "Health data platform (Dofek)"
+    type           = "home"
+    tunnel_enabled = true
+    require_auth   = true
+    backend_url    = "http://dofek-web:3000"
+  }
 }
