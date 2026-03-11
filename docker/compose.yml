@@ -484,6 +484,8 @@ services:
       - WATCHTOWER_LABEL_ENABLE=true
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=slack://hook/T82RC1DL1/B0AL1AK344A/KxtLM0zOAk0iyXzBpxZq0nW9
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/asherlc/.docker/config.json:/config.json:ro
