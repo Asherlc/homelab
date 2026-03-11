@@ -416,6 +416,11 @@ services:
       POSTGRES_PASSWORD: dofek-db-change-me
     volumes:
       - /srv/appdata/dofek/postgresql:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "2.0"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d health -U health"]
       start_period: 20s
@@ -432,9 +437,15 @@ services:
       NODE_ENV: production
       PORT: "3000"
       DATABASE_URL: postgres://health:dofek-db-change-me@dofek-db:5432/health
+      NODE_OPTIONS: "--max-old-space-size=1024"
     env_file: /srv/appdata/dofek/.env
     ports:
       - "3002:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+          cpus: "2.0"
     depends_on:
       dofek-db:
         condition: service_healthy
@@ -448,7 +459,13 @@ services:
     command: ["sync"]
     environment:
       DATABASE_URL: postgres://health:dofek-db-change-me@dofek-db:5432/health
+      NODE_OPTIONS: "--max-old-space-size=512"
     env_file: /srv/appdata/dofek/.env
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: "1.0"
     depends_on:
       dofek-db:
         condition: service_healthy
