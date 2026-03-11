@@ -427,7 +427,7 @@ services:
     container_name: dofek-web
     image: ghcr.io/asherlc/dofek:latest
     restart: unless-stopped
-    command: ["node_modules/.bin/tsx", "web/dist/server/server/index.js"]
+    command: ["web"]
     environment:
       NODE_ENV: production
       PORT: "3000"
@@ -445,7 +445,7 @@ services:
     container_name: dofek-sync
     image: ghcr.io/asherlc/dofek:latest
     restart: unless-stopped
-    command: ["node_modules/.bin/tsx", "dist/index.js", "sync"]
+    command: ["sync"]
     environment:
       DATABASE_URL: postgres://health:dofek-db-change-me@dofek-db:5432/health
     env_file: /srv/appdata/dofek/.env
