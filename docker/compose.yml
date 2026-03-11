@@ -439,8 +439,6 @@ services:
       DATABASE_URL: postgres://health:dofek-db-change-me@dofek-db:5432/health
       NODE_OPTIONS: "--max-old-space-size=1024"
     env_file: /srv/appdata/dofek/.env
-    ports:
-      - "3002:3000"
     deploy:
       resources:
         limits:
@@ -449,6 +447,15 @@ services:
     depends_on:
       dofek-db:
         condition: service_healthy
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  dofek-client:
+    container_name: dofek-client
+    image: ghcr.io/asherlc/dofek-client:latest
+    restart: unless-stopped
+    depends_on:
+      - dofek-web
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
