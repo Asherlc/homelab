@@ -270,6 +270,15 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+      priority: 1
+    dofek-oauth-callback:
+      rule: Host(`dofek.asherlc.com`) && (Path(`/callback`) || PathPrefix(`/auth/`))
+      entryPoints:
+        - web
+      service: dofek
+      middlewares:
+        - add-forward-headers
+      priority: 10
     dofek-local:
       rule: Host(`dofek.home`)
       entryPoints:
