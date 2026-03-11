@@ -266,7 +266,7 @@ http:
       rule: Host(`dofek.asherlc.com`)
       entryPoints:
         - web
-      service: dofek-client
+      service: dofek
       middlewares:
         - add-forward-headers
         - authentik
@@ -275,7 +275,7 @@ http:
       rule: Host(`dofek.asherlc.com`) && (Path(`/callback`) || PathPrefix(`/auth/`))
       entryPoints:
         - web
-      service: dofek-client
+      service: dofek
       middlewares:
         - add-forward-headers
       priority: 10
@@ -283,7 +283,7 @@ http:
       rule: Host(`dofek.home`)
       entryPoints:
         - web
-      service: dofek-client
+      service: dofek
 
   serversTransports:
     insecureTransport:
@@ -374,7 +374,7 @@ http:
         servers:
           - url: http://grafana:3000
 
-    dofek-client:
+    dofek:
       loadBalancer:
         servers:
-          - url: http://dofek-client:80
+          - url: http://dofek-web:3000
