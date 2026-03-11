@@ -427,7 +427,7 @@ services:
     container_name: dofek-web
     image: ghcr.io/asherlc/health-data:latest
     restart: unless-stopped
-    command: ["node", "web/dist/server/index.js"]
+    command: ["node", "web/dist/server/server/index.js"]
     environment:
       NODE_ENV: production
       PORT: "3000"
