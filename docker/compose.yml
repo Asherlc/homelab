@@ -425,7 +425,7 @@ services:
 
   dofek-web:
     container_name: dofek-web
-    image: ghcr.io/asherlc/health-data:latest
+    image: ghcr.io/asherlc/dofek:latest
     restart: unless-stopped
     command: ["node", "web/dist/server/server/index.js"]
     environment:
@@ -443,7 +443,7 @@ services:
 
   dofek-sync:
     container_name: dofek-sync
-    image: ghcr.io/asherlc/health-data:latest
+    image: ghcr.io/asherlc/dofek:latest
     restart: unless-stopped
     command: ["node", "dist/index.js", "sync"]
     environment:
