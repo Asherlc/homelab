@@ -43,6 +43,24 @@ Once enabled, the workflow is: **edit locally → commit → push → done**. Ch
 
 Check deploy logs: `journalctl -t auto-deploy`
 
+### Remote Access via Tailscale
+
+When off the home network, use Tailscale to reach the server. The server's Tailscale IP is `100.96.33.27`.
+
+```bash
+# SSH to server
+ssh asherlc@100.96.33.27
+
+# Check Tailscale status and find peers
+tailscale status
+```
+
+| Device | Tailscale IP |
+|--------|-------------|
+| Homelab server | `100.96.33.27` |
+
+Services are also accessible externally via `*.asherlc.com` (Cloudflare Tunnel), which does not require Tailscale.
+
 ### Manual Sync
 
 ```bash
