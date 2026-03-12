@@ -1,0 +1,10 @@
+[Unit]
+Description=Poll git for homelab config changes every 2 minutes
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=2min
+RandomizedDelaySec=10
+
+[Install]
+WantedBy=timers.target
