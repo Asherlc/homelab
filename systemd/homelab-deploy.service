@@ -1,0 +1,10 @@
+[Unit]
+Description=Homelab auto-deploy from git
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=asherlc
+ExecStart=/opt/homelab-config/scripts/auto-deploy.sh
+WorkingDirectory=/opt/homelab-config
