@@ -425,7 +425,7 @@ services:
       POSTGRES_USER: health
       POSTGRES_PASSWORD: dofek-db-change-me
     volumes:
-      - /srv/appdata/dofek/postgresql:/var/lib/postgresql/data
+      - /mnt/storage/appdata/dofek/postgresql:/var/lib/postgresql/data
     mem_limit: 1g
     command: >
       postgres
