@@ -377,7 +377,7 @@ services:
       - /srv/appdata/authentik/custom-templates:/templates
       - /srv/appdata/authentik/media/public/custom.css:/web/dist/custom.css:ro
       - /srv/appdata/authentik/media/flow_background_custom.png:/web/dist/assets/images/flow_background.jpg:ro
-    mem_limit: 200m
+    mem_limit: 256m
     depends_on:
       - authentik-postgresql
       - authentik-redis
@@ -426,11 +426,12 @@ services:
       POSTGRES_PASSWORD: dofek-db-change-me
     volumes:
       - /srv/appdata/dofek/postgresql:/var/lib/postgresql/data
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-          cpus: "2.0"
+    mem_limit: 1g
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c work_mem=16MB
+      -c effective_cache_size=512MB
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d health -U health"]
       start_period: 20s
