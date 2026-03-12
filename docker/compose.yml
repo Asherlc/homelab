@@ -307,11 +307,12 @@ services:
       POSTGRES_PASSWORD: authentik-db-password-change-me
       POSTGRES_USER: authentik
       POSTGRES_DB: authentik
+    mem_limit: 128m
 
   authentik-redis:
     container_name: authentik-redis
     image: docker.io/library/redis:alpine
-    command: --save 60 1 --loglevel warning
+    command: --save 60 1 --loglevel warning --maxmemory 32mb --maxmemory-policy allkeys-lru
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
@@ -321,10 +322,11 @@ services:
       timeout: 3s
     volumes:
       - /srv/appdata/authentik/redis:/data
+    mem_limit: 64m
 
   authentik-server:
     container_name: authentik-server
-    image: ghcr.io/goauthentik/server:latest
+    image: ghcr.io/goauthentik/server:2025.2.4
     restart: unless-stopped
     command: server
     environment:
@@ -335,6 +337,9 @@ services:
       AUTHENTIK_POSTGRESQL__USER: authentik
       AUTHENTIK_POSTGRESQL__NAME: authentik
       AUTHENTIK_POSTGRESQL__PASSWORD: authentik-db-password-change-me
+      AUTHENTIK_WEB__WORKERS: 1
+      AUTHENTIK_LOG_LEVEL: warning
+      AUTHENTIK_AVATARS: none
     volumes:
       - /srv/appdata/authentik/media:/media
       - /srv/appdata/authentik/custom-templates:/templates
@@ -343,13 +348,14 @@ services:
     ports:
       - "9000:9000"
       - "9443:9443"
+    mem_limit: 600m
     depends_on:
       - authentik-postgresql
       - authentik-redis
 
   authentik-worker:
     container_name: authentik-worker
-    image: ghcr.io/goauthentik/server:latest
+    image: ghcr.io/goauthentik/server:2025.2.4
     restart: unless-stopped
     command: worker
     environment:
@@ -360,6 +366,9 @@ services:
       AUTHENTIK_POSTGRESQL__USER: authentik
       AUTHENTIK_POSTGRESQL__NAME: authentik
       AUTHENTIK_POSTGRESQL__PASSWORD: authentik-db-password-change-me
+      AUTHENTIK_WORKER__CONCURRENCY: 1
+      AUTHENTIK_LOG_LEVEL: warning
+      AUTHENTIK_AVATARS: none
     user: root
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -368,6 +377,7 @@ services:
       - /srv/appdata/authentik/custom-templates:/templates
       - /srv/appdata/authentik/media/public/custom.css:/web/dist/custom.css:ro
       - /srv/appdata/authentik/media/flow_background_custom.png:/web/dist/assets/images/flow_background.jpg:ro
+    mem_limit: 200m
     depends_on:
       - authentik-postgresql
       - authentik-redis
