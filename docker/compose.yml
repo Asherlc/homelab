@@ -509,6 +509,22 @@ services:
     depends_on:
       - dofek-db
 
+  # Prometheus - Metrics collection
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - /opt/homelab-config/configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /srv/appdata/prometheus:/prometheus
+    mem_limit: 256m
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=30d"
+      - "--storage.tsdb.retention.size=1GB"
+
   # Watchtower - Auto-update containers with watchtower.enable label
   watchtower:
     container_name: watchtower
