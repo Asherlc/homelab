@@ -27,6 +27,22 @@ cd /opt/homelab-config
 git-crypt unlock ~/.homelab-secure/homelab-git-crypt.key
 ```
 
+### Auto-Deploy (one-time setup)
+
+A systemd timer polls GitHub every 2 minutes and automatically pulls changes and runs `docker compose up -d`. To enable it:
+
+```bash
+cd /opt/homelab-config && git pull
+sudo cp systemd/homelab-deploy.service /etc/systemd/system/
+sudo cp systemd/homelab-deploy.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now homelab-deploy.timer
+```
+
+Once enabled, the workflow is: **edit locally → commit → push → done**. Changes deploy within ~2 minutes.
+
+Check deploy logs: `journalctl -t auto-deploy`
+
 ### Manual Sync
 
 ```bash
