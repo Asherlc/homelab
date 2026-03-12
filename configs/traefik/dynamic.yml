@@ -269,7 +269,6 @@ http:
       service: dofek-client
       middlewares:
         - add-forward-headers
-        - authentik
       priority: 1
     dofek-oauth-callback:
       rule: Host(`dofek.asherlc.com`) && (Path(`/callback`) || PathPrefix(`/auth/`))

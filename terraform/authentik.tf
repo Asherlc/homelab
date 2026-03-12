@@ -155,3 +155,32 @@ resource "authentik_application" "synology_dsm" {
   open_in_new_tab   = true
   group             = "Home"
 }
+
+# Dofek OIDC provider (app-level authentication)
+resource "authentik_provider_oauth2" "dofek" {
+  name               = "Dofek OIDC"
+  client_id          = "dofek"
+  client_type        = "confidential"
+  authorization_flow = data.authentik_flow.default_authorization_flow.id
+  invalidation_flow  = data.authentik_flow.default_provider_invalidation_flow.id
+  allowed_redirect_uris = [
+    {
+      matching_mode = "strict"
+      url           = "https://dofek.asherlc.com/auth/callback/authentik"
+    }
+  ]
+  property_mappings = [
+    "b6900f1a-0e32-4e5c-a31a-cced7f0f77d0",
+    "34235530-e555-4380-800c-36a9c5181eeb",
+    "c1f1342d-709b-4b17-8925-fdddf7109e45",
+  ]
+}
+
+resource "authentik_application" "dofek" {
+  name              = "Dofek"
+  slug              = "dofek"
+  protocol_provider = authentik_provider_oauth2.dofek.id
+  meta_launch_url   = "https://dofek.asherlc.com"
+  open_in_new_tab   = true
+  group             = "Home"
+}
