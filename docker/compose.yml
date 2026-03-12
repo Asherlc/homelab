@@ -525,6 +525,54 @@ services:
       - "--storage.tsdb.retention.time=30d"
       - "--storage.tsdb.retention.size=1GB"
 
+  # Grafana - Dashboards & Log Viewer
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    ports:
+      - "3000:3000"
+    user: "472"
+    volumes:
+      - /srv/appdata/grafana:/var/lib/grafana
+      - /opt/homelab-config/configs/grafana/provisioning:/etc/grafana/provisioning:ro
+      - /opt/homelab-config/configs/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    mem_limit: 256m
+    depends_on:
+      - loki
+
+  # Loki - Log aggregation
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - /opt/homelab-config/configs/loki/loki.yml:/etc/loki/local-config.yaml:ro
+      - /srv/appdata/loki:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    mem_limit: 512m
+
+  # Promtail - Log collector (Docker + journald)
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:latest
+    restart: unless-stopped
+    volumes:
+      - /opt/homelab-config/configs/promtail/promtail.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    command: -config.file=/etc/promtail/config.yml
+    mem_limit: 128m
+    depends_on:
+      - loki
+
   # Watchtower - Auto-update containers with watchtower.enable label
   watchtower:
     container_name: watchtower
