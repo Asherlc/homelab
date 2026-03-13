@@ -19,7 +19,6 @@ declare -A WATCH_PATHS=(
     ["/srv/appdata/configarr/config/secrets.yml"]="configarr/secrets.yml"
     ["/srv/appdata/traefik/traefik.yml"]="configs/traefik/traefik.yml"
     ["/srv/appdata/traefik/dynamic.yml"]="configs/traefik/dynamic.yml"
-    ["/opt/docker/compose.yml"]="docker/compose.yml"
     ["/srv/appdata/qbittorrent/qBittorrent/qBittorrent.conf"]="configs/qbittorrent/qBittorrent.conf"
     ["/srv/appdata/qbittorrent/qBittorrent/categories.json"]="configs/qbittorrent/categories.json"
 )
