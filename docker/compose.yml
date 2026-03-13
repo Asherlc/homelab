@@ -448,7 +448,10 @@ services:
       PORT: "3000"
       DATABASE_URL: postgres://health:dofek-db-change-me@dofek-db:5432/health
       NODE_OPTIONS: "--max-old-space-size=1024"
+      SOPS_AGE_KEY_FILE: /run/secrets/age-key
     env_file: /srv/appdata/dofek/.env
+    volumes:
+      - /home/asherlc/.config/sops/age/keys.txt:/run/secrets/age-key:ro
     deploy:
       resources:
         limits:
@@ -477,7 +480,10 @@ services:
     environment:
       DATABASE_URL: postgres://health:dofek-db-change-me@dofek-db:5432/health
       NODE_OPTIONS: "--max-old-space-size=512"
+      SOPS_AGE_KEY_FILE: /run/secrets/age-key
     env_file: /srv/appdata/dofek/.env
+    volumes:
+      - /home/asherlc/.config/sops/age/keys.txt:/run/secrets/age-key:ro
     deploy:
       resources:
         limits:
