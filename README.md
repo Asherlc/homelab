@@ -43,6 +43,20 @@ Once enabled, the workflow is: **edit locally → commit → push → done**. Ch
 
 Check deploy logs: `journalctl -t auto-deploy`
 
+### Local Network Access
+
+When on the home network, SSH directly to the server at `192.168.1.197`. SSH keys are managed via 1Password — make sure the 1Password SSH agent is available:
+
+```bash
+# Set the 1Password SSH agent socket
+export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+
+# SSH to server
+ssh asherlc@192.168.1.197
+```
+
+Services are accessible locally via `<service>.home` through Traefik (no auth required).
+
 ### Remote Access via Tailscale
 
 When off the home network, use Tailscale to reach the server. The server's Tailscale IP is `100.96.33.27`.
