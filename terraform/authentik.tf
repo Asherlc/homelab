@@ -195,7 +195,7 @@ resource "authentik_provider_oauth2" "portainer" {
   allowed_redirect_uris = [
     {
       matching_mode = "strict"
-      url           = "https://portainer.asherlc.com/"
+      url           = "https://portainer.dofek.asherlc.com/"
     }
   ]
   property_mappings = [
@@ -209,7 +209,7 @@ resource "authentik_application" "portainer" {
   name              = "Portainer"
   slug              = "portainer"
   protocol_provider = authentik_provider_oauth2.portainer.id
-  meta_launch_url   = "https://portainer.asherlc.com"
+  meta_launch_url   = "https://portainer.dofek.asherlc.com"
   open_in_new_tab   = true
   group             = "Home"
 }
