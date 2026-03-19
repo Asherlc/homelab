@@ -123,6 +123,14 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+    tdarr-external:
+      rule: Host(`tdarr.asherlc.com`)
+      entryPoints:
+        - web
+      service: tdarr
+      middlewares:
+        - add-forward-headers
+        - authentik
     frigate-external:
       rule: Host(`frigate.asherlc.com`)
       entryPoints:
@@ -217,6 +225,11 @@ http:
         - web
       service: nas
 
+    tdarr-local:
+      rule: Host(`tdarr.home`)
+      entryPoints:
+        - web
+      service: tdarr
     frigate-local:
       rule: Host(`frigate.home`)
       entryPoints:
@@ -346,6 +359,10 @@ http:
         servers:
           - url: http://openwearables-backend:8000
 
+    tdarr:
+      loadBalancer:
+        servers:
+          - url: http://tdarr:8265
     grafana:
       loadBalancer:
         servers:

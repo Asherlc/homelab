@@ -217,6 +217,34 @@ services:
     volumes:
       - /mnt/storage/downloads:/downloads
 
+  tdarr:
+    container_name: tdarr
+    image: ghcr.io/haveagitgat/tdarr:latest
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+      - UMASK_SET=002
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=true
+      - inContainer=true
+      - ffmpegVersion=7
+      - nodeName=HomeServer
+    ports:
+      - "8265:8265"
+      - "8266:8266"
+    volumes:
+      - /srv/appdata/tdarr/server:/app/server
+      - /srv/appdata/tdarr/configs:/app/configs
+      - /srv/appdata/tdarr/logs:/app/logs
+      - /mnt/storage/media:/media
+      - /mnt/storage/tmp/tdarr:/temp
+    devices:
+      - /dev/dri:/dev/dri
+
   homarr:
     container_name: homarr
     image: ghcr.io/ajnart/homarr:latest
