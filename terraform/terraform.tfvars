@@ -161,6 +161,14 @@ services = {
   }
 
 
+  tdarr = {
+    description    = "Media transcoding"
+    type           = "media"
+    tunnel_enabled = true
+    require_auth   = true
+    backend_url    = "http://tdarr:8265"
+  }
+
   grafana = {
     description    = "Health data dashboards"
     type           = "home"

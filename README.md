@@ -87,10 +87,20 @@ cd /opt/homelab-config
 ```
 ├── docker/              # Docker Compose files
 ├── configarr/           # Configarr IaC configs (secrets encrypted)
+├── configs/tdarr/       # Tdarr desired state (plugin stack/worker limits)
 ├── scripts/             # Automation scripts
 ├── docs/                # Documentation
 └── configs/             # Service configurations
 ```
+
+## Tdarr IaC
+
+Tdarr plugin stack and worker limits are managed as code:
+
+- Desired state file: `configs/tdarr/qsv-state.json`
+- Apply script: `scripts/tdarr-apply-config.sh`
+
+The auto-deploy timer runs this script after each pull, so manual UI changes are automatically corrected on the next deploy.
 
 ## 🔑 Encryption Key
 
