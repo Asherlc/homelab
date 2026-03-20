@@ -72,3 +72,4 @@ sudo docker restart traefik
 - **Always verify deployments yourself** (e.g. `curl -s -o /dev/null -w "%{http_code}" https://<service>.asherlc.com`) before telling the user it's working
 - **Never edit files directly on the server or use scp** — always edit locally, commit, push to GitHub, then `git pull` on the server. The auto-sync script on the server will overwrite direct server edits.
 - **Never bypass the deployment workflow** — the correct flow is: local edit → commit → push → ssh pull → docker compose up
+- **Never make ad-hoc changes on the server** — all configuration must be codified as IaC. Use Terraform for DNS/Cloudflare, config files + apply scripts for app-level config (e.g. `configs/tdarr/` + `scripts/tdarr-apply-config.sh`), and `docker/compose.yml` for container definitions. If a change can't be expressed in the repo, create the IaC for it first.

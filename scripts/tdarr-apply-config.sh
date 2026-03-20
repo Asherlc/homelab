@@ -134,6 +134,37 @@ main() {
             done
         done
         log "Applied worker limit targets for node '$node_name' ($node_id)."
+
+        # Apply schedule if defined in config
+        local desired_schedule
+        desired_schedule="$(jq -c '.node.schedule // empty' "$CONFIG_FILE")"
+        if [[ -n "$desired_schedule" ]]; then
+            # Build the 24-hour schedule array from the per-hour template
+            local schedule_array
+            schedule_array="$(jq -c --argjson sched "$desired_schedule" '
+                [ "00-01","01-02","02-03","03-04","04-05","05-06",
+                  "06-07","07-08","08-09","09-10","10-11","11-12",
+                  "12-13","13-14","14-15","15-16","16-17","17-18",
+                  "18-19","19-20","20-21","21-22","22-23","23-00" ]
+                | [ .[] as $slot | { _id: $slot } + $sched ]
+            ' <<< 'null')"
+
+            # Fetch current schedule from NodeJSONDB
+            local node_db_json current_schedule_norm desired_schedule_norm
+            node_db_json="$(api_post "cruddb" '{"data":{"collection":"NodeJSONDB","mode":"getAll"}}')"
+            current_schedule_norm="$(jq -cS '.[0].schedule' <<< "$node_db_json")"
+            desired_schedule_norm="$(printf '%s' "$schedule_array" | jq -cS '.')"
+
+            if [[ "$current_schedule_norm" != "$desired_schedule_norm" ]]; then
+                local sched_payload
+                sched_payload="$(jq -cn --arg id "$node_name" --argjson schedule "$schedule_array" \
+                    '{data:{collection:"NodeJSONDB",mode:"update",docID:$id,obj:{schedule:$schedule}}}')"
+                api_post "cruddb" "$sched_payload" >/dev/null
+                log "Updated schedule for node '$node_name'."
+            else
+                log "Schedule for node '$node_name' already matches desired state."
+            fi
+        fi
     else
         log "Node '$node_name' not found; skipped worker limit enforcement."
     fi
