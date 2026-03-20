@@ -37,6 +37,15 @@ log "Pulled latest changes"
 sudo docker compose -f "$REPO_DIR/$COMPOSE_FILE" up -d
 log "Docker compose up complete"
 
+# Enforce Tdarr configuration as code (idempotent, safe to run every deploy)
+if [ -x "$REPO_DIR/scripts/tdarr-apply-config.sh" ]; then
+    if "$REPO_DIR/scripts/tdarr-apply-config.sh"; then
+        log "Tdarr IaC config applied"
+    else
+        log "WARNING: Tdarr IaC config apply failed"
+    fi
+fi
+
 # Restart traefik if its config changed
 if echo "$CHANGED_FILES" | grep -q "configs/traefik/"; then
     sudo docker restart traefik

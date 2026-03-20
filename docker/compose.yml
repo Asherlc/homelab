@@ -219,7 +219,7 @@ services:
 
   tdarr:
     container_name: tdarr
-    image: ghcr.io/haveagitgat/tdarr:latest
+    image: ghcr.io/haveagitgat/tdarr:2.63.01
     restart: unless-stopped
     environment:
       - PUID=1000

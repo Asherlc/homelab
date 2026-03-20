@@ -1,0 +1,41 @@
+{
+  "plugin_stack": [
+    {
+      "_id": "plugin1",
+      "id": "Tdarr_Plugin_bsh1_Boosh_FFMPEG_QSV_HEVC",
+      "checked": true,
+      "source": "Community",
+      "priority": 0,
+      "InputsDB": {
+        "container": "mkv",
+        "encoder": "hevc_qsv",
+        "force_conform": "false",
+        "enable_10bit": "false",
+        "target_bitrate_modifier": "0.5",
+        "encoder_speedpreset": "fast",
+        "extra_qsv_options": "",
+        "bitrate_cutoff": "0",
+        "reconvert_hevc": "false"
+      }
+    }
+  ],
+  "libraries": [
+    {
+      "name": "Movies",
+      "folder": "/media/Movies"
+    },
+    {
+      "name": "TV Shows",
+      "folder": "/media/TV Shows"
+    }
+  ],
+  "node": {
+    "name": "HomeServer",
+    "worker_limits": {
+      "healthcheckcpu": 1,
+      "healthcheckgpu": 0,
+      "transcodecpu": 1,
+      "transcodegpu": 1
+    }
+  }
+}
