@@ -161,6 +161,17 @@ main() {
                     '{data:{collection:"NodeJSONDB",mode:"update",docID:$id,obj:{schedule:$schedule}}}')"
                 api_post "cruddb" "$sched_payload" >/dev/null
                 log "Updated schedule for node '$node_name'."
+
+                # Tdarr doesn't reload the schedule from NodeJSONDB at runtime,
+                # so a container restart is required for schedule changes to take effect.
+                local container="${TDARR_CONTAINER:-tdarr}"
+                log "Restarting container '$container' to apply schedule change..."
+                sudo docker restart "$container" >/dev/null
+                if ! wait_for_tdarr; then
+                    log "Tdarr failed to come back up after restart."
+                    exit 1
+                fi
+                log "Container restarted and Tdarr is ready."
             else
                 log "Schedule for node '$node_name' already matches desired state."
             fi
