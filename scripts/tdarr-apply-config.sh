@@ -57,11 +57,29 @@ main() {
         exit 0
     fi
 
-    local desired_stack
-    desired_stack="$(jq -c ".plugin_stack" "$CONFIG_FILE")"
-    local desired_stack_norm
-    desired_stack_norm="$(printf "%s" "$desired_stack" | normalize_json)"
+    # --- Apply flow ---
+    local desired_flow desired_flow_id
+    desired_flow="$(jq -c '.flow' "$CONFIG_FILE")"
+    desired_flow_id="$(jq -r '.flow._id' "$CONFIG_FILE")"
 
+    # Fetch current flow from DB (if any)
+    local current_flow_json current_flow_norm desired_flow_norm
+    current_flow_json="$(api_post "cruddb" "$(jq -cn --arg id "$desired_flow_id" \
+        '{data:{collection:"FlowsJSONDB",mode:"getById",docID:$id}}')" 2>/dev/null || echo "{}")"
+    current_flow_norm="$(printf '%s' "$current_flow_json" | jq -cS 'del(._rev)' 2>/dev/null || echo "{}")"
+    desired_flow_norm="$(printf '%s' "$desired_flow" | normalize_json)"
+
+    if [[ "$current_flow_norm" != "$desired_flow_norm" ]]; then
+        local flow_payload
+        flow_payload="$(jq -cn --arg id "$desired_flow_id" --argjson flow "$desired_flow" \
+            '{data:{collection:"FlowsJSONDB",mode:"update",docID:$id,obj:$flow}}')"
+        api_post "cruddb" "$flow_payload" >/dev/null
+        log "Updated flow '$desired_flow_id'."
+    else
+        log "Flow '$desired_flow_id' already matches desired state."
+    fi
+
+    # --- Apply flow to libraries ---
     local libraries_json
     libraries_json="$(api_post "cruddb" '{"data":{"collection":"LibrarySettingsJSONDB","mode":"getAll"}}')"
 
@@ -83,22 +101,23 @@ main() {
             continue
         fi
 
-        local lib_id current_stack_norm
+        local lib_id current_flow_id
         lib_id="$(jq -r "._id" <<<"$lib_json")"
-        current_stack_norm="$(jq -c ".pluginIDs" <<<"$lib_json" | normalize_json)"
+        current_flow_id="$(jq -r '.flowID // ""' <<<"$lib_json")"
 
-        if [[ "$current_stack_norm" != "$desired_stack_norm" ]]; then
+        if [[ "$current_flow_id" != "$desired_flow_id" ]]; then
             local payload
-            payload="$(jq -cn --arg id "$lib_id" --argjson plugins "$desired_stack" \
-                '{data:{collection:"LibrarySettingsJSONDB",mode:"update",docID:$id,obj:{pluginIDs:$plugins}}}')"
+            payload="$(jq -cn --arg id "$lib_id" --arg flowID "$desired_flow_id" \
+                '{data:{collection:"LibrarySettingsJSONDB",mode:"update",docID:$id,obj:{pluginIDs:[],flowID:$flowID}}}')"
             api_post "cruddb" "$payload" >/dev/null
-            log "Updated plugin stack for library '$lib_name' ($lib_id)."
+            log "Updated library '$lib_name' ($lib_id) to use flow '$desired_flow_id'."
             updates=$((updates + 1))
         else
-            log "Library '$lib_name' ($lib_id) already matches desired plugin stack."
+            log "Library '$lib_name' ($lib_id) already uses flow '$desired_flow_id'."
         fi
     done < <(jq -c ".libraries[]" "$CONFIG_FILE")
 
+    # --- Apply node worker limits and schedule ---
     local nodes_json
     nodes_json="$(curl -fsS --connect-timeout 5 --max-time 60 "$API_BASE/get-nodes")"
 
