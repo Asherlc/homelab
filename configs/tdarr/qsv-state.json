@@ -1,24 +1,109 @@
 {
-  "plugin_stack": [
-    {
-      "_id": "plugin1",
-      "id": "Tdarr_Plugin_bsh1_Boosh_FFMPEG_QSV_HEVC",
-      "checked": true,
-      "source": "Community",
-      "priority": 0,
-      "InputsDB": {
-        "container": "mkv",
-        "encoder": "hevc_qsv",
-        "force_conform": "false",
-        "enable_10bit": "false",
-        "target_bitrate_modifier": "0.5",
-        "encoder_speedpreset": "fast",
-        "extra_qsv_options": "",
-        "bitrate_cutoff": "0",
-        "reconvert_hevc": "false"
+  "flow": {
+    "_id": "qsv-hevc-transcode",
+    "name": "QSV HEVC Transcode",
+    "description": "Transcode video to HEVC using Intel QSV, 50% bitrate, MKV container",
+    "flowPlugins": [
+      {
+        "name": "Input File",
+        "sourceRepo": "Community",
+        "pluginName": "inputFile",
+        "version": "1.0.0",
+        "id": "qsvInFile",
+        "position": { "x": 500, "y": 100 }
+      },
+      {
+        "name": "Check Video Codec",
+        "sourceRepo": "Community",
+        "pluginName": "checkVideoCodec",
+        "version": "1.0.0",
+        "id": "qsvChkCod",
+        "position": { "x": 500, "y": 250 },
+        "inputsDB": {
+          "codec": "hevc"
+        }
+      },
+      {
+        "name": "FFmpeg Command Start",
+        "sourceRepo": "Community",
+        "pluginName": "ffmpegCommandStart",
+        "version": "1.0.0",
+        "id": "qsvFfStrt",
+        "position": { "x": 300, "y": 400 }
+      },
+      {
+        "name": "Set Video Encoder (QSV HEVC)",
+        "sourceRepo": "Community",
+        "pluginName": "ffmpegCommandSetVideoEncoder",
+        "version": "1.0.0",
+        "id": "qsvSetEnc",
+        "position": { "x": 300, "y": 550 },
+        "inputsDB": {
+          "outputCodec": "hevc",
+          "ffmpegPresetEnabled": true,
+          "ffmpegPreset": "fast",
+          "ffmpegQualityEnabled": true,
+          "ffmpegQuality": 25,
+          "hardwareEncoding": true,
+          "hardwareType": "qsv",
+          "hardwareDecoding": true,
+          "forceEncoding": false
+        }
+      },
+      {
+        "name": "Set Video Bitrate (50%)",
+        "sourceRepo": "Community",
+        "pluginName": "ffmpegCommandSetVideoBitrate",
+        "version": "1.0.0",
+        "id": "qsvSetBit",
+        "position": { "x": 300, "y": 700 },
+        "inputsDB": {
+          "useInputBitrate": true,
+          "targetBitratePercent": "50",
+          "fallbackBitrate": "4000",
+          "bitrateType": "abr"
+        }
+      },
+      {
+        "name": "Set Container (MKV)",
+        "sourceRepo": "Community",
+        "pluginName": "ffmpegCommandSetContainer",
+        "version": "1.0.0",
+        "id": "qsvSetCon",
+        "position": { "x": 300, "y": 850 },
+        "inputsDB": {
+          "container": "mkv",
+          "forceConform": true
+        }
+      },
+      {
+        "name": "FFmpeg Execute",
+        "sourceRepo": "Community",
+        "pluginName": "ffmpegCommandExecute",
+        "version": "1.0.0",
+        "id": "qsvFfExec",
+        "position": { "x": 300, "y": 1000 }
+      },
+      {
+        "name": "Replace Original File",
+        "sourceRepo": "Community",
+        "pluginName": "replaceOriginalFile",
+        "version": "1.0.0",
+        "id": "qsvReplce",
+        "position": { "x": 500, "y": 1150 }
       }
-    }
-  ],
+    ],
+    "flowEdges": [
+      { "source": "qsvInFile", "sourceHandle": "1", "target": "qsvChkCod", "targetHandle": null, "id": "e1" },
+      { "source": "qsvChkCod", "sourceHandle": "1", "target": "qsvReplce", "targetHandle": null, "id": "e2" },
+      { "source": "qsvChkCod", "sourceHandle": "2", "target": "qsvFfStrt", "targetHandle": null, "id": "e3" },
+      { "source": "qsvFfStrt", "sourceHandle": "1", "target": "qsvSetEnc", "targetHandle": null, "id": "e4" },
+      { "source": "qsvSetEnc", "sourceHandle": "1", "target": "qsvSetBit", "targetHandle": null, "id": "e5" },
+      { "source": "qsvSetBit", "sourceHandle": "1", "target": "qsvSetCon", "targetHandle": null, "id": "e6" },
+      { "source": "qsvSetCon", "sourceHandle": "1", "target": "qsvFfExec", "targetHandle": null, "id": "e7" },
+      { "source": "qsvFfExec", "sourceHandle": "1", "target": "qsvReplce", "targetHandle": null, "id": "e8" }
+    ]
+  },
   "libraries": [
     {
       "name": "Movies",
