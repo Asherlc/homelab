@@ -70,11 +70,16 @@ main() {
     desired_flow_norm="$(printf '%s' "$desired_flow" | normalize_json)"
 
     if [[ "$current_flow_norm" != "$desired_flow_norm" ]]; then
+        # Use "insert" if the flow doesn't exist yet, "update" otherwise
+        local flow_mode="update"
+        if [[ -z "$current_flow_json" || "$current_flow_json" == "{}" ]]; then
+            flow_mode="insert"
+        fi
         local flow_payload
-        flow_payload="$(jq -cn --arg id "$desired_flow_id" --argjson flow "$desired_flow" \
-            '{data:{collection:"FlowsJSONDB",mode:"update",docID:$id,obj:$flow}}')"
+        flow_payload="$(jq -cn --arg id "$desired_flow_id" --arg mode "$flow_mode" --argjson flow "$desired_flow" \
+            '{data:{collection:"FlowsJSONDB",mode:$mode,docID:$id,obj:$flow}}')"
         api_post "cruddb" "$flow_payload" >/dev/null
-        log "Updated flow '$desired_flow_id'."
+        log "${flow_mode^} flow '$desired_flow_id'."
     else
         log "Flow '$desired_flow_id' already matches desired state."
     fi
@@ -101,16 +106,20 @@ main() {
             continue
         fi
 
-        local lib_id current_flow_id
+        local lib_id current_flow_id current_settings_flows
         lib_id="$(jq -r "._id" <<<"$lib_json")"
-        current_flow_id="$(jq -r '.flowID // ""' <<<"$lib_json")"
+        current_flow_id="$(jq -r '.flowId // .flowID // ""' <<<"$lib_json")"
+        current_settings_flows="$(jq -r '.decisionMaker.settingsFlows // false' <<<"$lib_json")"
 
-        if [[ "$current_flow_id" != "$desired_flow_id" ]]; then
-            local payload
-            payload="$(jq -cn --arg id "$lib_id" --arg flowID "$desired_flow_id" \
-                '{data:{collection:"LibrarySettingsJSONDB",mode:"update",docID:$id,obj:{pluginIDs:[],flowID:$flowID}}}')"
+        if [[ "$current_flow_id" != "$desired_flow_id" || "$current_settings_flows" != "true" ]]; then
+            # Merge decisionMaker: read the existing one and toggle flow/plugin flags
+            local current_dm merged_dm payload
+            current_dm="$(jq -c '.decisionMaker // {}' <<<"$lib_json")"
+            merged_dm="$(printf '%s' "$current_dm" | jq -c '. + {settingsFlows: true, settingsPlugin: false}')"
+            payload="$(jq -cn --arg id "$lib_id" --arg flowId "$desired_flow_id" --argjson dm "$merged_dm" \
+                '{data:{collection:"LibrarySettingsJSONDB",mode:"update",docID:$id,obj:{pluginIDs:[],flowId:$flowId,decisionMaker:$dm}}}')"
             api_post "cruddb" "$payload" >/dev/null
-            log "Updated library '$lib_name' ($lib_id) to use flow '$desired_flow_id'."
+            log "Updated library '$lib_name' ($lib_id) to use flow '$desired_flow_id' with flow mode enabled."
             updates=$((updates + 1))
         else
             log "Library '$lib_name' ($lib_id) already uses flow '$desired_flow_id'."
