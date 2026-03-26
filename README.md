@@ -105,14 +105,12 @@ The auto-deploy timer runs the apply script after each pull, so manual UI change
 
 ### Running the Laptop Node
 
-The laptop needs the NAS media share mounted. Then:
-
 ```bash
 cd /path/to/homelab
 docker compose -f docker/tdarr-node-compose.yml up -d
 ```
 
-The node connects to the Tdarr Server at `192.168.1.197:8266` (LAN) or `100.96.33.27:8266` (Tailscale). Transcoding only happens when the laptop is running and connected. The server handles disconnections gracefully.
+Files are transferred over the network between server and node (no NAS mount needed on the laptop). The node connects to `192.168.1.197:8266` (LAN) or `100.96.33.27:8266` (Tailscale). Transcoding only happens when the laptop is running and connected. The server handles disconnections gracefully.
 
 ## 🔑 Encryption Key
 
