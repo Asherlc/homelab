@@ -2,7 +2,7 @@
   "flow": {
     "_id": "hevc-transcode",
     "name": "HEVC Transcode",
-    "description": "Transcode video to HEVC using libx265 software encoding, 50% bitrate, MKV container",
+    "description": "Transcode video to HEVC using VideoToolbox hardware encoding, CRF-only quality, MKV container",
     "flowPlugins": [
       {
         "name": "Input File",
@@ -50,26 +50,12 @@
         }
       },
       {
-        "name": "Set Video Bitrate (50%)",
-        "sourceRepo": "Community",
-        "pluginName": "ffmpegCommandSetVideoBitrate",
-        "version": "1.0.0",
-        "id": "hvcSetBit",
-        "position": { "x": 300, "y": 700 },
-        "inputsDB": {
-          "useInputBitrate": true,
-          "targetBitratePercent": "50",
-          "fallbackBitrate": "4000",
-          "bitrateType": "abr"
-        }
-      },
-      {
         "name": "Set Container (MKV)",
         "sourceRepo": "Community",
         "pluginName": "ffmpegCommandSetContainer",
         "version": "1.0.0",
         "id": "hvcSetCon",
-        "position": { "x": 300, "y": 850 },
+        "position": { "x": 300, "y": 700 },
         "inputsDB": {
           "container": "mkv",
           "forceConform": true
@@ -81,7 +67,7 @@
         "pluginName": "ffmpegCommandExecute",
         "version": "1.0.0",
         "id": "hvcFfExec",
-        "position": { "x": 300, "y": 1000 }
+        "position": { "x": 300, "y": 850 }
       },
       {
         "name": "Replace Original File",
@@ -89,7 +75,7 @@
         "pluginName": "replaceOriginalFile",
         "version": "1.0.0",
         "id": "hvcReplce",
-        "position": { "x": 500, "y": 1150 }
+        "position": { "x": 500, "y": 1000 }
       }
     ],
     "flowEdges": [
@@ -97,10 +83,9 @@
       { "source": "hvcChkCod", "sourceHandle": "1", "target": "hvcReplce", "targetHandle": null, "id": "e2" },
       { "source": "hvcChkCod", "sourceHandle": "2", "target": "hvcFfStrt", "targetHandle": null, "id": "e3" },
       { "source": "hvcFfStrt", "sourceHandle": "1", "target": "hvcSetEnc", "targetHandle": null, "id": "e4" },
-      { "source": "hvcSetEnc", "sourceHandle": "1", "target": "hvcSetBit", "targetHandle": null, "id": "e5" },
-      { "source": "hvcSetBit", "sourceHandle": "1", "target": "hvcSetCon", "targetHandle": null, "id": "e6" },
-      { "source": "hvcSetCon", "sourceHandle": "1", "target": "hvcFfExec", "targetHandle": null, "id": "e7" },
-      { "source": "hvcFfExec", "sourceHandle": "1", "target": "hvcReplce", "targetHandle": null, "id": "e8" }
+      { "source": "hvcSetEnc", "sourceHandle": "1", "target": "hvcSetCon", "targetHandle": null, "id": "e5" },
+      { "source": "hvcSetCon", "sourceHandle": "1", "target": "hvcFfExec", "targetHandle": null, "id": "e6" },
+      { "source": "hvcFfExec", "sourceHandle": "1", "target": "hvcReplce", "targetHandle": null, "id": "e7" }
     ]
   },
   "libraries": [
