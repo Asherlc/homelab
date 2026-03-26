@@ -32,7 +32,7 @@
         "position": { "x": 300, "y": 400 }
       },
       {
-        "name": "Set Video Encoder (libx265)",
+        "name": "Set Video Encoder (VideoToolbox HEVC)",
         "sourceRepo": "Community",
         "pluginName": "ffmpegCommandSetVideoEncoder",
         "version": "1.0.0",
@@ -40,11 +40,11 @@
         "position": { "x": 300, "y": 550 },
         "inputsDB": {
           "outputCodec": "hevc",
-          "ffmpegPresetEnabled": true,
-          "ffmpegPreset": "medium",
+          "ffmpegPresetEnabled": false,
           "ffmpegQualityEnabled": true,
-          "ffmpegQuality": 23,
-          "hardwareEncoding": false,
+          "ffmpegQuality": 60,
+          "hardwareEncoding": true,
+          "hardwareType": "videotoolbox",
           "hardwareDecoding": false,
           "forceEncoding": false
         }
@@ -118,14 +118,14 @@
     "worker_limits": {
       "healthcheckcpu": 1,
       "healthcheckgpu": 0,
-      "transcodecpu": 1,
-      "transcodegpu": 0
+      "transcodecpu": 0,
+      "transcodegpu": 1
     },
     "schedule": {
       "healthcheckcpu": 1,
       "healthcheckgpu": 0,
-      "transcodecpu": 1,
-      "transcodegpu": 0
+      "transcodecpu": 0,
+      "transcodegpu": 1
     }
   }
 }
