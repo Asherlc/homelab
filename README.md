@@ -112,6 +112,10 @@ The auto-deploy timer runs this script after each pull, so manual UI changes are
 
 **Managed with git-crypt** - See `docs/GIT_CRYPT_GUIDE.md` for details.
 
+## ❌ Retired Services
+
+- **Tdarr**: Removed 2026-03-25. Media transcoding (h264 → h265) was too resource-intensive for the server — a single transcode job would saturate the CPU and exhaust swap, causing other services (notably Plex) to fail. Not worth running on a 4-core / 8GB box alongside ~20 other containers.
+
 ## ⚠️ Services Not Version Controlled
 
 Some services use formats incompatible with SOPS or are better managed through other means:
