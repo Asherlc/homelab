@@ -4,7 +4,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-CONFIG_FILE="${TDARR_IAC_CONFIG:-$REPO_DIR/configs/tdarr/qsv-state.json}"
+CONFIG_FILE="${TDARR_IAC_CONFIG:-$REPO_DIR/configs/tdarr/state.json}"
 API_BASE="${TDARR_API_BASE:-http://127.0.0.1:8265/api/v2}"
 
 log() {

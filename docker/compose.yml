@@ -229,10 +229,9 @@ services:
       - serverIP=0.0.0.0
       - serverPort=8266
       - webUIPort=8265
-      - internalNode=true
+      - internalNode=false
       - inContainer=true
       - ffmpegVersion=7
-      - nodeName=HomeServer
     ports:
       - "8265:8265"
       - "8266:8266"
@@ -241,9 +240,9 @@ services:
       - /srv/appdata/tdarr/configs:/app/configs
       - /srv/appdata/tdarr/logs:/app/logs
       - /mnt/storage/media:/media
-      - /mnt/storage/tmp/tdarr:/temp
-    devices:
-      - /dev/dri:/dev/dri
+      - /mnt/storage/transcode:/temp
+    mem_limit: 512m
+    cpus: 1.0
 
   homarr:
     container_name: homarr

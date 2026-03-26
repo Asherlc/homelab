@@ -93,14 +93,26 @@ cd /opt/homelab-config
 └── configs/             # Service configurations
 ```
 
-## Tdarr IaC
+## Tdarr (Remote Node Architecture)
 
-Tdarr plugin stack and worker limits are managed as code:
+Tdarr Server runs on the homelab (orchestration only, no internal node) while the actual transcoding runs on a remote Tdarr Node on the laptop. This avoids saturating the server's 4 cores / 8GB RAM.
 
-- Desired state file: `configs/tdarr/qsv-state.json`
+- Desired state file: `configs/tdarr/state.json`
 - Apply script: `scripts/tdarr-apply-config.sh`
+- Laptop node compose: `docker/tdarr-node-compose.yml`
 
-The auto-deploy timer runs this script after each pull, so manual UI changes are automatically corrected on the next deploy.
+The auto-deploy timer runs the apply script after each pull, so manual UI changes are automatically corrected on the next deploy.
+
+### Running the Laptop Node
+
+The laptop needs the NAS media share mounted. Then:
+
+```bash
+cd /path/to/homelab
+docker compose -f docker/tdarr-node-compose.yml up -d
+```
+
+The node connects to the Tdarr Server at `192.168.1.197:8266` (LAN) or `100.96.33.27:8266` (Tailscale). Transcoding only happens when the laptop is running and connected. The server handles disconnections gracefully.
 
 ## 🔑 Encryption Key
 
@@ -111,10 +123,6 @@ The auto-deploy timer runs this script after each pull, so manual UI changes are
 ---
 
 **Managed with git-crypt** - See `docs/GIT_CRYPT_GUIDE.md` for details.
-
-## ❌ Retired Services
-
-- **Tdarr**: Removed 2026-03-25. Media transcoding (h264 → h265) was too resource-intensive for the server — a single transcode job would saturate the CPU and exhaust swap, causing other services (notably Plex) to fail. Not worth running on a 4-core / 8GB box alongside ~20 other containers.
 
 ## ⚠️ Services Not Version Controlled
 
