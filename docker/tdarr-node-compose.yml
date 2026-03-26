@@ -1,5 +1,6 @@
 # Tdarr Node — run on laptop to transcode media for the homelab Tdarr Server.
-# Files are transferred over the network (no NAS mount needed).
+# Requires the NAS media share mounted at ~/mnt/homelab-media:
+#   mount_smbfs '//asherlc:<password>@192.168.1.161/data' ~/mnt/homelab-media
 #
 # Usage:
 #   docker compose -f docker/tdarr-node-compose.yml up -d
@@ -20,6 +21,7 @@ services:
       - ffmpegVersion=7
     volumes:
       - tdarr-node-config:/app/configs
+      - ~/mnt/homelab-media/media:/media
       - /tmp/tdarr-transcode:/temp
 
 volumes:
