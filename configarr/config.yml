@@ -53,6 +53,13 @@ radarr:
       - template: radarr-quality-profile-hd-bluray-web
       - template: radarr-custom-formats-hd-bluray-web
 
+    # Override TRaSH template cutoff: stop at WEB 1080p instead of Bluray-1080p
+    # to avoid downloading huge Bluray files when a WEBDL is good enough
+    quality_profiles:
+      - name: HD Bluray + WEB
+        upgrade:
+          until_quality: WEB 1080p
+
     # Automatic cleanup of unmanaged custom formats
     delete_unmanaged_custom_formats:
       enabled: false  # Start with false to review what would be deleted
