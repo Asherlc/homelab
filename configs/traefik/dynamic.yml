@@ -35,6 +35,15 @@ http:
       middlewares:
         - add-forward-headers
 
+    homebridge-external:
+      rule: Host(`homebridge.asherlc.com`)
+      entryPoints:
+        - web
+      service: homebridge
+      middlewares:
+        - add-forward-headers
+        - authentik
+
     radarr-external:
       rule: Host(`radarr.asherlc.com`)
       entryPoints:
@@ -43,6 +52,7 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+
     sonarr-external:
       rule: Host(`sonarr.asherlc.com`)
       entryPoints:
@@ -155,11 +165,19 @@ http:
       entryPoints:
         - web
       service: sonarr
+
+    homebridge-local:
+      rule: Host(`homebridge.home`)
+      entryPoints:
+        - web
+      service: homebridge
+
     radarr-local:
       rule: Host(`radarr.home`)
       entryPoints:
         - web
       service: radarr
+
     bazarr-local:
       rule: Host(`bazarr.home`)
       entryPoints:
@@ -284,6 +302,10 @@ http:
         servers:
           - url: http://authentik-server:9000
         passHostHeader: true
+    homebridge:
+      loadBalancer:
+        servers:
+          - url: http://homebridge:8581
     radarr:
       loadBalancer:
         servers:

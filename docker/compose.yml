@@ -304,6 +304,18 @@ services:
     depends_on:
       - mosquitto
 
+  homebridge:
+    image: homebridge/homebridge:latest
+    restart: always
+    network_mode: host
+    volumes:
+      - /opt/homelab-config/configs/homebridge:/homebridge
+    logging:
+      driver: json-file
+      options:
+        max-size: "10mb"
+        max-file: "1"
+
   dashdot:
     container_name: dashdot
     image: mauricenino/dashdot:latest

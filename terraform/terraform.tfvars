@@ -170,10 +170,18 @@ services = {
   }
 
   grafana = {
-    description    = "Health data dashboards"
+    description    = "health data dashboards"
     type           = "home"
     tunnel_enabled = true
-    require_auth   = false
+    require_auth   = true
     backend_url    = "http://grafana:3000"
+  }
+  
+  homebridge = {
+    description    = "homekit integration"
+    type           = "home"
+    tunnel_enabled = true
+    require_auth   = rue
+    backend_url    = "http://homebridge:8581"
   }
 }

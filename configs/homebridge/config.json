@@ -1,0 +1,112 @@
+{
+    "bridge": {
+        "name": "Homebridge AFA9",
+        "username": "0E:FF:DA:A8:AF:A9",
+        "port": 51642,
+        "pin": "686-78-188",
+        "advertiser": "bonjour-hap"
+    },
+    "accessories": [
+        {
+            "type": "switch",
+            "name": "Basement Light Switch",
+            "url": "mqtt://zigbee2mqtt.home:1883",
+            "topics": {
+                "getOnline": "zwave/LivingRoom/Basement_LightSwitch/switch_binary",
+                "getOn": "zwave/Basement/Basement_LightSwitch/switch_binary/endpoint_0/currentValue",
+                "setOn": "zwave/Basement/Basement_LightSwitch/switch_binary/endpoint_0/targetValue/set"
+            },
+            "otherValueOff": false,
+            "manufacturer": "Zooz",
+            "model": "ZEN71 800LR",
+            "accessory": "mqttthing"
+        }
+    ],
+    "platforms": [
+        {
+            "name": "Config",
+            "port": 8581,
+            "platform": "config"
+        },
+        {
+            "mqtt": {
+                "base_topic": "zigbee2mqtt",
+                "server": "mqtt://mqtt.asherlc.com",
+                "client_id": "homebridge-3",
+                "reject_unauthorized": false,
+                "keepalive": 60,
+                "version": 4,
+                "disable_qos": false
+            },
+            "log": {
+                "mqtt_publish": "debug"
+            },
+            "defaults": {
+                "exclude": false,
+                "converters": {
+                    "light": {
+                        "adaptive_lighting": true
+                    }
+                }
+            },
+            "exclude_grouped_devices": false,
+            "devices": [
+                {
+                    "id": "Doorbell",
+                    "exclude": true
+                },
+                {
+                    "id": "Basement Repeater",
+                    "exclude": true
+                },
+                {
+                    "id": "IR EmitterDescription",
+                    "exclude": true
+                }
+            ],
+            "_bridge": {
+                "username": "0E:62:AA:A3:5A:D6",
+                "port": 31840
+            },
+            "platform": "zigbee2mqtt"
+        },
+        {
+            "sensors": [
+                {
+                    "name": "Purple Air",
+                    "useLocalNetwork": true,
+                    "localIPAddress": "purple-air.home",
+                    "humidity": true,
+                    "temperature": true
+                }
+            ],
+            "conversion": "None",
+            "averages": "realtime",
+            "platform": "PurpleAirSensor"
+        },
+        {
+            "name": "Nest",
+            "googleAuth": {
+                "issueToken": "https://accounts.google.com/o/oauth2/iframerpc?action=issueToken&response_type=token%20id_token&login_hint=AJDLj6LQu-SMCQLMJfOUep6S7tCeVl-4hdtAuryM-SfSw4bAH-eXdy5zs_dzQJUYZxMwg4KmVFY7V0ukV8fpvPDgoIY-vQdF8Q&client_id=733249279899-44tchle2kaa9afr5v9ov7jbuojfr9lrq.apps.googleusercontent.com&origin=https%3A%2F%2Fhome.nest.com&scope=openid%20profile%20email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fnest-account&ss_domain=https%3A%2F%2Fhome.nest.com&include_granted_scopes=true&auto=0",
+                "cookies": "__Secure-3PSID=g.a000jQiCp4ssNeo24GLAJxBbRlTUC4jOkM1aEakOzsUIQm88e038G4T0rE4z95Ie38yJtKZFDQACgYKAUASAQASFQHGX2MiQ6OOLYD-UZSTMmBmEycPlhoVAUF8yKojgffEMBc9Wy8NsqvuejUs0076; __Secure-3PAPISID=nF2JZC9k69gQhIsA/AdfN6z2ZBXaw2b8jF; __Host-3PLSID=s.youtube:g.a000jQiCp8cDgp9e_JOhHx5klVslVAZ0oKz1zMcPR2N_LJZRF7a6bTaHjGmI-LmKCJB8FgJkmwACgYKAbISAQASFQHGX2MiVFinhyh7xfQ8lJesWieAQxoVAUF8yKqjTRvDmGxhXyMpy-fNLJhR0076; NID=514=n0Lha60tLGxLMjMtvXEAVYe0gtkb9QFDOvTHZtWGu0aP36yOQbQY3BHu_w6Pj2R405VjrK-Hg7eC_G38n6Dxjt1xLRD-ljyDWS8eMnw1kxvI8JqMbo3GuhnViEKkQsq0t3xRstOwFs8XA7He57v9xgLuETdRTcOXuppmwP7xPBUbsl-zNeH-3ONg5Ev5PlEV_pgi4Vt00lOo0KSYHxIZbYkNfClhEL5lO9wzjf29lwi9i1jL7cFBkK2e33maeago54ryWj52TcYCt2VsFQ77JNy_Zg; __Secure-3PSIDCC=AKEyXzVimc3YYcvqP6E0FVR9irkfNTglmNiY7U6GP35_qtamtrtB_qEi9nkYqvMunfnLm3lvGg"
+            },
+            "options": [
+                "HomeAway.Disable"
+            ],
+            "_bridge": {
+                "username": "0E:E8:7E:4C:E7:27",
+                "port": 53913
+            },
+            "platform": "Nest"
+        },
+        {
+            "name": "Flume",
+            "username": "asherlc@asherlc.com",
+            "password": "rgy3utz1MWU5cdn-myn",
+            "clientId": "91817D7KZ9USECC",
+            "clientSecret": "AYH6Z4BAPT39UPZUWN8Y",
+            "platform": "Flume"
+        }
+    ],
+    "disabledPlugins": []
+}
