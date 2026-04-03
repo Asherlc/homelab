@@ -181,7 +181,7 @@ services = {
     description    = "homekit integration"
     type           = "home"
     tunnel_enabled = true
-    require_auth   = rue
+    require_auth   = true
     backend_url    = "http://homebridge:8581"
   }
 }

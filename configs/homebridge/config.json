@@ -1,112 +1,124 @@
 {
-    "bridge": {
-        "name": "Homebridge AFA9",
-        "username": "0E:FF:DA:A8:AF:A9",
-        "port": 51642,
-        "pin": "686-78-188",
-        "advertiser": "bonjour-hap"
-    },
-    "accessories": [
-        {
-            "type": "switch",
-            "name": "Basement Light Switch",
-            "url": "mqtt://zigbee2mqtt.home:1883",
-            "topics": {
-                "getOnline": "zwave/LivingRoom/Basement_LightSwitch/switch_binary",
-                "getOn": "zwave/Basement/Basement_LightSwitch/switch_binary/endpoint_0/currentValue",
-                "setOn": "zwave/Basement/Basement_LightSwitch/switch_binary/endpoint_0/targetValue/set"
-            },
-            "otherValueOff": false,
-            "manufacturer": "Zooz",
-            "model": "ZEN71 800LR",
-            "accessory": "mqttthing"
-        }
-    ],
-    "platforms": [
-        {
-            "name": "Config",
-            "port": 8581,
-            "platform": "config"
-        },
-        {
-            "mqtt": {
-                "base_topic": "zigbee2mqtt",
-                "server": "mqtt://mqtt.asherlc.com",
-                "client_id": "homebridge-3",
-                "reject_unauthorized": false,
-                "keepalive": 60,
-                "version": 4,
-                "disable_qos": false
-            },
-            "log": {
-                "mqtt_publish": "debug"
-            },
-            "defaults": {
-                "exclude": false,
-                "converters": {
-                    "light": {
-                        "adaptive_lighting": true
-                    }
-                }
-            },
-            "exclude_grouped_devices": false,
-            "devices": [
-                {
-                    "id": "Doorbell",
-                    "exclude": true
-                },
-                {
-                    "id": "Basement Repeater",
-                    "exclude": true
-                },
-                {
-                    "id": "IR EmitterDescription",
-                    "exclude": true
-                }
-            ],
-            "_bridge": {
-                "username": "0E:62:AA:A3:5A:D6",
-                "port": 31840
-            },
-            "platform": "zigbee2mqtt"
-        },
-        {
-            "sensors": [
-                {
-                    "name": "Purple Air",
-                    "useLocalNetwork": true,
-                    "localIPAddress": "purple-air.home",
-                    "humidity": true,
-                    "temperature": true
-                }
-            ],
-            "conversion": "None",
-            "averages": "realtime",
-            "platform": "PurpleAirSensor"
-        },
-        {
-            "name": "Nest",
-            "googleAuth": {
-                "issueToken": "https://accounts.google.com/o/oauth2/iframerpc?action=issueToken&response_type=token%20id_token&login_hint=AJDLj6LQu-SMCQLMJfOUep6S7tCeVl-4hdtAuryM-SfSw4bAH-eXdy5zs_dzQJUYZxMwg4KmVFY7V0ukV8fpvPDgoIY-vQdF8Q&client_id=733249279899-44tchle2kaa9afr5v9ov7jbuojfr9lrq.apps.googleusercontent.com&origin=https%3A%2F%2Fhome.nest.com&scope=openid%20profile%20email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fnest-account&ss_domain=https%3A%2F%2Fhome.nest.com&include_granted_scopes=true&auto=0",
-                "cookies": "__Secure-3PSID=g.a000jQiCp4ssNeo24GLAJxBbRlTUC4jOkM1aEakOzsUIQm88e038G4T0rE4z95Ie38yJtKZFDQACgYKAUASAQASFQHGX2MiQ6OOLYD-UZSTMmBmEycPlhoVAUF8yKojgffEMBc9Wy8NsqvuejUs0076; __Secure-3PAPISID=nF2JZC9k69gQhIsA/AdfN6z2ZBXaw2b8jF; __Host-3PLSID=s.youtube:g.a000jQiCp8cDgp9e_JOhHx5klVslVAZ0oKz1zMcPR2N_LJZRF7a6bTaHjGmI-LmKCJB8FgJkmwACgYKAbISAQASFQHGX2MiVFinhyh7xfQ8lJesWieAQxoVAUF8yKqjTRvDmGxhXyMpy-fNLJhR0076; NID=514=n0Lha60tLGxLMjMtvXEAVYe0gtkb9QFDOvTHZtWGu0aP36yOQbQY3BHu_w6Pj2R405VjrK-Hg7eC_G38n6Dxjt1xLRD-ljyDWS8eMnw1kxvI8JqMbo3GuhnViEKkQsq0t3xRstOwFs8XA7He57v9xgLuETdRTcOXuppmwP7xPBUbsl-zNeH-3ONg5Ev5PlEV_pgi4Vt00lOo0KSYHxIZbYkNfClhEL5lO9wzjf29lwi9i1jL7cFBkK2e33maeago54ryWj52TcYCt2VsFQ77JNy_Zg; __Secure-3PSIDCC=AKEyXzVimc3YYcvqP6E0FVR9irkfNTglmNiY7U6GP35_qtamtrtB_qEi9nkYqvMunfnLm3lvGg"
-            },
-            "options": [
-                "HomeAway.Disable"
-            ],
-            "_bridge": {
-                "username": "0E:E8:7E:4C:E7:27",
-                "port": 53913
-            },
-            "platform": "Nest"
-        },
-        {
-            "name": "Flume",
-            "username": "asherlc@asherlc.com",
-            "password": "rgy3utz1MWU5cdn-myn",
-            "clientId": "91817D7KZ9USECC",
-            "clientSecret": "AYH6Z4BAPT39UPZUWN8Y",
-            "platform": "Flume"
-        }
-    ],
-    "disabledPlugins": []
+	"bridge": {
+		"name": "Homebridge AFA9",
+		"username": "ENC[AES256_GCM,data:0FAEwTYfVLa5lSMyryk6Ux8=,iv:oINYsKVPccR7+57se7GizOMtRgze+Kx6YX8U0bv9Zto=,tag:5TbX2fGYTQh+uBFss/fmVQ==,type:str]",
+		"port": 51642,
+		"pin": "686-78-188",
+		"advertiser": "bonjour-hap"
+	},
+	"accessories": [
+		{
+			"type": "switch",
+			"name": "Basement Light Switch",
+			"url": "mqtt://localhost:1883",
+			"topics": {
+				"getOnline": "zwave/LivingRoom/Basement_LightSwitch/switch_binary",
+				"getOn": "zwave/Basement/Basement_LightSwitch/switch_binary/endpoint_0/currentValue",
+				"setOn": "zwave/Basement/Basement_LightSwitch/switch_binary/endpoint_0/targetValue/set"
+			},
+			"otherValueOff": false,
+			"manufacturer": "Zooz",
+			"model": "ZEN71 800LR",
+			"accessory": "mqttthing"
+		}
+	],
+	"platforms": [
+		{
+			"name": "Config",
+			"port": 8581,
+			"platform": "config"
+		},
+		{
+			"mqtt": {
+				"base_topic": "zigbee2mqtt",
+				"server": "mqtt://mqtt.asherlc.com",
+				"client_id": "homebridge-3",
+				"reject_unauthorized": false,
+				"keepalive": 60,
+				"version": 4,
+				"disable_qos": false
+			},
+			"log": {
+				"mqtt_publish": "debug"
+			},
+			"defaults": {
+				"exclude": false,
+				"converters": {
+					"light": {
+						"adaptive_lighting": true
+					}
+				}
+			},
+			"exclude_grouped_devices": false,
+			"devices": [
+				{
+					"id": "Doorbell",
+					"exclude": true
+				},
+				{
+					"id": "Basement Repeater",
+					"exclude": true
+				},
+				{
+					"id": "IR EmitterDescription",
+					"exclude": true
+				}
+			],
+			"_bridge": {
+				"username": "ENC[AES256_GCM,data:Ew7bhCGmZude9Z7oyOFUpg0=,iv:XXfQwE7RS4ch1s7e/NNhi4XWSimXoc8CrqpYYkihnl0=,tag:eItHYrqiirzAXgowcu+bBA==,type:str]",
+				"port": 31840
+			},
+			"platform": "zigbee2mqtt"
+		},
+		{
+			"sensors": [
+				{
+					"name": "Purple Air",
+					"useLocalNetwork": true,
+					"localIPAddress": "purple-air.home",
+					"humidity": true,
+					"temperature": true
+				}
+			],
+			"conversion": "None",
+			"averages": "realtime",
+			"platform": "PurpleAirSensor"
+		},
+		{
+			"name": "Nest",
+			"googleAuth": {
+				"issueToken": "ENC[AES256_GCM,data:s41ieYwXxPHbaWga/Dt3O7tUVDHvOH9pcFQ7RMAZpzSSGQxM4fBfwsSR3o+8esMLEU11Cna7L5YeA1mEAB/lezIfuu+tkCzTZk+kySELsY9w0TmowYGSVzYKHEVKpy2p3VOP+ErA11z5iXorZjg+OBmOzDoJSSx/hgZxS4LNTYUbP7pUa0QL/tRAMJVKLZcC3gJTQ2oK5O9uR27LgYywi8Jr8Ph1z/0WLYxuDgea7LnjRnd5PFzTda1LxpqvqQla3Id0LV2MLekfgdBzE0ZL7ZF+5h6rcrvw8AgzzwJhSvUf9nxy2wd8wK3FuoZbYU77pV/QJq4d570HrJHb4RNZXD4x6e5ARPvceIXooUjWVU/Dt3Rw+14/WMvqcFTEIah8YlVD3BLImpIZ2urr8tNI8bYMpegMUz2qzVX6eL3VOEmitDKZr4uNzBg97vVy457oPIWtL9nhm75R4Deumm0oUjpuxBCbo5nm2tS2//KRxDlqBCdijVTvI6HtdazE1QlRqRbq1UzCOs476QcILFWQLCg/eyCJeFpEqrsjVskTfF7NTvaMA0XOvq0JSBkkDX9UqulSYQK6DgkhKulrIfud+sJGcTMnR90Run+2IIHPjisuIqHq04DnXjvVHARRTkf7KCfGng==,iv:ixPeTMnZmT9/iv+kc4LufYgNCPLmj4VAqhcVQ0rWabs=,tag:P3XEAUBvX54Jls5FkswcxQ==,type:str]",
+				"cookies": "ENC[AES256_GCM,data:31S3LJ7oHitQdJFiVXrzrii5G+x/EJuU46wE4YbJjcCNbDCoi4m4S39i9FOrXkYRMW4hn9OhKZRym/ZoG0CiCeTYSPkRXTGkGGqhkq3BSM7fBD0xpD/awBNz+txgTYvH7iINSMsfScXCJOXQrgvhCP/V+R7wBE1FPrMHNMa+Qi9lgH1Cus40eEhbQ3BQXSb3xY/brMieAaUDCeHqvoFJCxIdYW4Eg8fryOtlUAYsjjUg9Wck2GpDfBhT00GiIQLOZgbTWAW+C6r762uHNnGTIdzZKONM96+kSDT1++2HIDuslK76GU0q3Z9UYt9brQeXPFRNh3wo6NuJuD/B1kRbbhqC2eMRVEE1tkpXgHO7mNo+rnr8/YEcalIBfdGB4TVBU+A11sl0EjnccLONz22H3T06qyWhOBAdAaSdSDHxY1Ej/Sejz8YJi4beAFMMhWNEDXwRw/cMJkF+4bNpws6hXElsODt2ACB5+wn7Zo03lSK0ovw8DkDFwOOqcsBKk8i5HI8OJo4lJfamS+aark/ejE9uBjJRtzXhuC7Kpzp78hmFsKA29COWLBaXBab+SSHyuy6eMMWohaBehFOc/1Ta6KWdgs2ZjiNeyzzZLbHfeAb0WceU5/2vxCCHb2LLsfoPwsNlocaCeBCilHyxIQ1h9DiTKIN0Ae73lKZvB8T3LCSADyEzQ2qjHwmf3Ua31Wg58jUjH7nmlmzye7Wf4ArpKzFJBs8S8JND0wPS5hocjqiEatVQk4hKk7SMUHIaxmfPMOxpqaLd4aT0B3s7u+qVyOGoFHvQldrsvUiYPfHKG/KkJxB+t+G+W+yYxbVLaRN7lpH0mLRZCgfz1u/91FO6wjYM/uzeGUr1aeXD/1gzTo12KRV5qYFiFDYnvw8JeamldjkDgF4f8m9Y4SxLhmD6O2Qv3caZzZTGOSr8+7rU9KeAq4UebxdBISXbcGKIknp/AVv1+ClJ10Nwjs6enu3OQTqO4iY95Wux4GamzNfiPIZlbHs5oeXJbxQFu3GKM9cduxFCeVWpcVo8V2U8MyxecQQ3,iv:nR5q08fWZjqiYTkuPxL2gNizr9XVQRXgP40NM5V231g=,tag:sisfCsm9l/CfU9aTjsfjtQ==,type:str]"
+			},
+			"options": [
+				"HomeAway.Disable"
+			],
+			"_bridge": {
+				"username": "ENC[AES256_GCM,data:7g6py3GNip+JOjuY76bIUu0=,iv:au+fn9EpM8ZytOlW5xhb2iMpa9yW5FG5+/N3jo1M5J4=,tag:yrPZMueQB/gI6okCf19pcg==,type:str]",
+				"port": 53913
+			},
+			"platform": "Nest"
+		},
+		{
+			"name": "Flume",
+			"username": "ENC[AES256_GCM,data:9qIhbPOcLgINuG+ArZ8mWToC6w==,iv:MQiQk1GRDOrv/tS24HCOr2+Kd5/npoDRy/YScLztVRw=,tag:ko07NJSmlh3xrDce66YXIQ==,type:str]",
+			"password": "ENC[AES256_GCM,data:rDu3BsXvefH1M2pbgMIpGC1nLg==,iv:KoY+CUli9pt/cOpnclkJ+E6TITTuzUr8qDIpDNIx8Xk=,tag:ukSTosBkxmyajLemjPX9Vw==,type:str]",
+			"clientId": "ENC[AES256_GCM,data:/emzMvL0pW5Y0cOjYivO,iv:6Ru/GPuIHdK85sBaD2XacLXPXHPcVYaQt7c91+JwBe8=,tag:mc4+nb+XIPNWpbXX7NMaTQ==,type:str]",
+			"clientSecret": "ENC[AES256_GCM,data:rDSEimXFNmvweXO1+nQC3qkwFkU=,iv:AEl0mOgPyq4SZk1Ku3rPlx7ODDDMsG2FekrF5vviY1U=,tag:Kww6tlY0n+VGmZnQeNLyCg==,type:str]",
+			"platform": "Flume"
+		}
+	],
+	"disabledPlugins": [],
+	"sops": {
+		"age": [
+			{
+				"recipient": "age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd",
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBNSFpVMUMwMG1hRkgxOVMw\nek1iNVhuQVk1Q0hQUWNXdFA1YVd1dyt2aVg0CnRjQVpJSy9rbUo2YUVpK1hVUWJj\neCt1Z05tSVlyeDdaMUIveXdrRURrbHcKLS0tIElLTWZiblRWdVlOMk1KdUJQQ2NS\nUFV1U3BQcThiWGlZMVJ6ckU5ZVpRcjQKX2ZQAUodU4GMlbhuhmAYG9KSNFybMl4h\ny+IALj38QdRAWFxNwGV2GaGqu9Yq2AIoMosjHfdj3kfVwi7ld8KZKw==\n-----END AGE ENCRYPTED FILE-----\n"
+			}
+		],
+		"lastmodified": "2026-04-03T04:53:25Z",
+		"mac": "ENC[AES256_GCM,data:16jUe/LfoTNyn9VLHlzRmZJ8ahXZ31inRFTNNpe6/BN3h1re5drdzew3cDtlcvxgWt4apvXKQlYyvMYVqbI21a4AeOkkJ+efeTDtafOsrW1b0oI5v2g03hnwpz4Y94gRrfochXy9A7jTswOSnmL+YJ4/Fwgd74Ov5TuIgkmnKGc=,iv:F/+RFfve8uhga25Y9ssL7XX7pPqFJwearYIf2p5H4Ac=,tag:dtEyNWL3691+i03vWj/+TQ==,type:str]",
+		"encrypted_regex": "^(issueToken|cookies|username|password|clientId|clientSecret)$",
+		"version": "3.12.1"
+	}
 }

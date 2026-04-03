@@ -4,10 +4,8 @@ Version-controlled infrastructure configuration with encrypted secrets.
 
 ## 🔐 Security
 
-This repository uses **git-crypt** to encrypt sensitive files:
-- API keys and secrets
-- SSL private keys  
-- Cloudflare credentials
+This repository uses **SOPS** (Secrets OPerational Support) to encrypt sensitive keys and credentials.
+Previously, **git-crypt** was used, but it is now deprecated in favor of SOPS for better granular control.
 
 Encrypted files are safe to store on GitHub!
 
@@ -15,7 +13,7 @@ Encrypted files are safe to store on GitHub!
 
 - [Backup & Recovery Guide](docs/BACKUP_README.md)
 - [Quick Reference](docs/QUICK_REFERENCE.md)
-- [Git-Crypt Usage](docs/GIT_CRYPT_GUIDE.md)
+- [SOPS Encryption Guide](docs/SOPS_GUIDE.md)
 
 ## 🚀 Quick Start
 
@@ -129,7 +127,7 @@ Some services use formats incompatible with SOPS or are better managed through o
 - **Prowlarr**: Managed via Configarr IaC + database backups (XML format not SOPS-compatible)
 - **Overseerr users/permissions**: Stored in SQLite database, backed up to NAS
 
-See  for database backup procedures.
+See [Backup & Recovery Guide](docs/BACKUP_README.md) for database backup procedures.
 
 ## DNS Management (OpenTofu)
 

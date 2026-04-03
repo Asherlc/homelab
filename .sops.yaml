@@ -21,6 +21,11 @@ creation_rules:
   - path_regex: configarr/secrets\.ya?ml$
     age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
   
+  # Homelab Homebridge - encrypt Nest and Flume credentials
+  - path_regex: configs/homebridge/config\.json$
+    encrypted_regex: '^(issueToken|cookies|username|password|clientId|clientSecret)$'
+    age: age1cmvfpx67qzk2g8ldw5q8k356msnw0zxjvwg68dxux6475cyy5arsvekytd
+
   # Generic patterns for future files
   # .env files - encrypt entire file
   - path_regex: \.env$

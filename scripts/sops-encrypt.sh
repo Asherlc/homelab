@@ -18,7 +18,8 @@ else
                 configs/bazarr/config.yaml \
                 configs/homarr/*.json \
                 configarr/secrets.yml \
-                configs/cloudflared/credentials.json; do
+                configs/cloudflared/credentials.json \
+                configs/homebridge/config.json; do
         
         if [ -f "$file" ]; then
             # Check if file is encrypted (contains sops metadata)

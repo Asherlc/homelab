@@ -33,6 +33,16 @@ log "Changed files: $CHANGED_FILES"
 git pull origin main --quiet
 log "Pulled latest changes"
 
+# Decrypt SOPS files for use by containers
+if [ -x "$REPO_DIR/scripts/sops-decrypt.sh" ]; then
+    export SOPS_AGE_KEY_FILE=/home/asherlc/.sops/key.txt
+    if "$REPO_DIR/scripts/sops-decrypt.sh"; then
+        log "SOPS secrets decrypted"
+    else
+        log "WARNING: SOPS decryption failed"
+    fi
+fi
+
 # Always run docker compose up -d (idempotent — only recreates changed services)
 sudo docker compose -f "$REPO_DIR/$COMPOSE_FILE" up -d
 log "Docker compose up complete"

@@ -16,7 +16,8 @@ else
                 configs/bazarr/config.yaml \
                 configs/homarr/*.json \
                 configarr/secrets.yml \
-                configs/cloudflared/credentials.json; do
+                configs/cloudflared/credentials.json \
+                configs/homebridge/config.json; do
         
         if [ -f "$file" ]; then
             if grep -q "sops:" "$file" || grep -q "ENC\[" "$file"; then
