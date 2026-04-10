@@ -145,6 +145,37 @@ mkdir -p ~/tdarr && cd ~/tdarr && unzip /tmp/Tdarr_Updater.zip && chmod +x Tdarr
 launchctl load ~/Library/LaunchAgents/com.tdarr.node.plist
 ```
 
+#### Checking transcode status
+
+The Tdarr web UI is at `http://192.168.1.197:8265` (or `tdarr.asherlc.com` externally).
+
+From the CLI, query the server API:
+
+```bash
+# Overall statistics (files processed, space saved, queue sizes)
+curl -s -X POST http://192.168.1.197:8266/api/v2/cruddb \
+  -H 'Content-Type: application/json' \
+  -d '{"data":{"collection":"StatisticsJSONDB","mode":"getAll"}}' | jq '.[0] | {
+    totalFiles: .totalFileCount,
+    transcoded: .totalTranscodeCount,
+    spaceSavedGB: (.sizeDiff | round),
+    transcodeQueue: .table2Count,
+    healthCheckQueue: .table3Count,
+    transcodeErrors: .table1Count
+  }'
+
+# Node status (connected, worker limits, active workers)
+curl -s http://192.168.1.197:8266/api/v2/get-nodes | jq '.[] | {
+    name: .nodeName,
+    type: .config.nodeType,
+    platform: .config.platform_arch_isdocker,
+    workerLimits: .workerLimits,
+    activeWorkers: (.workers | length),
+    queue: .queueLengths,
+    paused: .nodePaused
+  }'
+```
+
 ## 🔑 Encryption Key
 
 **Location:** `~/.homelab-secure/homelab-git-crypt.key`
