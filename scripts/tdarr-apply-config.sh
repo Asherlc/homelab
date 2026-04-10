@@ -57,6 +57,33 @@ main() {
         exit 0
     fi
 
+    # --- Apply server settings (e.g. enableUnmappedNodes) ---
+    local desired_server_settings
+    desired_server_settings="$(jq -c '.server // empty' "$CONFIG_FILE")"
+    if [[ -n "$desired_server_settings" ]]; then
+        local current_global
+        current_global="$(api_post "cruddb" '{"data":{"collection":"SettingsGlobalJSONDB","mode":"getAll"}}')"
+        local needs_update=false
+        while IFS='=' read -r key value; do
+            local current_value
+            current_value="$(jq -r --arg k "$key" '.[0][$k] // empty' <<<"$current_global")"
+            if [[ "$current_value" != "$value" ]]; then
+                needs_update=true
+                break
+            fi
+        done < <(jq -r '.server | to_entries[] | "\(.key)=\(.value)"' "$CONFIG_FILE")
+
+        if [[ "$needs_update" == "true" ]]; then
+            local server_payload
+            server_payload="$(jq -cn --argjson obj "$desired_server_settings" \
+                '{data:{collection:"SettingsGlobalJSONDB",mode:"update",docID:"globalsettings",obj:$obj}}')"
+            api_post "cruddb" "$server_payload" >/dev/null
+            log "Updated server settings."
+        else
+            log "Server settings already match desired state."
+        fi
+    fi
+
     # --- Apply flow ---
     local desired_flow desired_flow_id
     desired_flow="$(jq -c '.flow' "$CONFIG_FILE")"

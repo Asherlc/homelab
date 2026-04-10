@@ -85,7 +85,7 @@ cd /opt/homelab-config
 ```
 ├── docker/              # Docker Compose files
 ├── configarr/           # Configarr IaC configs (secrets encrypted)
-├── configs/tdarr/       # Tdarr desired state (plugin stack/worker limits)
+├── configs/tdarr/       # Tdarr desired state (flow, worker limits, server settings)
 ├── scripts/             # Automation scripts
 ├── docs/                # Documentation
 └── configs/             # Service configurations
@@ -93,22 +93,57 @@ cd /opt/homelab-config
 
 ## Tdarr (Remote Node Architecture)
 
-Tdarr Server runs on the homelab (orchestration only, no internal node) while the actual transcoding runs on a remote Tdarr Node on the laptop. This avoids saturating the server's 4 cores / 8GB RAM.
+Tdarr Server runs on the homelab (orchestration only, no internal node) while the actual transcoding runs on a native Tdarr Node on the laptop. This avoids saturating the server's 4 cores / 8GB RAM and gives the node direct access to macOS VideoToolbox for hardware-accelerated HEVC encoding.
 
 - Desired state file: `configs/tdarr/state.json`
 - Apply script: `scripts/tdarr-apply-config.sh`
-- Laptop node compose: `docker/tdarr-node-compose.yml`
 
 The auto-deploy timer runs the apply script after each pull, so manual UI changes are automatically corrected on the next deploy.
 
-### Running the Laptop Node
+### Laptop Node Setup
+
+The node runs **natively on macOS** (not in Docker) so it can use the Apple Silicon VideoToolbox hardware encoder. It is installed at `~/tdarr/` and managed by a launchd agent (`~/Library/LaunchAgents/com.tdarr.node.plist`) that starts it on login and keeps it alive.
+
+The node operates in **unmapped mode** — files are transferred over the network between the server and node automatically (no NAS mount needed). The server setting `enableUnmappedNodes` must be `true` (managed by the apply script via `state.json`).
+
+Config file: `~/tdarr/configs/Tdarr_Node_Config.json`
+
+Key settings:
+- `nodeName`: `LaptopNode`
+- `serverIP`: `192.168.1.197` (LAN) or `100.96.33.27` (Tailscale)
+- `nodeType`: `unmapped`
+- Workers: 3 GPU transcode (VideoToolbox), 2 CPU health check
+
+Transcoding only happens when the laptop is running and connected. The server handles disconnections gracefully.
+
+#### Managing the node
 
 ```bash
-cd /path/to/homelab
-docker compose -f docker/tdarr-node-compose.yml up -d
+# Check status
+launchctl list | grep tdarr
+
+# Stop
+launchctl unload ~/Library/LaunchAgents/com.tdarr.node.plist
+
+# Start
+launchctl load ~/Library/LaunchAgents/com.tdarr.node.plist
+
+# View logs
+tail -f ~/tdarr/logs/Tdarr_Node_Log.txt
 ```
 
-Files are transferred over the network between server and node (no NAS mount needed on the laptop). The node connects to `192.168.1.197:8266` (LAN) or `100.96.33.27:8266` (Tailscale). Transcoding only happens when the laptop is running and connected. The server handles disconnections gracefully.
+#### Reinstalling / updating
+
+The Tdarr Node auto-updates to match the server version on startup. To do a fresh install:
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.tdarr.node.plist
+rm -rf ~/tdarr
+curl -L -o /tmp/Tdarr_Updater.zip https://storage.tdarr.io/versions/2.17.01/darwin_arm64/Tdarr_Updater.zip
+mkdir -p ~/tdarr && cd ~/tdarr && unzip /tmp/Tdarr_Updater.zip && chmod +x Tdarr_Updater && ./Tdarr_Updater
+# Edit ~/tdarr/configs/Tdarr_Node_Config.json (set serverIP, nodeName, nodeType=unmapped)
+launchctl load ~/Library/LaunchAgents/com.tdarr.node.plist
+```
 
 ## 🔑 Encryption Key
 

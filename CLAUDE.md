@@ -63,7 +63,7 @@ sudo docker restart traefik
 | 192.168.1.97 | Frigate |
 | 192.168.1.197 | Homelab server |
 | 192.168.1.218 | Pi-hole |
-| 192.168.1.221 | Synology NAS (nas.local) |
+| 192.168.1.161 | Synology NAS (nas.local) |
 
 ## User Preferences
 - Execute deployments directly on the server rather than giving instructions
