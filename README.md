@@ -104,14 +104,14 @@ The auto-deploy timer runs the apply script after each pull, so manual UI change
 
 The node runs **natively on macOS** (not in Docker) so it can use the Apple Silicon VideoToolbox hardware encoder. It is installed at `~/tdarr/` and managed by a launchd agent (`~/Library/LaunchAgents/com.tdarr.node.plist`) that starts it on login and keeps it alive.
 
-The node operates in **unmapped mode** — files are transferred over the network between the server and node automatically (no NAS mount needed). The server setting `enableUnmappedNodes` must be `true` (managed by the apply script via `state.json`).
+The node operates in **mapped mode** with the NAS media share mounted via SSHFS (using the 1Password SSH key for authentication). A launchd agent (`~/Library/LaunchAgents/com.homelab.sshfs-mount.plist`) auto-mounts `asherlc@192.168.1.161:data` to `~/mnt/homelab-media` on login. Path translators in the node config map the server's `/media` and `/temp` paths to the local SSHFS mount.
 
 Config file: `~/tdarr/configs/Tdarr_Node_Config.json`
 
 Key settings:
 - `nodeName`: `LaptopNode`
 - `serverIP`: `192.168.1.197` (LAN) or `100.96.33.27` (Tailscale)
-- `nodeType`: `unmapped`
+- `nodeType`: `mapped`
 - Workers: 3 GPU transcode (VideoToolbox), 2 CPU health check
 
 Transcoding only happens when the laptop is running and connected. The server handles disconnections gracefully.
@@ -141,7 +141,7 @@ launchctl unload ~/Library/LaunchAgents/com.tdarr.node.plist
 rm -rf ~/tdarr
 curl -L -o /tmp/Tdarr_Updater.zip https://storage.tdarr.io/versions/2.17.01/darwin_arm64/Tdarr_Updater.zip
 mkdir -p ~/tdarr && cd ~/tdarr && unzip /tmp/Tdarr_Updater.zip && chmod +x Tdarr_Updater && ./Tdarr_Updater
-# Edit ~/tdarr/configs/Tdarr_Node_Config.json (set serverIP, nodeName, nodeType=unmapped)
+# Edit ~/tdarr/configs/Tdarr_Node_Config.json (set serverIP, nodeName, nodeType=mapped, pathTranslators)
 launchctl load ~/Library/LaunchAgents/com.tdarr.node.plist
 ```
 
