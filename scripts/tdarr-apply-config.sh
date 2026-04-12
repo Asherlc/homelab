@@ -106,7 +106,7 @@ main() {
         flow_payload="$(jq -cn --arg id "$desired_flow_id" --arg mode "$flow_mode" --argjson flow "$desired_flow" \
             '{data:{collection:"FlowsJSONDB",mode:$mode,docID:$id,obj:$flow}}')"
         api_post "cruddb" "$flow_payload" >/dev/null
-        log "${flow_mode^} flow '$desired_flow_id'."
+        log "$(tr '[:lower:]' '[:upper:]' <<<"${flow_mode:0:1}")${flow_mode:1} flow '$desired_flow_id'."
     else
         log "Flow '$desired_flow_id' already matches desired state."
     fi
@@ -128,8 +128,39 @@ main() {
             '.[] | select((.name == $name) or (.folder == $folder))' <<<"$libraries_json" | head -n 1)"
 
         if [[ -z "$lib_json" ]]; then
-            log "Library not found: name='$lib_name', folder='$lib_folder'"
-            missing=$((missing + 1))
+            # Create the library with sensible defaults
+            local new_lib_id new_lib_payload now_ms
+            new_lib_id="$(jq -r ".id // (\"$lib_name\" | ascii_downcase | gsub(\" \"; \"_\") + \"_lib\")" <<<"$target")"
+            now_ms=$(($(date +%s) * 1000))
+            new_lib_payload="$(jq -cn \
+                --arg id "$new_lib_id" \
+                --arg name "$lib_name" \
+                --arg folder "$lib_folder" \
+                --arg flowId "$desired_flow_id" \
+                --argjson createdAt "$now_ms" \
+                '{data:{collection:"LibrarySettingsJSONDB",mode:"insert",docID:$id,obj:{
+                    _id:$id,name:$name,priority:0,folder:$folder,foldersToIgnore:"",
+                    folderWatchScanInterval:30,scannerThreadCount:2,cache:"/temp",output:".",
+                    folderToFolderConversion:false,folderToFolderConversionDeleteSource:false,
+                    copyIfConditionsMet:false,container:".mkv",
+                    containerFilter:"mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,m2ts,ts",
+                    createdAt:$createdAt,folderWatching:false,useFsEvents:false,
+                    scheduledScanFindNew:false,processLibrary:true,scanOnStart:true,
+                    exifToolScan:false,mediaInfoScan:false,closedCaptionScan:false,
+                    scanButtons:true,pluginIDs:[],pluginCommunity:false,
+                    handbrake:true,ffmpeg:true,handbrakescan:false,ffmpegscan:true,preset:"",
+                    decisionMaker:{settingsFlows:true,settingsPlugin:false},
+                    flowId:$flowId,schedule:[],totalHealthCheckCount:0,totalTranscodeCount:0,
+                    sizeDiff:0,holdNewFiles:false,holdFor:3600,local:true,community:true,
+                    pluginStackOverview:false,mediaType:"video",scannerType:"ffprobe"
+                }}}')"
+            api_post "cruddb" "$new_lib_payload" >/dev/null
+            log "Created library '$lib_name' ($new_lib_id) with flow '$desired_flow_id'."
+            # Trigger a fresh scan to populate files
+            api_post "scan-files" "$(jq -cn --arg id "$new_lib_id" --arg folder "$lib_folder" \
+                '{data:{scanConfig:{dbID:$id,mode:"scanFresh",arrayOrPath:[$folder]}}}')" >/dev/null
+            log "Triggered scanFresh for '$lib_name'."
+            updates=$((updates + 1))
             continue
         fi
 
