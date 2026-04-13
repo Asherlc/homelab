@@ -195,7 +195,7 @@ resource "authentik_provider_oauth2" "portainer" {
   allowed_redirect_uris = [
     {
       matching_mode = "strict"
-      url           = "https://portainer.asherlc.com/"
+      url           = "https://portainer.asherlc.com"
     }
   ]
   property_mappings = [
