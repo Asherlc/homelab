@@ -184,4 +184,12 @@ services = {
     require_auth   = true
     backend_url    = "http://homebridge:8581"
   }
+
+  portainer = {
+    description    = "Docker management UI"
+    type           = "home"
+    tunnel_enabled = true
+    require_auth   = false  # Portainer handles its own auth via Authentik OAuth
+    backend_url    = "http://portainer:9000"
+  }
 }

@@ -185,7 +185,7 @@ resource "authentik_application" "dofek" {
   group             = "Home"
 }
 
-# Portainer OIDC provider (dofek server admin panel)
+# Portainer OIDC provider (homelab Docker management)
 resource "authentik_provider_oauth2" "portainer" {
   name               = "Portainer OIDC"
   client_id          = "portainer"
@@ -195,7 +195,7 @@ resource "authentik_provider_oauth2" "portainer" {
   allowed_redirect_uris = [
     {
       matching_mode = "strict"
-      url           = "https://portainer.dofek.asherlc.com/"
+      url           = "https://portainer.asherlc.com/"
     }
   ]
   property_mappings = [
@@ -209,7 +209,7 @@ resource "authentik_application" "portainer" {
   name              = "Portainer"
   slug              = "portainer"
   protocol_provider = authentik_provider_oauth2.portainer.id
-  meta_launch_url   = "https://portainer.dofek.asherlc.com"
+  meta_launch_url   = "https://portainer.asherlc.com"
   open_in_new_tab   = true
   group             = "Home"
 }

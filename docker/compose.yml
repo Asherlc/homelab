@@ -516,6 +516,16 @@ services:
     depends_on:
       - loki
 
+  # Portainer - Docker management UI
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:2.40.0
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/appdata/portainer:/data
+    mem_limit: 256m
+
   # Watchtower - Auto-update containers with watchtower.enable label
   watchtower:
     container_name: watchtower

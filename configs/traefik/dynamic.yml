@@ -293,6 +293,19 @@ http:
         - web
       service: grafana
 
+    portainer-external:
+      rule: Host(`portainer.asherlc.com`)
+      entryPoints:
+        - web
+      service: portainer
+      middlewares:
+        - add-forward-headers
+    portainer-local:
+      rule: Host(`portainer.home`)
+      entryPoints:
+        - web
+      service: portainer
+
   serversTransports:
     insecureTransport:
       insecureSkipVerify: true
@@ -389,4 +402,8 @@ http:
       loadBalancer:
         servers:
           - url: http://grafana:3000
+    portainer:
+      loadBalancer:
+        servers:
+          - url: http://portainer:9000
 
