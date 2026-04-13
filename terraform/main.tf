@@ -41,16 +41,6 @@ resource "cloudflare_record" "tunnel_services" {
   comment = "Managed by OpenTofu - ${each.value.description}"
 }
 
-# DNS A record for dofek (external server)
-resource "cloudflare_record" "dofek" {
-  zone_id = data.cloudflare_zone.domain.id
-  name    = "dofek"
-  content = "159.69.3.40"
-  type    = "A"
-  proxied = true
-  comment = "Managed by OpenTofu - Dofek external server"
-}
-
 # Cloudflare Tunnel configuration
 # ALL traffic goes to Traefik (single ingress rule)
 resource "cloudflare_zero_trust_tunnel_cloudflared_config" "homelab" {
