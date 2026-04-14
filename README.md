@@ -104,7 +104,9 @@ The auto-deploy timer runs the apply script after each pull, so manual UI change
 
 The node runs **natively on macOS** (not in Docker) so it can use the Apple Silicon VideoToolbox hardware encoder. It is installed at `~/tdarr/` and managed by a launchd agent (`~/Library/LaunchAgents/com.tdarr.node.plist`) that starts it on login and keeps it alive.
 
-The node operates in **mapped mode** with the NAS media share mounted via SSHFS (using the 1Password SSH key for authentication). A launchd agent (`~/Library/LaunchAgents/com.homelab.sshfs-mount.plist`) auto-mounts `asherlc@192.168.1.161:data` to `~/mnt/homelab-media` on login. Path translators in the node config map the server's `/media` and `/temp` paths to the local SSHFS mount.
+The node operates in **mapped mode** with the NAS media share mounted via SMB. A launchd agent (`~/Library/LaunchAgents/com.homelab.smb-mount.plist`) runs `~/bin/mount-homelab-media.sh` every 60 seconds, which fetches the NAS password from 1Password (`op item get "Synology NAS"`) and mounts `//asherlc@192.168.1.161/data` at `~/mnt/homelab-media`. The agent acts as a watchdog — it detects stale mounts (failed `ls` on the media dir) and remounts automatically. Path translators in the node config map the server's `/media` and `/temp` paths to the local SMB mount.
+
+SMB was chosen over SSHFS because SSHFS is ~3-5x slower for file reads and silently stales out on network hiccups. SMB natively reconnects and delivers 60-300 fps transcode throughput vs 12-35 fps on SSHFS.
 
 Config file: `~/tdarr/configs/Tdarr_Node_Config.json`
 
