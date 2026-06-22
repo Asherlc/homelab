@@ -43,6 +43,15 @@ if [ -x "$REPO_DIR/scripts/sops-decrypt.sh" ]; then
     fi
 fi
 
+# Ensure DNS stays resilient across reboots (Pi-hole + public fallbacks)
+if [ -x "$REPO_DIR/scripts/configure-dns.sh" ]; then
+    if "$REPO_DIR/scripts/configure-dns.sh"; then
+        log "DNS configuration applied"
+    else
+        log "WARNING: DNS configuration failed"
+    fi
+fi
+
 # Always run docker compose up -d (idempotent — only recreates changed services)
 sudo docker compose -f "$REPO_DIR/$COMPOSE_FILE" up -d
 log "Docker compose up complete"

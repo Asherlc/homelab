@@ -108,6 +108,13 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+    plex-external:
+      rule: Host(`plex.asherlc.com`)
+      entryPoints:
+        - web
+      service: plex
+      middlewares:
+        - add-forward-headers
     scrypted-external:
       rule: Host(`scrypted.asherlc.com`)
       entryPoints:

@@ -57,7 +57,7 @@ services:
     image: remirigal/plex-auto-languages:latest
     restart: always
     environment:
-      - PLEX_URL=http://plex.home:32400
+      - PLEX_URL=http://172.17.0.1:32400
       - PLEX_TOKEN=HK9VP3eRPjEkLsx9giC_
       - TZ=Europe/Paris
     volumes:
