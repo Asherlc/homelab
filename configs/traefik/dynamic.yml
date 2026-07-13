@@ -69,6 +69,14 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+    sabnzbd-external:
+      rule: Host(`sabnzbd.asherlc.com`)
+      entryPoints:
+        - web
+      service: sabnzbd
+      middlewares:
+        - add-forward-headers
+        - authentik
     prowlarr-external:
       rule: Host(`prowlarr.asherlc.com`)
       entryPoints:
@@ -215,6 +223,11 @@ http:
       entryPoints:
         - web
       service: qbittorrent
+    sabnzbd-local:
+      rule: Host(`sabnzbd.home`)
+      entryPoints:
+        - web
+      service: sabnzbd
     scrypted-local:
       rule: Host(`scrypted.home`)
       entryPoints:
@@ -331,6 +344,10 @@ http:
       loadBalancer:
         servers:
           - url: http://qbittorrent:8080
+    sabnzbd:
+      loadBalancer:
+        servers:
+          - url: http://sabnzbd:8080
     prowlarr:
       loadBalancer:
         servers:
@@ -406,4 +423,3 @@ http:
       loadBalancer:
         servers:
           - url: http://portainer:9000
-

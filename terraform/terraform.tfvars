@@ -67,6 +67,14 @@ services = {
     backend_url     = "http://qbittorrent:8080"
   }
 
+  sabnzbd = {
+    description     = "Usenet download client"
+    type            = "media"
+    tunnel_enabled  = true
+    require_auth    = true
+    backend_url     = "http://sabnzbd:8080"
+  }
+
   calibre = {
     description     = "eBook library manager"
     type            = "media"
