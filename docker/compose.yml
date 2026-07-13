@@ -153,6 +153,20 @@ services:
       - /srv/appdata/qbittorrent:/config
       - /mnt/storage/downloads:/downloads
 
+  sabnzbd:
+    container_name: sabnzbd
+    image: lscr.io/linuxserver/sabnzbd:latest
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=US/Pacific
+    ports:
+      - "8081:8080"
+    volumes:
+      - /srv/appdata/sabnzbd:/config
+      - /mnt/storage/downloads:/downloads
+
   prowlarr:
     container_name: prowlarr
     image: lscr.io/linuxserver/prowlarr:latest
