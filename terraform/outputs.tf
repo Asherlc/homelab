@@ -6,7 +6,10 @@ output "dns_records" {
   }
 }
 
-output "paseo_dev_url" {
-  description = "Public HTTPS URL for the local-config Paseo development tunnel"
-  value       = "https://${var.paseo_dev_tunnel.hostname}.${var.domain}"
+output "paseo_dev_urls" {
+  description = "Public HTTPS URLs for explicitly routed Paseo development servers"
+  value = {
+    for hostname, record in cloudflare_record.paseo_dev :
+    hostname => "https://${record.hostname}"
+  }
 }

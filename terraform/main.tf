@@ -67,14 +67,18 @@ resource "cloudflare_zero_trust_tunnel_cloudflared" "paseo_dev" {
   account_id = var.cloudflare_account_id
   name       = var.paseo_dev_tunnel.name
   config_src = "local"
+  secret     = var.paseo_dev_tunnel_secret
 }
 
-# This exact hostname is deliberately separate from the homelab wildcard route.
+# Explicit hostnames preserve each dev server's origin path semantics. Add a map
+# entry only after a corresponding Caddy host route exists on the development Mac.
 resource "cloudflare_record" "paseo_dev" {
+  for_each = var.paseo_dev_hosts
+
   zone_id = data.cloudflare_zone.domain.id
-  name    = var.paseo_dev_tunnel.hostname
+  name    = each.key
   content = "${var.paseo_dev_tunnel.id}.cfargotunnel.com"
   type    = "CNAME"
   proxied = true
-  comment = "Managed by OpenTofu - Paseo development tunnel"
+  comment = "Managed by OpenTofu - ${each.value.description}"
 }

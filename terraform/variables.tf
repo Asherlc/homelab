@@ -25,14 +25,33 @@ variable "tunnel_id" {
 variable "paseo_dev_tunnel" {
   description = "Existing local-config Cloudflare Tunnel for the development Mac's Paseo service proxy"
   type = object({
-    id       = string
-    name     = string
-    hostname = string
+    id   = string
+    name = string
   })
   default = {
-    id       = "eb624b63-2af6-4f47-ab9c-dac3228f0515"
-    name     = "paseo-dev"
-    hostname = "paseo"
+    id   = "eb624b63-2af6-4f47-ab9c-dac3228f0515"
+    name = "paseo-dev"
+  }
+}
+
+variable "paseo_dev_tunnel_secret" {
+  description = "Existing paseo-dev tunnel secret from the development Mac's cloudflared credentials file"
+  type        = string
+  sensitive   = true
+}
+
+variable "paseo_dev_hosts" {
+  description = "Explicit development-server hostnames routed through the paseo-dev tunnel"
+  type = map(object({
+    description = string
+  }))
+  default = {
+    p61882 = {
+      description = "Paseo development server on port 61882"
+    }
+    p61999 = {
+      description = "Paseo development server on port 61999"
+    }
   }
 }
 
