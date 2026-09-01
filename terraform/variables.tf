@@ -22,27 +22,6 @@ variable "tunnel_id" {
   default     = "2dd6f4cb-7842-47f1-8c49-7e1c2af9aca9"
 }
 
-variable "paseo_tunnel_id" {
-  description = "Existing paseo-dev local-config tunnel ID; its credentials and ingress live on the development Mac"
-  type        = string
-  default     = "eb624b63-2af6-4f47-ab9c-dac3228f0515"
-}
-
-variable "paseo_dev_hosts" {
-  description = "Explicit development-server hostnames routed through the paseo-dev tunnel"
-  type = map(object({
-    description = string
-  }))
-  default = {
-    p61882 = {
-      description = "Paseo development server on port 61882"
-    }
-    p61999 = {
-      description = "Paseo development server on port 61999"
-    }
-  }
-}
-
 variable "services" {
   description = "Map of subdomain -> service config"
   type = map(object({
