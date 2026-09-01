@@ -61,23 +61,16 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "homelab" {
   }
 }
 
-# Paseo's tunnel runs on the development Mac, where its ingress configuration is
-# intentionally managed by the local cloudflared YAML file.
-resource "cloudflare_zero_trust_tunnel_cloudflared" "paseo_dev" {
-  account_id = var.cloudflare_account_id
-  name       = var.paseo_dev_tunnel.name
-  config_src = "local"
-  secret     = var.paseo_dev_tunnel_secret
-}
-
 # Explicit hostnames preserve each dev server's origin path semantics. Add a map
 # entry only after a corresponding Caddy host route exists on the development Mac.
+# The named tunnel itself remains local-config managed on that Mac because its
+# credentials and ingress configuration must not be stored in this repository.
 resource "cloudflare_record" "paseo_dev" {
   for_each = var.paseo_dev_hosts
 
   zone_id = data.cloudflare_zone.domain.id
   name    = each.key
-  content = "${var.paseo_dev_tunnel.id}.cfargotunnel.com"
+  content = "${var.paseo_tunnel_id}.cfargotunnel.com"
   type    = "CNAME"
   proxied = true
   comment = "Managed by OpenTofu - ${each.value.description}"
