@@ -35,6 +35,14 @@ http:
       middlewares:
         - add-forward-headers
 
+    plex-external:
+      rule: Host(`plex.asherlc.com`)
+      entryPoints:
+        - web
+      service: plex
+      middlewares:
+        - add-forward-headers
+
     homebridge-external:
       rule: Host(`homebridge.asherlc.com`)
       entryPoints:

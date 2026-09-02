@@ -11,6 +11,14 @@ services = {
   }
 
   # Media Services
+  plex = {
+    description     = "Media server"
+    type            = "media"
+    tunnel_enabled  = true
+    require_auth    = false
+    backend_url     = "http://172.17.0.1:32400"
+  }
+
   seerr = {
     description     = "Media requests (Seerr)"
     type            = "media"
