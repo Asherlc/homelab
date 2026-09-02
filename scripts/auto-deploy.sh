@@ -47,6 +47,15 @@ fi
 sudo docker compose -f "$REPO_DIR/$COMPOSE_FILE" up -d
 log "Docker compose up complete"
 
+# Apply qBittorrent settings from the repository after containers are available.
+if [ -x "$REPO_DIR/scripts/qbittorrent-apply-config.sh" ]; then
+    if "$REPO_DIR/scripts/qbittorrent-apply-config.sh"; then
+        log "qBittorrent configuration applied"
+    else
+        log "WARNING: qBittorrent configuration apply failed"
+    fi
+fi
+
 # Enforce Tdarr configuration as code (idempotent, safe to run every deploy)
 if [ -x "$REPO_DIR/scripts/tdarr-apply-config.sh" ]; then
     if "$REPO_DIR/scripts/tdarr-apply-config.sh"; then
@@ -61,5 +70,13 @@ if echo "$CHANGED_FILES" | grep -q "configs/traefik/"; then
     sudo docker restart traefik
     log "Traefik restarted due to config change"
 fi
+
+# Keep the weekly storage-report timer managed as infrastructure code.
+for unit in homelab-storage-maintenance.service homelab-storage-maintenance.timer; do
+    sudo install -m 0644 "$REPO_DIR/systemd/$unit" "/etc/systemd/system/$unit"
+done
+sudo systemctl daemon-reload
+sudo systemctl enable --now homelab-storage-maintenance.timer
+log "Weekly storage maintenance timer enabled"
 
 log "Deploy complete"

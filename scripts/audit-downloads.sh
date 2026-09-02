@@ -3,12 +3,15 @@
 # Runs all logic server-side via SSH heredoc to avoid round-trips.
 set -euo pipefail
 
-SSH_CMD=(ssh -o ConnectTimeout=10 asherlc@192.168.1.197)
-export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+if [[ "${1:-}" == "--local" ]]; then
+    RUNNER=(bash -s)
+else
+    RUNNER=(ssh -o ConnectTimeout=10 asherlc@192.168.1.197 'bash -s')
+    export SSH_AUTH_SOCK="/Users/asherlc/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+    echo "Connecting to homelab server..."
+fi
 
-echo "Connecting to homelab server..."
-
-"${SSH_CMD[@]}" 'bash -s' <<'REMOTE_SCRIPT'
+"${RUNNER[@]}" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 DOWNLOADS="/mnt/storage/downloads"
@@ -63,9 +66,9 @@ extract_core() {
 human_size() {
     local bytes=$1
     if (( bytes >= 1073741824 )); then
-        echo "$(echo "scale=1; $bytes / 1073741824" | bc)G"
+        awk -v bytes="$bytes" 'BEGIN { printf "%.1fG\n", bytes / 1073741824 }'
     elif (( bytes >= 1048576 )); then
-        echo "$(echo "scale=1; $bytes / 1048576" | bc)M"
+        awk -v bytes="$bytes" 'BEGIN { printf "%.1fM\n", bytes / 1048576 }'
     else
         echo "${bytes}B"
     fi
