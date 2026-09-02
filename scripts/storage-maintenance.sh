@@ -15,7 +15,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$REPORT_DIR"
+sudo install -d -m 0755 -o asherlc -g asherlc "$REPORT_DIR"
 
 {
     echo "Homelab storage report: $(date --iso-8601=seconds)"
