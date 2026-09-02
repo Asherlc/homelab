@@ -70,11 +70,15 @@ if [ -x "$REPO_DIR/scripts/qbittorrent-apply-config.sh" ]; then
 fi
 
 # Keep the weekly storage-report timer managed as infrastructure code.
-for unit in homelab-storage-maintenance.service homelab-storage-maintenance.timer; do
+for unit in \
+    homelab-storage-maintenance.service \
+    homelab-storage-maintenance.timer \
+    homelab-qbittorrent-cleanup.service \
+    homelab-qbittorrent-cleanup.timer; do
     sudo install -m 0644 "$REPO_DIR/systemd/$unit" "/etc/systemd/system/$unit"
 done
 sudo systemctl daemon-reload
-sudo systemctl enable --now homelab-storage-maintenance.timer
-log "Weekly storage maintenance timer enabled"
+sudo systemctl enable --now homelab-storage-maintenance.timer homelab-qbittorrent-cleanup.timer
+log "Storage maintenance and qBittorrent cleanup timers enabled"
 
 log "Deploy complete"

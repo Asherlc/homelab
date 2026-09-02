@@ -1,0 +1,10 @@
+[Unit]
+Description=Remove inactive qBittorrent payloads after seven days
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=asherlc
+ExecStart=/opt/homelab-config/scripts/qbittorrent-cleanup.sh
+WorkingDirectory=/opt/homelab-config
