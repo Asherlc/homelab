@@ -46,6 +46,7 @@ assert_file() {
 assert_contains "configs/qbittorrent/qBittorrent.conf" 'Session\ShareLimitAction=Stop'
 assert_not_contains "scripts/audit-downloads.sh" ' | bc'
 assert_file "scripts/qbittorrent-apply-config.sh"
+assert_text_contains "scripts/qbittorrent-apply-config.sh" '/api/v2/app/setPreferences'
 assert_file "scripts/qbittorrent-cleanup.sh"
 assert_file "scripts/storage-maintenance.sh"
 assert_file "systemd/homelab-storage-maintenance.service"
