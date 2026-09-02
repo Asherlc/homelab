@@ -40,6 +40,11 @@ if [ "$LOCAL" != "$REMOTE" ]; then
         fi
     fi
 
+    # Prepare service-owned persistent directories before Compose creates bind mounts.
+    if [ -x "$REPO_DIR/scripts/maintainerr-prepare.sh" ]; then
+        "$REPO_DIR/scripts/maintainerr-prepare.sh"
+    fi
+
     # Always run docker compose up -d after a configuration change.
     sudo docker compose -f "$REPO_DIR/$COMPOSE_FILE" up -d
     log "Docker compose up complete"

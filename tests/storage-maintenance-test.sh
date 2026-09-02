@@ -61,6 +61,8 @@ assert_text_contains "docker/compose.yml" '  maintainerr:'
 assert_text_contains "docker/compose.yml" 'ghcr.io/maintainerr/maintainerr:latest'
 assert_text_contains "configs/traefik/dynamic.yml" 'maintainerr.asherlc.com'
 assert_text_contains "terraform/terraform.tfvars" 'maintainerr = {'
+assert_file "scripts/maintainerr-prepare.sh"
+assert_text_contains "scripts/auto-deploy.sh" 'maintainerr-prepare.sh'
 
 if (( failures > 0 )); then
     exit 1
