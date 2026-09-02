@@ -57,6 +57,10 @@ assert_file "systemd/homelab-qbittorrent-cleanup.timer"
 assert_text_contains "scripts/auto-deploy.sh" '"$REPO_DIR/scripts/qbittorrent-apply-config.sh"'
 assert_text_contains "scripts/auto-deploy.sh" 'homelab-storage-maintenance.timer'
 assert_not_contains "scripts/auto-deploy.sh" 'exit 0'
+assert_text_contains "docker/compose.yml" '  maintainerr:'
+assert_text_contains "docker/compose.yml" 'ghcr.io/maintainerr/maintainerr:latest'
+assert_text_contains "configs/traefik/dynamic.yml" 'maintainerr.asherlc.com'
+assert_text_contains "terraform/terraform.tfvars" 'maintainerr = {'
 
 if (( failures > 0 )); then
     exit 1

@@ -58,6 +58,14 @@ services = {
     require_auth    = true
     backend_url     = "http://tautulli:8181"
   }
+
+  maintainerr = {
+    description     = "Media library retention preview"
+    type            = "media"
+    tunnel_enabled  = true
+    require_auth    = true
+    backend_url     = "http://maintainerr:6246"
+  }
   
   qbittorrent = {
     description     = "Torrent client"

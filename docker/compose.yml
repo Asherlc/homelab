@@ -581,3 +581,17 @@ services:
       timeout: 10s         # Allow up to 10 seconds for response
       start_period: 30s    # Wait 30 seconds before first check
       retries: 3           # Mark unhealthy after 3 consecutive failures
+
+  maintainerr:
+    image: ghcr.io/maintainerr/maintainerr:latest
+    container_name: maintainerr
+    restart: unless-stopped
+    user: "1000:1000"
+    environment:
+      - TZ=US/Pacific
+      - TELEMETRY=off
+    ports:
+      - "6246:6246"
+    volumes:
+      - /srv/appdata/maintainerr:/opt/data
+      - /mnt/storage/media:/data/media

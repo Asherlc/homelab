@@ -157,6 +157,14 @@ http:
       middlewares:
         - add-forward-headers
         - authentik
+    maintainerr-external:
+      rule: Host(`maintainerr.asherlc.com`)
+      entryPoints:
+        - web
+      service: maintainerr
+      middlewares:
+        - add-forward-headers
+        - authentik
 
     homarr-local:
       rule: Host(`homarr.home`)
@@ -213,6 +221,11 @@ http:
       entryPoints:
         - web
       service: tautulli
+    maintainerr-local:
+      rule: Host(`maintainerr.home`)
+      entryPoints:
+        - web
+      service: maintainerr
     zigbee2mqtt-local:
       rule: Host(`zigbee2mqtt.home`)
       entryPoints:
@@ -380,6 +393,10 @@ http:
       loadBalancer:
         servers:
           - url: http://tautulli:8181
+    maintainerr:
+      loadBalancer:
+        servers:
+          - url: http://maintainerr:6246
     scrypted:
       loadBalancer:
         servers:
