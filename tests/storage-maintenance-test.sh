@@ -51,6 +51,7 @@ assert_file "systemd/homelab-storage-maintenance.service"
 assert_file "systemd/homelab-storage-maintenance.timer"
 assert_text_contains "scripts/auto-deploy.sh" '"$REPO_DIR/scripts/qbittorrent-apply-config.sh"'
 assert_text_contains "scripts/auto-deploy.sh" 'homelab-storage-maintenance.timer'
+assert_not_contains "scripts/auto-deploy.sh" 'exit 0'
 
 if (( failures > 0 )); then
     exit 1
