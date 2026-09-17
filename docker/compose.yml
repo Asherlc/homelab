@@ -429,7 +429,7 @@ services:
       - /srv/appdata/authentik/custom-templates:/templates
       - /srv/appdata/authentik/media/public/custom.css:/web/dist/custom.css:ro
       - /srv/appdata/authentik/media/flow_background_custom.png:/web/dist/assets/images/flow_background.jpg:ro
-    mem_limit: 256m
+    mem_limit: 512m
     depends_on:
       - authentik-postgresql
       - authentik-redis
