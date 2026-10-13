@@ -40,6 +40,7 @@ apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/packer-shell*
 find /var/log -type f -exec truncate -s 0 {} +
 sync
+fstrim -v /
 shutdown -P now
 CLEANUP
 sudo chmod 0755 /usr/local/sbin/media-kit-generalize

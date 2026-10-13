@@ -118,6 +118,9 @@ jobs:
           version: '1.14.2'
       - name: Install appliance build tools
         run: |
+          # This disposable image-builder does not use the preinstalled mobile/.NET SDKs.
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup
+          df -h /
           sudo apt-get update
           sudo apt-get install -y qemu-system-x86 qemu-utils ovmf xorriso curl gnupg
       - name: Build and verify generalized VHDX

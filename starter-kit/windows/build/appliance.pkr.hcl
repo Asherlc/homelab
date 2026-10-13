@@ -33,6 +33,9 @@ source "qemu" "media_kit" {
   disk_size        = "32768M"
   format           = "qcow2"
   disk_interface   = "virtio"
+  disk_discard     = "unmap"
+  disk_detect_zeroes = "unmap"
+  skip_compaction  = true
   net_device       = "virtio-net"
   machine_type     = "q35"
   accelerator      = var.accelerator
