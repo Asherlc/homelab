@@ -105,7 +105,7 @@ function New-KitFirewallRule($Config,[string]$Suffix,[int]$Port,[string]$Remote)
     Register-KitResource 'firewall' $name
 }
 function Install-KitPlex($Config,$Manifest) {
-    $ctx=Get-KitContext; $cache=Join-Path (Split-Path $ctx.Path -Parent) 'artifacts'
+    $ctx=Get-KitContext; $cache=Get-KitArtifactDirectory $Config.releaseId
     $path=Save-KitVerifiedArtifact $Manifest.artifacts.plex (Join-Path $cache $Manifest.artifacts.plex.filename)
     if(@($ctx.State.resources | Where-Object {$_.type -eq 'plex-install'}).Count) {return}
     Write-Host 'In Plex setup, clear the final Launch Plex Media Server checkbox before finishing.'
@@ -123,7 +123,7 @@ function Install-KitPlexService($Config,$Artifact,[Management.Automation.PSCrede
         Assert-KitOwnership 'service' 'PlexService' $Config.installationId $ctx.State.resources | Out-Null
         if($service.StartName -ne $Credential.UserName) {throw 'PlexService uses a different profile. Migration requires manual review.'}
     } else {
-        $path=Save-KitVerifiedArtifact $Artifact (Join-Path (Join-Path (Split-Path $ctx.Path -Parent) 'artifacts') $Artifact.filename)
+        $path=Save-KitVerifiedArtifact $Artifact (Join-Path (Get-KitArtifactDirectory $Config.releaseId) $Artifact.filename)
         Initialize-KitWindowsNative; $p=Get-KitMsiPublicProperties $Config
         # Intent record survives a crash after MSI creates the service. StartName is revalidated on resume.
         Register-KitResource 'service' 'PlexService' -Path $path

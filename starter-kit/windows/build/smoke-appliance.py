@@ -80,12 +80,12 @@ ip link show lan0 >/dev/null
 test -s /etc/machine-id
 test -s /etc/ssh/ssh_host_ed25519_key
 test ! -e /etc/cloud/cloud-init.disabled
-! getent passwd mediakit-builder
+if getent passwd mediakit-builder; then exit 1; fi
 test ! -e /home/mediakit-builder
 test ! -e /etc/sudoers.d/90-mediakit-builder
 test "$(systemctl is-enabled docker.service || true)" = disabled
 test "$(systemctl is-enabled docker.socket || true)" = disabled
-! systemctl is-active --quiet docker.service
+if systemctl is-active --quiet docker.service; then exit 1; fi
 test "$(stat -c %a /data)" = 700
 sudo test -s /boot/efi/EFI/BOOT/BOOTX64.EFI
 sudo sbverify --list /boot/efi/EFI/BOOT/BOOTX64.EFI

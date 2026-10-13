@@ -30,6 +30,7 @@ function Test-KitPlexRegistryExport([string]$Path,[string]$Sid) {
 }
 function New-KitBackup($Config,[string]$Destination) {
     $ctx=Get-KitContext; $user=Get-LocalUser $Config.plex.account; $profile=Get-KitProfilePath $user.SID.Value
+    if($ctx.State.PSObject.Properties.Name -contains 'update') {throw 'Finish or restore the pending update before creating another backup.'}
     [IO.Directory]::CreateDirectory((Split-Path $Destination -Parent)) | Out-Null; Protect-KitPath (Split-Path $Destination -Parent)
     $stage=Join-Path (Split-Path $Destination -Parent) ('backup-'+[guid]::NewGuid().ToString('N')); [IO.Directory]::CreateDirectory($stage) | Out-Null; Protect-KitPath $stage
     $service=Get-Service PlexService; $wasRunning=$service.Status -eq 'Running'
@@ -154,7 +155,12 @@ function Test-KitReleaseDowngrade([string]$Current,[string]$Next) {
 }
 function Update-KitRelease($Config,[string]$ManifestPath,[string]$MatchingBackup='') {
     $ctx=Get-KitContext; $next=Get-Content -LiteralPath $ManifestPath -Raw | ConvertFrom-Json; Test-KitManifest $next | Out-Null
-    if($next.releaseId -eq $Config.releaseId) {return Invoke-KitGuest $Config 'status'}
+    $transition=$null; if($ctx.State.PSObject.Properties.Name -contains 'update') {$transition=$ctx.State.update}
+    if(-not $transition -and $next.releaseId -eq $Config.releaseId) {return Invoke-KitGuest $Config 'status'}
+    $manifestHash=(Get-FileHash -LiteralPath $ManifestPath -Algorithm SHA256).Hash
+    if($transition -and $next.releaseId -ne $transition.targetReleaseId) {
+        if($next.releaseId -ne $transition.originalReleaseId -or -not $MatchingBackup) {throw 'Resume using the same target release kit, or select the original release kit with -MatchingBackup pointing to the before-update ZIP.'}
+    } elseif($transition -and $manifestHash -ne $transition.manifestSha256) {throw 'The target manifest changed during a pending update. Use the same immutable kit to resume.'}
     $downgrade=Test-KitReleaseDowngrade $Config.releaseId $next.releaseId
     if($downgrade -and -not $MatchingBackup) {throw 'A downgrade requires -MatchingBackup with the backup made under the target release.'}
     if($MatchingBackup) {
@@ -163,33 +169,48 @@ function Update-KitRelease($Config,[string]$ManifestPath,[string]$MatchingBackup
         try {Expand-KitBackup $MatchingBackup $checkStage $targetConfig|Out-Null}
         finally {if(Test-Path -LiteralPath $checkStage) {Remove-Item -LiteralPath $checkStage -Recurse -Force}}
     }
-    $backup=Join-Path (Join-Path (Split-Path $ctx.Path -Parent) 'backups') ('before-update-'+[DateTime]::UtcNow.ToString('yyyyMMddHHmmss')+'.zip')
-    New-KitBackup $Config $backup | Out-Null
-    $source=Split-Path $ManifestPath -Parent; $cache=Join-Path (Split-Path $ctx.Path -Parent) 'artifacts'
+    if(-not $transition) {
+        $backup=Join-Path (Join-Path (Split-Path $ctx.Path -Parent) 'backups') ('before-update-'+[DateTime]::UtcNow.ToString('yyyyMMddHHmmss')+'.zip')
+        New-KitBackup $Config $backup | Out-Null
+        $transition=[pscustomobject]@{originalReleaseId=$Config.releaseId;targetReleaseId=$next.releaseId;backupPath=$backup;manifestSha256=$manifestHash;phase='native';matchingRestorePath=$MatchingBackup}
+        $ctx.State|Add-Member -NotePropertyName update -NotePropertyValue $transition -Force
+    } elseif($next.releaseId -ne $transition.targetReleaseId) {
+        # An explicit original-kit plus matching-backup rollback uses the existing
+        # consistent backup. Never snapshot an interrupted, mixed-version system.
+        $transition.targetReleaseId=$next.releaseId; $transition.manifestSha256=$manifestHash; $transition.phase='native'; $transition.matchingRestorePath=$MatchingBackup
+    }
+    $backup=$transition.backupPath; $ctx.State.phase='update-pending'; Save-KitCheckpoint $ctx.Path $ctx.State
+    $source=Split-Path $ManifestPath -Parent; $cache=Get-KitArtifactDirectory $next.releaseId
     foreach($key in @('plex','wrapper','appliance')) {Save-KitVerifiedArtifact $next.artifacts.$key (Join-Path $cache $next.artifacts.$key.filename) -AssetDirectory $source | Out-Null}
-    $oldRelease=$Config.releaseId; $service=Get-Service PlexService; $wasRunning=$service.Status -eq 'Running'
+    $oldRelease=$transition.originalReleaseId; $service=Get-Service PlexService; $wasRunning=$service.Status -eq 'Running'
     try {
         if($wasRunning) {Stop-Service PlexService; (Get-Service PlexService).WaitForStatus('Stopped',[TimeSpan]::FromSeconds(60))}
-        $plexPath=Join-Path $cache $next.artifacts.plex.filename
-        Write-Host 'Update Plex using the verified setup, leaving Launch Plex Media Server unchecked.'
-        $p=Start-Process -FilePath $plexPath -Wait -PassThru; if($p.ExitCode -notin @(0,3010)) {throw 'Plex update failed.'}
-        if(Get-Process -Name 'Plex Media Server' -ErrorAction SilentlyContinue) {throw 'Exit the interactive Plex process before resuming the update.'}
-        $credential=Get-KitCredential 'plex' "$($Config.smb.domain)\$($Config.plex.account)"; Initialize-KitWindowsNative; $props=Get-KitMsiPublicProperties $Config
-        [MediaKit.NativeWindows]::InstallMsi((Join-Path $cache $next.artifacts.wrapper.filename),$credential.UserName,$credential.Password,$props.MsiHiddenProperties,$props.SecureCustomProperties)
+        if($transition.phase -eq 'native') {
+            $plexPath=Join-Path $cache $next.artifacts.plex.filename
+            Write-Host 'Update Plex using the verified setup, leaving Launch Plex Media Server unchecked.'
+            $p=Start-Process -FilePath $plexPath -Wait -PassThru; if($p.ExitCode -notin @(0,3010)) {throw 'Plex update failed.'}
+            if(Get-Process -Name 'Plex Media Server' -ErrorAction SilentlyContinue) {throw 'Exit the interactive Plex process before resuming the update.'}
+            $credential=Get-KitCredential 'plex' "$($Config.smb.domain)\$($Config.plex.account)"; Initialize-KitWindowsNative; $props=Get-KitMsiPublicProperties $Config
+            [MediaKit.NativeWindows]::InstallMsi((Join-Path $cache $next.artifacts.wrapper.filename),$credential.UserName,$credential.Password,$props.MsiHiddenProperties,$props.SecureCustomProperties)
+            $transition.phase='guest'
+        }
+        $Config.releaseId=$next.releaseId; Save-KitCheckpoint $ctx.Path $ctx.State
         $payloadFiles=@{'release.json'=[Convert]::ToBase64String([IO.File]::ReadAllBytes($ManifestPath))}
         foreach($file in $next.files) {
             if($file.StartsWith('guest/') -and $file -notmatch '(^|/)(tests|__pycache__)(/|$)') {$relative=$file.Substring(6); Assert-KitArchiveEntry $relative | Out-Null; $payloadFiles[$relative]=[Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $source $file)))}
         }
-        $Config.releaseId=$next.releaseId; $payload=@{config=(Get-KitGuestConfig $Config);files=$payloadFiles}
+        $payload=@{config=(Get-KitGuestConfig $Config);files=$payloadFiles}
         $input=Join-Path (Get-KitSecretDirectory) 'release-upload.json'; [IO.File]::WriteAllText($input,($payload|ConvertTo-Json -Depth 20),[Text.UTF8Encoding]::new($false)); Protect-KitPath $input
         try {
             Invoke-KitGuest $Config 'release-upload' $input | Out-Null
-            if($MatchingBackup) {$status=Restore-KitBackup $Config $MatchingBackup} else {$status=Invoke-KitGuest $Config 'apply'}
+            if($transition.matchingRestorePath) {$status=Restore-KitBackup $Config $transition.matchingRestorePath} else {$status=Invoke-KitGuest $Config 'apply'}
         } finally {Remove-Item -LiteralPath $input -Force}
-        $ctx.State | Add-Member -NotePropertyName previousRelease -NotePropertyValue $oldRelease -Force; Save-KitCheckpoint $ctx.Path $ctx.State
-        Copy-Item -LiteralPath $ManifestPath -Destination (Join-Path (Split-Path $ctx.Path -Parent) 'release.json') -Force
+        $persistedManifest=Join-Path (Split-Path $ctx.Path -Parent) 'release.json'
+        if([IO.Path]::GetFullPath($ManifestPath) -ne [IO.Path]::GetFullPath($persistedManifest)) {Copy-Item -LiteralPath $ManifestPath -Destination $persistedManifest -Force}
+        $ctx.State | Add-Member -NotePropertyName previousRelease -NotePropertyValue $oldRelease -Force
+        $ctx.State.PSObject.Properties.Remove('update'); $ctx.State.phase='account-handoff'; Save-KitCheckpoint $ctx.Path $ctx.State
         return $status
-    } catch {throw "Update interrupted. The consistent backup is '$backup'. Restore its matching release binaries and state before retrying."}
+    } catch {throw "Update interrupted. Retry Update with this same target release.json. To restore the original release, use its kit release.json plus -MatchingBackup '$backup'. Status remains update-pending until completion."}
     finally {if($wasRunning) {Start-Service PlexService -ErrorAction Stop}}
 }
 function Uninstall-Kit($Config) {

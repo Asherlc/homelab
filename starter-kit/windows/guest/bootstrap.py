@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Root guest entry point. Stdlib only, public JSON output never includes secrets."""
 import argparse
+from contextlib import contextmanager
+import fcntl
 import hashlib
 import ipaddress
 import json
@@ -8,6 +10,8 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import stat
+import time
 import uuid
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import xml.etree.ElementTree as ET
@@ -144,7 +148,28 @@ def cleanup_seed(cloud=Path('/var/lib/cloud'),disable_path=Path('/etc/cloud/clou
     if cloud==Path('/var/lib/cloud'):
         Path('/run/cloud-init/instance-data-sensitive.json').unlink(missing_ok=True)
 
+@contextmanager
+def exclusive_apply_lock(path=Path('/run/starter-kit-apply.lock'),timeout=120):
+    fd=os.open(path,os.O_CREAT|os.O_RDWR|getattr(os,'O_NOFOLLOW',0),0o600)
+    try:
+        info=os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_uid!=os.geteuid() or info.st_mode & 0o077: raise ValueError('unsafe provisioning lock')
+        deadline=time.monotonic()+timeout
+        while True:
+            try: fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB); break
+            except BlockingIOError:
+                if time.monotonic()>=deadline: raise ValueError('guest apply is already running; retry after provisioning completes') from None
+                time.sleep(min(0.1,max(0,deadline-time.monotonic())))
+        yield
+    finally:
+        fcntl.flock(fd,fcntl.LOCK_UN); os.close(fd)
+
 def apply(c,release):
+    validate(c); validate_release(release,c)
+    if os.geteuid()!=0: raise ValueError('guest apply requires root')
+    with exclusive_apply_lock(): return _apply_locked(c,release)
+
+def _apply_locked(c,release):
     validate(c); validate_release(release,c)
     if os.geteuid()!=0: raise ValueError('guest apply requires root')
     BASE.mkdir(mode=0o700,parents=True,exist_ok=True); BASE.chmod(0o700)

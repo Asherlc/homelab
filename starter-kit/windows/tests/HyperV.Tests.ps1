@@ -50,4 +50,25 @@ Describe 'Hyper-V seed and network decisions' {
         Get-KitGuestCommand 'backup-remove' $a | Should -Be "sudo rm -- /var/lib/starter-kit/$a"
         {Get-KitGuestCommand 'backup' '../unsafe;touch x'} | Should -Throw
     }
+    It 'allows retrying apply after first boot failed with a still reachable guest' {
+        $c=Get-Fixture
+        InModuleScope MediaKit.HyperV -Parameters @{Config=$c} {
+            param($Config)
+            Mock Invoke-KitGuest {
+                param($Config,$Command)
+                if($Command -eq 'validate') {return [pscustomobject]@{installationId=$Config.installationId;releaseId=$Config.releaseId;phase='validated'}}
+                return [pscustomobject]@{installationId=$Config.installationId;releaseId=$Config.releaseId;phase='blocked'}
+            }
+            Mock Start-Sleep {}
+            (Wait-KitGuest $Config -TimeoutSeconds 1 -ConfigOnly).phase | Should -Be 'validated'
+        }
+        Get-KitGuestCommand 'validate' | Should -Match 'cloud-init status --format json'
+        Get-KitGuestCommand 'validate' | Should -Match '/opt/starter-kit/bootstrap.py validate'
+    }
+    It 'allows bounded image pulls and archive operations on the small HDD server' {
+        Get-KitGuestTimeoutSeconds 'apply' | Should -Be 1800
+        Get-KitGuestTimeoutSeconds 'backup' | Should -Be 1800
+        Get-KitGuestTimeoutSeconds 'restore' | Should -Be 1800
+        Get-KitGuestTimeoutSeconds 'validate' | Should -Be 60
+    }
 }

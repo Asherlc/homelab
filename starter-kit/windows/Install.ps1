@@ -73,7 +73,7 @@ try {
         }
     }
     Invoke-KitOperation $StatePath $state 'artifacts' {
-        foreach($key in @('plex','wrapper','appliance')) {Save-KitVerifiedArtifact $release.artifacts.$key (Join-Path (Join-Path (Split-Path $StatePath -Parent) 'artifacts') $release.artifacts.$key.filename) -AssetDirectory $PSScriptRoot | Out-Null}
+        foreach($key in @('plex','wrapper','appliance')) {Save-KitVerifiedArtifact $release.artifacts.$key (Join-Path (Get-KitArtifactDirectory $config.releaseId) $release.artifacts.$key.filename) -AssetDirectory $PSScriptRoot | Out-Null}
     }
     $plexCredential=Get-KitCredential 'plex' "$($config.smb.domain)\$($config.plex.account)"
     $smbCredential=Get-KitCredential 'smb' "$($config.smb.domain)\$($config.smb.account)"
@@ -94,7 +94,7 @@ try {
         if(-not @(Get-VMDvdDrive -VMName $config.vmName | Where-Object {$_.Path -eq $seedPath}).Count) {Add-VMDvdDrive -VMName $config.vmName -Path $seedPath}
     }
     if((Get-VM -Name $config.vmName).State -ne 'Running') {Start-VM -Name $config.vmName}
-    Invoke-KitOperation $StatePath $state 'guest' {Wait-KitGuest $config | Out-Null; Invoke-KitGuest $config 'apply' | Out-Null; Complete-KitSeed $config $seedPath | Out-Null}
+    Invoke-KitOperation $StatePath $state 'guest' {Wait-KitGuest $config -ConfigOnly | Out-Null; Invoke-KitGuest $config 'apply' | Out-Null; Complete-KitSeed $config $seedPath | Out-Null}
     $kitDirectory=Join-Path (Split-Path $StatePath -Parent) 'kit'
     Invoke-KitOperation $StatePath $state 'shortcuts' {
         [IO.Directory]::CreateDirectory($kitDirectory) | Out-Null

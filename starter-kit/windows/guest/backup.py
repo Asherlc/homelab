@@ -21,7 +21,9 @@ def digest_file(path):
         for chunk in iter(lambda:f.read(1024*1024),b''): result.update(chunk)
     return result.hexdigest()
 
-def control(action): bootstrap.docker('stop' if action=='stop' else 'start')
+def control(action):
+    if action=='stop': bootstrap.docker('stop')
+    else: bootstrap.docker('up','-d')  # Recreate when restored Compose pins different release images.
 
 def create_backup(config,destination,state=bootstrap.STATE,etc=bootstrap.BASE,service_control=control):
     destination=Path(destination); state=Path(state); etc=Path(etc)

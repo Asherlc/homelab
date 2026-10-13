@@ -49,7 +49,7 @@ function New-KitVM($Config,$Manifest) {
         if((Get-Content -LiteralPath $folderMarker -Raw | ConvertFrom-Json).installationId -ne $Config.installationId) {throw 'VM storage belongs to another installation.'}
     } elseif(@(Get-ChildItem -LiteralPath $Config.vmRoot -Force).Count) {throw 'Choose an empty VM directory to preserve unrelated files.'}
     else {[IO.File]::WriteAllText($folderMarker,(@{schemaVersion=1;installationId=$Config.installationId}|ConvertTo-Json),[Text.UTF8Encoding]::new($false))}
-    $source=Save-KitVerifiedArtifact $Manifest.artifacts.appliance (Join-Path (Join-Path (Split-Path $ctx.Path -Parent) 'artifacts') $Manifest.artifacts.appliance.filename)
+    $source=Save-KitVerifiedArtifact $Manifest.artifacts.appliance (Join-Path (Get-KitArtifactDirectory $Config.releaseId) $Manifest.artifacts.appliance.filename)
     $os=Join-Path $Config.vmRoot 'os.vhdx'; $state=Join-Path $Config.vmRoot 'appstate.vhdx'
     if(-not (Test-Path -LiteralPath $os)) {Copy-Item -LiteralPath $source -Destination $os}
     if((Get-VHD -Path $os).VhdType -ne 'Dynamic' -or (Get-VHD -Path $os).Size -gt 32GB) {throw 'Appliance must be a dynamic VHDX no larger than 32 GB.'}
@@ -173,14 +173,15 @@ function ConvertTo-KitWindowsArgument([string]$Value) {
     # CommandLineToArgvW: double backslashes only when followed by a quote or final quote.
     return '"'+([regex]::Replace([regex]::Replace($Value,'(\\*)"','$1$1\"'),'(\\+)$','$1$1'))+'"'
 }
-function Invoke-KitNative([string]$Program,[string[]]$Arguments,[string]$InputText='') {
+function Invoke-KitNative([string]$Program,[string[]]$Arguments,[string]$InputText='',[int]$TimeoutSeconds=300) {
+    if($TimeoutSeconds -lt 1 -or $TimeoutSeconds -gt 7200) {throw 'Unsupported external-operation timeout.'}
     $start=New-Object Diagnostics.ProcessStartInfo; $start.FileName=$Program; $start.Arguments=(@($Arguments | ForEach-Object {ConvertTo-KitWindowsArgument $_}) -join ' ')
     $start.UseShellExecute=$false; $start.CreateNoWindow=$true; $start.RedirectStandardInput=$true; $start.RedirectStandardOutput=$true; $start.RedirectStandardError=$true
     $process=New-Object Diagnostics.Process; $process.StartInfo=$start
     try {
         $process.Start() | Out-Null; $outTask=$process.StandardOutput.ReadToEndAsync(); $errorTask=$process.StandardError.ReadToEndAsync()
         if($InputText) {$process.StandardInput.Write($InputText)}; $process.StandardInput.Close()
-        if(-not $process.WaitForExit(300000)) {$process.Kill(); throw 'External operation exceeded five minutes.'}
+        if(-not $process.WaitForExit($TimeoutSeconds*1000)) {$process.Kill(); throw "External operation exceeded the bounded $TimeoutSeconds second timeout."}
         $stdout=$outTask.GetAwaiter().GetResult(); $stderr=$errorTask.GetAwaiter().GetResult()
         if($process.ExitCode -ne 0) {throw "External operation failed ($Program, exit $($process.ExitCode)); check service and network status."}
         return $stdout
@@ -202,6 +203,7 @@ function Get-KitKnownHostEntry($Config) {return "$($Config.guestIP) $($Config.gu
 function Get-KitGuestCommand([string]$Command,[string]$BackupName='') {
     if($Command -in @('backup','backup-download','backup-remove') -and $BackupName -notmatch '^host-backup-[0-9a-f]{32}\.tar$') {throw 'Backup operations require an installation-generated UUID spool name.'}
     switch($Command) {
+        'validate' {return 'sudo cloud-init status --format json | python3 -c ''import json,sys; sys.exit(0 if json.load(sys.stdin).get("status") in ("done","error","disabled") else 1)'' && sudo /opt/starter-kit/bootstrap.py validate --config /etc/starter-kit/config.json'}
         'apply' {return 'sudo /opt/starter-kit/bootstrap.py apply --config /etc/starter-kit/config.json'}
         'status' {return 'sudo /opt/starter-kit/bootstrap.py status --config /etc/starter-kit/config.json'}
         'backup' {return "sudo python3 /opt/starter-kit/backup.py --config /etc/starter-kit/config.json --output /var/lib/starter-kit/$BackupName"}
@@ -219,19 +221,26 @@ function Invoke-KitGuest($Config,[string]$Command,[string]$InputFile='',[string]
     $dir=Get-KitSecretDirectory; $remote=Get-KitGuestCommand $Command $BackupName
     $args=@('-i',(Join-Path $dir 'client'),'-o',('UserKnownHostsFile='+(Join-Path $dir 'known_hosts')),'-o','StrictHostKeyChecking=yes','-o','BatchMode=yes','-o','ConnectTimeout=10','-o','LogLevel=ERROR',('mediakit@'+$Config.guestIP),$remote)
     $input=''; if($InputFile) {$input=[IO.File]::ReadAllText($InputFile)}
-    $output=Invoke-KitNative 'ssh.exe' $args $input
-    if($Command -in @('apply','status','backup','restore')) {
+    $output=Invoke-KitNative 'ssh.exe' $args $input -TimeoutSeconds (Get-KitGuestTimeoutSeconds $Command)
+    if($Command -in @('validate','apply','status','backup','restore')) {
         try {$result=$output | ConvertFrom-Json} catch {throw 'Guest returned an invalid status document.'}
         if($result.installationId -ne $Config.installationId -or $result.releaseId -ne $Config.releaseId) {throw 'Guest installation or release identity does not match.'}
         return $result
     }
     return $output
 }
-function Wait-KitGuest($Config,[int]$TimeoutSeconds=600) {
+function Get-KitGuestTimeoutSeconds([string]$Command) {
+    if($Command -in @('apply','backup','backup-download','restore','restore-upload')) {return 1800}
+    if($Command -eq 'validate') {return 60}
+    return 300
+}
+function Wait-KitGuest($Config,[int]$TimeoutSeconds=1800,[switch]$ConfigOnly) {
     $timer=[Diagnostics.Stopwatch]::StartNew(); $last=$null
     while($timer.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
         try {
-            $last=Invoke-KitGuest $Config 'status'
+            $command='status'; if($ConfigOnly) {$command='validate'}
+            $last=Invoke-KitGuest $Config $command
+            if($ConfigOnly -and $last.phase -eq 'validated') {return $last}
             if($last.phase -in @('ready','complete','interactive-pending','configured','account-handoff')) {return $last}
         } catch { } # bounded retries, no raw SSH output or secret-bearing remote error
         Start-Sleep -Seconds 5

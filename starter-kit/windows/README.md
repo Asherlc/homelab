@@ -43,6 +43,22 @@ Run `Maintenance.ps1` through Windows PowerShell with an action:
 
 The wizard creates shortcuts for common actions. Backups include Plex preferences/database and the supporting apps' configuration and credentials; media files are excluded by default. Store backups somewhere with enough space and keep their access restricted. Updates use a complete tested release manifest. Restore uses the matching backup/release so database migrations and binary versions stay together. Uninstall preserves media and backups.
 
+For an update, select the new extracted kit's manifest explicitly:
+
+```powershell
+.\Maintenance.ps1 -Action Update -Path 'D:\Downloads\NewKit\release.json'
+```
+
+If interrupted, run that same command with the same kit. The saved update checkpoint records the original and target releases, the before-update backup, and progress. It retries guest setup without backing up a mixture of old and new versions. Status reports `update-pending` until the target setup succeeds. Artifact caches are kept separately for each release.
+
+To restore the original release after an interrupted update, use its complete kit and the before-update ZIP shown by Status:
+
+```powershell
+.\Maintenance.ps1 -Action Update -Path 'D:\Downloads\OriginalKit\release.json' -MatchingBackup 'C:\ProgramData\MediaKit\backups\before-update-YYYYMMDDHHMMSS.zip'
+```
+
+This reinstalls the matching native binaries and guest runtime before restoring their state. Follow the verified Plex setup screens and leave Launch unchecked. Windows may require removing a newer native application version before permitting its older installer; preserve its profile data. First boot, image downloads and guest archive operations have bounded 30-minute waits. A failed initial setup can be retried after fixing the reported network/storage issue; the wizard waits for cloud-init to finish or fail before retrying guest configuration.
+
 ## Candidate status
 
 The automated build verifies source/input checksums, PowerShell/Python behavior, patched wrapper logging, and the package allowlist. Actual Windows cold-boot behavior, Intel Quick Sync, and LAN discovery require validation on the target machine. See [VALIDATION.md](VALIDATION.md) for the exact procedure and recorded results.

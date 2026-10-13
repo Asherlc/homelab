@@ -35,6 +35,7 @@ class FixtureTransport:
             return {'status':True}
         if path.endswith('/test'): return []
         if path.endswith('/config/mediamanagement'): return {'id':1,'copyUsingHardlinks':True}
+        if app=='seerr' and path.endswith('/settings/public'): return {'initialized':False}
         if app=='seerr': raise ValueError('SECRET TOKEN must not leak')
         key=(app,path.rsplit('/',1)[0] if method=='PUT' else path)
         values=self.resources.setdefault(key,[{'id':90,'name':'unrelated','path':'/unrelated'}])
@@ -110,5 +111,16 @@ class APITests(unittest.TestCase):
             else: next(category for category in t.resources[(downloader,'config')]['config']['categories'] if category['name']=='tv')['dir']='/unsafe'
             health=api_setup.verify_apps(c,t)
             self.assertFalse(health['checks']['downloadCategories'])
+    def test_seerr_must_respond_while_account_setup_stays_pending(self):
+        import api_setup
+        t=FixtureTransport('qbittorrent'); api_setup.configure_apps(CONTRACT,t)
+        health=api_setup.verify_apps(CONTRACT,t)
+        self.assertTrue(health['checks']['seerr']); self.assertTrue(health['pendingSteps'])
+        original=t.request
+        def unavailable(app,*args,**kwargs):
+            if app=='seerr': raise ValueError('unavailable')
+            return original(app,*args,**kwargs)
+        t.request=unavailable
+        self.assertFalse(api_setup.verify_apps(CONTRACT,t)['checks']['seerr'])
 
 if __name__=='__main__': unittest.main()

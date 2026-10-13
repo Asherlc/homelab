@@ -1,6 +1,6 @@
 BeforeAll {
     $root=Split-Path $PSScriptRoot -Parent
-    foreach($name in @('Common','Secrets','UserHive','Maintenance')) {if(Test-Path "$root/modules/MediaKit.$name.psm1") {Import-Module "$root/modules/MediaKit.$name.psm1" -Force}}
+    foreach($name in @('Common','Artifacts','Secrets','UserHive','Windows','HyperV','Maintenance')) {if(Test-Path "$root/modules/MediaKit.$name.psm1") {Import-Module "$root/modules/MediaKit.$name.psm1" -Force}}
     function Get-Fixture { Get-Content "$PSScriptRoot/fixtures/host-config.json" -Raw | ConvertFrom-Json }
 }
 Describe 'Safe maintenance' {
@@ -52,5 +52,37 @@ Describe 'Safe maintenance' {
         Test-KitReleaseDowngrade '0.2.0-candidate.2' '0.1.0-candidate.1' | Should -BeTrue
         Test-KitReleaseDowngrade '0.1.0-candidate.2' '0.1.0-candidate.1' | Should -BeTrue
         Test-KitReleaseDowngrade '0.1.0-candidate.1' '0.2.0-candidate.1' | Should -BeFalse
+    }
+    It 'resumes a persisted guest update without creating a mixed-release backup' {
+        function global:Get-Service {param($Name)}
+        function global:Start-Service {param($Name)}
+        function global:Stop-Service {param($Name)}
+        try {
+            $c=Get-Fixture; $original=$c.releaseId; $c.releaseId='0.2.0-candidate.1'
+            $m=[IO.File]::ReadAllText((Join-Path $root 'release.json'))|ConvertFrom-Json; $m.releaseId=$c.releaseId; $m.files=@('guest/bootstrap.py')
+            foreach($k in @('plex','wrapper','appliance')) {$m.artifacts.$k.sha256='a'*64}
+            $manifest=Join-Path $TestDrive 'release.json'; [IO.File]::WriteAllText($manifest,($m|ConvertTo-Json -Depth 20))
+            [IO.Directory]::CreateDirectory((Join-Path $TestDrive 'guest'))|Out-Null; [IO.File]::WriteAllText((Join-Path $TestDrive 'guest/bootstrap.py'),'fixture')
+            $state=[pscustomobject]@{schemaVersion=1;config=$c;phase='update-pending';completed=@();resources=@();update=[pscustomobject]@{originalReleaseId=$original;targetReleaseId=$c.releaseId;backupPath=(Join-Path $TestDrive 'original.zip');manifestSha256=(Get-FileHash $manifest -Algorithm SHA256).Hash;phase='guest';matchingRestorePath=''}}
+            $statePath=Join-Path $TestDrive 'state.json'; Set-KitContext $statePath $state
+            InModuleScope MediaKit.Maintenance -Parameters @{Config=$c;Manifest=$manifest;Base=$TestDrive;StatePath=$statePath} {
+                param($Config,$Manifest,$Base,$StatePath)
+                Mock Save-KitVerifiedArtifact {return $Destination}
+                Mock New-KitBackup {throw 'A new backup of mixed versions is forbidden'}
+                Mock Get-Service {[pscustomobject]@{Status='Stopped'}}
+                Mock Start-Service {}; Mock Stop-Service {}; Mock Protect-KitPath {}
+                Mock Get-KitSecretDirectory {return $Base}
+                $script:applyAttempts=0
+                Mock Invoke-KitGuest {
+                    param($Config,$Command)
+                    if($Command -eq 'apply') {$script:applyAttempts++; if($script:applyAttempts -eq 1) {throw 'first apply interrupted'}; return [pscustomobject]@{phase='account-handoff'}}
+                    if($Command -eq 'status') {return [pscustomobject]@{phase='blocked'}}
+                }
+                {Update-KitRelease $Config $Manifest} | Should -Throw '*interrupted*'
+                (Get-KitCheckpoint $StatePath).update.targetReleaseId | Should -Be $Config.releaseId
+                (Update-KitRelease $Config $Manifest).phase | Should -Be 'account-handoff'
+                (Get-KitCheckpoint $StatePath).PSObject.Properties.Name | Should -Not -Contain 'update'
+            }
+        } finally {foreach($n in @('Get-Service','Start-Service','Stop-Service')) {Remove-Item "Function:\$n"}}
     }
 }

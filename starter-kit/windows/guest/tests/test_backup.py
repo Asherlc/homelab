@@ -67,5 +67,11 @@ class BackupTests(unittest.TestCase):
         self.events=[]
         with self.assertRaises(RuntimeError): restore.restore_backup(CONTRACT,self.archive,self.state,self.etc,broken_stop)
         self.assertEqual(self.events,['stop','start'])
+    def test_restart_reconciles_restored_pinned_image_definitions(self):
+        import backup
+        from unittest.mock import patch
+        commands=[]
+        with patch.object(backup.bootstrap,'docker',lambda *args:commands.append(args)): backup.control('start')
+        self.assertEqual(commands,[('up','-d')])
 
 if __name__=='__main__': unittest.main()

@@ -71,13 +71,18 @@ function Get-KitGuestConfig($Config) {
 function Get-KitCheckpoint([string]$Path) {
     if(-not (Test-Path -LiteralPath $Path)) {return $null}
     $s=[IO.File]::ReadAllText($Path) | ConvertFrom-Json
-    Assert-KitFields $s @('schemaVersion','config','phase','completed','resources') @('pending','lastBackup','previousRelease','rebootRequired')
+    Assert-KitFields $s @('schemaVersion','config','phase','completed','resources') @('pending','lastBackup','previousRelease','rebootRequired','update')
     Test-KitConfig $s.config | Out-Null; return $s
 }
 function Save-KitCheckpoint([string]$Path,$Checkpoint) {
-    Assert-KitFields $Checkpoint @('schemaVersion','config','phase','completed','resources') @('pending','lastBackup','previousRelease','rebootRequired')
+    Assert-KitFields $Checkpoint @('schemaVersion','config','phase','completed','resources') @('pending','lastBackup','previousRelease','rebootRequired','update')
     if($Checkpoint.schemaVersion -ne 1) {throw 'Unsupported checkpoint schema.'}
     Test-KitConfig $Checkpoint.config | Out-Null
+    if($Checkpoint.PSObject.Properties.Name -contains 'update') {
+        Assert-KitFields $Checkpoint.update @('originalReleaseId','targetReleaseId','backupPath','manifestSha256','phase','matchingRestorePath')
+        foreach($key in @('originalReleaseId','targetReleaseId')) {if($Checkpoint.update.$key -notmatch '^[a-zA-Z0-9][a-zA-Z0-9._-]{0,79}$') {throw 'Invalid update release identity.'}}
+        if($Checkpoint.update.manifestSha256 -notmatch '^[a-fA-F0-9]{64}$' -or $Checkpoint.update.phase -notin @('native','guest')) {throw 'Invalid update checkpoint.'}
+    }
     foreach($r in $Checkpoint.resources) {Assert-KitFields $r @('type','name','installationId') @('sid','path','productCode'); if($r.installationId -ne $Checkpoint.config.installationId) {throw 'Resource ownership identity differs from the installation.'}}
     $previous=Get-KitCheckpoint $Path
     if($previous -and $previous.config.installationId -ne $Checkpoint.config.installationId) {throw 'Checkpoint installation identity cannot change.'}
@@ -98,6 +103,10 @@ function Save-KitCheckpoint([string]$Path,$Checkpoint) {
 }
 function Set-KitContext([string]$Path,$Checkpoint) {$script:Context=@{Path=$Path;State=$Checkpoint}}
 function Get-KitContext {if(-not $script:Context) {throw 'Installer context has not been initialized.'}; return $script:Context}
+function Get-KitArtifactDirectory([string]$ReleaseId) {
+    if($ReleaseId -notmatch '^[a-zA-Z0-9][a-zA-Z0-9._-]{0,79}$') {throw 'Invalid artifact release identity.'}
+    $ctx=Get-KitContext; return Join-Path (Join-Path (Split-Path $ctx.Path -Parent) 'artifacts') $ReleaseId
+}
 function Register-KitResource([string]$Type,[string]$Name,[string]$Sid='',[string]$Path='',[string]$ProductCode='') {
     $ctx=Get-KitContext; $c=$ctx.State.config
     $existing=@($ctx.State.resources | Where-Object {$_.type -eq $Type -and $_.name -eq $Name})

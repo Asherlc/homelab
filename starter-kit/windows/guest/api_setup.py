@@ -185,6 +185,8 @@ def verify_apps(config,transport):
     except Exception: pending.append('Indexer/provider credentials')
     try:
         public=transport.request('seerr','GET','/api/v1/settings/public')
+        if not isinstance(public,dict) or 'initialized' not in public: raise ValueError('invalid requests service response')
+        checks['seerr']=True
         if not public.get('initialized'): pending.extend(PENDING[:2])
         else:
             libraries=transport.request('seerr','GET','/api/v1/settings/plex/library')
@@ -192,5 +194,5 @@ def verify_apps(config,transport):
             for app in ['sonarr','radarr']:
                 servers=transport.request('seerr','GET','/api/v1/settings/'+app)
                 if not any(s.get('name')=='MediaKit '+app for s in servers): pending.append('Seerr '+app+' connection')
-    except Exception: pending.extend(PENDING[:2])
+    except Exception: checks['seerr']=False; pending.extend(PENDING[:2])
     return {'checks':checks,'pendingSteps':pending}

@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 
@@ -131,5 +132,20 @@ class CoreTests(unittest.TestCase):
         kit_secrets.create_once(self.root/'app-secrets.json',CONTRACT['installationId'],{})
         with patch.object(bootstrap,'BASE',self.root),patch.object(bootstrap.storage,'verify',lambda c:True),patch.object(api_setup,'verify_apps',lambda c,t:{'checks':{'connections':True},'pendingSteps':[]}),patch.object(bootstrap,'interface_name',side_effect=ValueError()):
             self.assertEqual(bootstrap.status(CONTRACT)['phase'],'blocked')
+    def test_apply_lock_serializes_processes_times_out_and_releases(self):
+        import bootstrap
+        lock=self.root/'apply.lock'; bootstrap.exclusive_apply_lock
+        script='import sys; sys.path.insert(0,sys.argv[1]); import bootstrap;\nwith bootstrap.exclusive_apply_lock(sys.argv[2],1):\n print("locked",flush=True); input()\n'
+        child=subprocess.Popen([sys.executable,'-c',script,str(GUEST),str(lock)],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        try:
+            self.assertEqual(child.stdout.readline().strip(),'locked')
+            with self.assertRaisesRegex(ValueError,'already running'):
+                with bootstrap.exclusive_apply_lock(lock,0.05): self.fail('overlapping apply entered')
+            child.communicate('\n',timeout=5); self.assertEqual(child.returncode,0)
+            with self.assertRaises(RuntimeError):
+                with bootstrap.exclusive_apply_lock(lock,1): raise RuntimeError('interrupted apply')
+            with bootstrap.exclusive_apply_lock(lock,1): self.assertEqual(lock.stat().st_mode & 0o777,0o600)
+        finally:
+            if child.poll() is None: child.kill(); child.communicate()
 
 if __name__=='__main__': unittest.main()

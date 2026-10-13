@@ -70,4 +70,11 @@ Describe 'Artifacts and manifest' {
         $dest=Join-Path $TestDrive 'wrapper-cache/PmsServiceInstaller.msi'
         Save-KitVerifiedArtifact $a $dest -AssetDirectory $TestDrive | Should -Be $dest
     }
+    It 'isolates same-named immutable artifacts across release updates' {
+        $c=Get-Fixture; Set-KitContext (Join-Path $TestDrive 'state.json') ([pscustomobject]@{schemaVersion=1;config=$c;phase='ready';completed=@();resources=@()})
+        $a=Join-Path (Get-KitArtifactDirectory '0.1.0-candidate.1') 'PlexMediaServer.exe'
+        $b=Join-Path (Get-KitArtifactDirectory '0.2.0-candidate.1') 'PlexMediaServer.exe'
+        $a | Should -Not -Be $b
+        {Get-KitArtifactDirectory '../unsafe'} | Should -Throw
+    }
 }

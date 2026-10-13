@@ -15,6 +15,7 @@ try {
     Set-KitContext $StatePath $state; $config=$state.config
     switch($Action) {
         'Status' {
+            if($state.PSObject.Properties.Name -contains 'update') {Write-Host "Update pending: $($state.update.originalReleaseId) -> $($state.update.targetReleaseId). Retry Update with the same target kit, or use the original kit plus -MatchingBackup $($state.update.backupPath)."; break}
             Get-KitPlexStatus $config | ConvertTo-Json -Depth 5
             $vm=Get-VM -Name $config.vmName -ErrorAction SilentlyContinue
             if(-not $vm -or $vm.State -ne 'Running') {Write-Host 'The companion VM is stopped. Rerun Install.cmd or start the owned VM in Hyper-V Manager.'}
