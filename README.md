@@ -14,6 +14,9 @@ Encrypted files are safe to store on GitHub!
 - [Backup & Recovery Guide](docs/BACKUP_README.md)
 - [Quick Reference](docs/QUICK_REFERENCE.md)
 - [SOPS Encryption Guide](docs/SOPS_GUIDE.md)
+- [Windows Plex Starter Kit Design](docs/superpowers/specs/2026-10-13-windows-plex-installer-design.md)
+
+The Windows Plex starter kit is at the design stage. Its documentation covers native Windows Plex, the Hyper-V media stack, startup before Windows sign-in, shared storage, backups, and the planned installation flow. Installation instructions will accompany the tested release.
 
 ## 🚀 Quick Start
 
