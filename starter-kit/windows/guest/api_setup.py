@@ -80,6 +80,13 @@ def schema_payload(schemas,implementation,fields):
     for name,value in fields.items(): known[name]['value']=value
     return result
 
+def test_provider(t,app,path,desired):
+    result=t.request(app,'POST',path,payload=desired)
+    # Arr ProviderControllerBase returns the literal string "{}" on HTTP200.
+    # Depending on content negotiation, transport decodes an empty object or
+    # a JSON string containing that object. HTTP400 validation remains fatal.
+    if result not in [None,{},[],'{}','']: raise ValueError(app+' connection test failed '+response_summary(result))
+
 def reconcile(t,app,path,desired,key='name'):
     records=t.request(app,'GET',path)
     if not isinstance(records,list): raise ValueError('invalid managed-resource response')
@@ -133,13 +140,13 @@ def configure_apps(config,transport,attempts=12):
         if downloader=='sabnzbd': fields['apiKey']=t.secrets[downloader]['apiKey']
         desired=schema_payload(schema,implementation,fields)
         desired.update({'name':'MediaKit '+downloader,'enable':True,'priority':1,'removeCompletedDownloads':True,'removeFailedDownloads':True})
-        if t.request(app,'POST',prefix+'/downloadclient/test',payload=desired): raise ValueError('download client connection test failed')
+        test_provider(t,app,prefix+'/downloadclient/test',desired)
         reconcile(t,app,prefix+'/downloadclient',desired)
     schema=t.request('prowlarr','GET','/api/v1/applications/schema')
     for app in ['sonarr','radarr']:
         desired=schema_payload(schema,app.capitalize(),{'prowlarrUrl':'http://prowlarr:9696','baseUrl':'http://'+app+':'+str(PORTS[app]),'apiKey':t.secrets[app]['apiKey'],'syncCategories':[5000] if app=='sonarr' else [2000]})
         desired.update({'name':'MediaKit '+app,'syncLevel':'fullSync'})
-        if t.request('prowlarr','POST','/api/v1/applications/test',payload=desired): raise ValueError('Prowlarr connection test failed')
+        test_provider(t,'prowlarr','/api/v1/applications/test',desired)
         reconcile(t,'prowlarr','/api/v1/applications',desired)
     return {'checks':{'connections':True},'pendingSteps':list(PENDING)}
 
@@ -196,11 +203,13 @@ def verify_apps(config,transport):
             if not any(r.get('path')==root for r in roots): raise ValueError()
             clients=transport.request(app,'GET','/api/v3/downloadclient')
             match=[r for r in clients if r.get('name')=='MediaKit '+config['downloader'] and r.get('enable')]
-            if len(match)!=1 or transport.request(app,'POST','/api/v3/downloadclient/test',payload=match[0]): raise ValueError()
+            if len(match)!=1: raise ValueError()
+            test_provider(transport,app,'/api/v3/downloadclient/test',match[0])
         applications=transport.request('prowlarr','GET','/api/v1/applications')
         for app in ['sonarr','radarr']:
             match=[r for r in applications if r.get('name')=='MediaKit '+app]
-            if len(match)!=1 or transport.request('prowlarr','POST','/api/v1/applications/test',payload=match[0]): raise ValueError()
+            if len(match)!=1: raise ValueError()
+            test_provider(transport,'prowlarr','/api/v1/applications/test',match[0])
         checks['connections']=True
     except Exception: checks['connections']=False
     try:

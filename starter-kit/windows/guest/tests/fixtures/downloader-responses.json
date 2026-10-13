@@ -2,17 +2,19 @@
   "provenance": {
     "kind": "Documented response fixtures, not live-container captures",
     "retrieved": "2026-10-13",
-    "qbittorrent": "https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-5.0)",
-    "sabnzbd": "https://sabnzbd.org/wiki/configuration/4.5/api"
+    "qbittorrent": "https://github.com/qbittorrent/qBittorrent/blob/release-5.2.4/src/webui/api/authcontroller.cpp",
+    "sabnzbd": "https://sabnzbd.org/wiki/configuration/5.1/api"
   },
   "qbittorrent": {
-    "login": "Ok.",
+    "login": null,
+    "loginStatus": 200,
+    "legacyLogin": "Ok.",
     "categories": {
       "existing": {"name": "existing", "savePath": "/data/downloads/existing"}
     }
   },
   "sabnzbd": {
-    "version": {"version": "4.5.0"},
+    "version": {"version": "5.1.3"},
     "categoryConfig": {
       "config": {
         "categories": [
