@@ -1,0 +1,34 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: media-kit-factory
+    username: mediakit-builder
+    password: "!"
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  ssh:
+    install-server: true
+    allow-pw: false
+    authorized-keys:
+      - BUILD_SSH_PUBLIC_KEY
+  storage:
+    layout:
+      name: direct
+  packages:
+    - cloud-init
+    - openssh-server
+    - python3
+    - cifs-utils
+    - avahi-daemon
+    - docker.io
+    - docker-compose-v2
+    - linux-tools-virtual
+    - linux-cloud-tools-virtual
+    - sbsigntool
+  updates: security
+  late-commands:
+    - 'echo "mediakit-builder ALL=(ALL) NOPASSWD: ALL" > /target/etc/sudoers.d/90-mediakit-builder'
+    - chmod 0440 /target/etc/sudoers.d/90-mediakit-builder
+  shutdown: reboot

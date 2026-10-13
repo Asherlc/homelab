@@ -1,0 +1,13 @@
+[Unit]
+Description=Installer-owned authenticated Windows media
+Wants=network-online.target
+After=network-online.target
+Before=docker.service docker.socket
+[Mount]
+What=//{{hostIP}}/{{share}}
+Where=/data
+Type=cifs
+Options=credentials=/etc/starter-kit/smb.credentials,vers=3.1.1,seal,uid=1000,gid=1000,file_mode=0664,dir_mode=0775,nosuid,nodev,noexec,_netdev
+TimeoutSec=30
+[Install]
+WantedBy=multi-user.target

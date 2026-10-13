@@ -1,0 +1,14 @@
+[Unit]
+Description=Installer-owned media applications
+Requires=docker.service
+After=docker.service
+BindsTo=docker.service
+ConditionPathExists=/etc/starter-kit/compose.json
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/docker compose -p starter-kit -f /etc/starter-kit/compose.json up -d
+ExecStop=/usr/bin/docker compose -p starter-kit -f /etc/starter-kit/compose.json stop
+TimeoutStartSec=180
+[Install]
+WantedBy=docker.service

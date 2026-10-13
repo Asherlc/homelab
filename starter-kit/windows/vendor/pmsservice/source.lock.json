@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/cjmurph/PmsService",
+  "version": "1.2.3",
+  "commit": "f1cb2de5795aa4149b4670b6f0f2973b41003c08",
+  "archive": {
+    "url": "https://codeload.github.com/cjmurph/PmsService/zip/f1cb2de5795aa4149b4670b6f0f2973b41003c08",
+    "sha256": "fc1b72e536532bd8d2cb53ce9bb946d95090c304bcb9867e1ce9ec68ae11d497",
+    "root": "PmsService-f1cb2de5795aa4149b4670b6f0f2973b41003c08"
+  },
+  "patch": {
+    "filename": "redact-secrets.patch",
+    "sha256": "551b2b344cb6f55cbd4665371762107dfcda5fea44212fb0c7ced99b8862b32a",
+    "encoding": "UTF-8/LF"
+  },
+  "patchedVersion": "1.2.300",
+  "assemblyVersion": "1.2.300.1",
+  "bundledDlls": [
+    {
+      "filename": "PlexServiceInstaller/ActiveDirectory.dll",
+      "sha256": "7cff5d3bd2e6cb1f61d458a2afc8ae3d8687ee86c63af3179d2dc43192360e33",
+      "license": "EPL-1.0",
+      "source": "https://github.com/dblock/msiext"
+    },
+    {
+      "filename": "PlexServiceInstaller/UserPrivileges.dll",
+      "sha256": "8892c8bb85b1e326f6d16aa37a02f25dc7170aace3c6d111ff577bca07fa1ffb",
+      "license": "EPL-1.0",
+      "source": "https://github.com/dblock/msiext"
+    },
+    {
+      "filename": "PlexServiceInstaller/WixCommonUiExtension.dll",
+      "sha256": "8cc76596947bfa81c584b66b5b7b106058f05c94c3132f5cc6dc5553b7b01167",
+      "license": "EPL-1.0",
+      "source": "https://github.com/dblock/msiext"
+    }
+  ],
+  "wix": {
+    "version": "3.14.1",
+    "url": "https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip",
+    "sha256": "6ac824e1642d6f7277d0ed7ea09411a508f6116ba6fae0aa5f2c7daa2ff43d31"
+  },
+  "bundledSourceArchives": [
+    {
+      "filename": "ThirdPartyLibraries/msiext-master.zip",
+      "sha256": "a6bc17e1ed6dad7c7515831caa750ac032b81c86905ac8ef9cfbf411a490fcef",
+      "license": "EPL-1.0"
+    }
+  ]
+}

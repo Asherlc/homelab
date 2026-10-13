@@ -1,0 +1,11 @@
+[Unit]
+Description=Dedicated ext4 appstate
+Before=docker.service docker.socket
+[Mount]
+What=/dev/disk/by-uuid/{{stateUUID}}
+Where=/var/lib/starter-kit
+Type=ext4
+Options=nosuid,nodev
+TimeoutSec=30
+[Install]
+WantedBy=multi-user.target

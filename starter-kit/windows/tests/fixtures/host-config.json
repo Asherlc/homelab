@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "installationId": "05dd38dd-66a5-4e44-a26c-d33e05a223b8",
+  "releaseId": "0.1.0-candidate.1",
+  "hostname": "media-05dd38dd",
+  "timezone": "America/Los_Angeles",
+  "downloader": "qbittorrent",
+  "mediaRoot": "C:\\MediaStack\\data",
+  "vmRoot": "C:\\MediaStack\\vm",
+  "vmName": "MediaKit-05dd38dd",
+  "externalSwitchName": "MediaKit-LAN-05dd38dd",
+  "internalSwitchName": "MediaKit-Private-05dd38dd",
+  "externalAdapterName": "Ethernet",
+  "hostIP": "172.29.240.1",
+  "guestIP": "172.29.240.2",
+  "prefixLength": 30,
+  "network": {
+    "internalMac": "00155D123401",
+    "externalMac": "00155D123402"
+  },
+  "smb": {
+    "account": "media-smb-05dd38dd",
+    "domain": "FRIEND-PC",
+    "share": "MediaKit-05dd38dd",
+    "credentialsRef": "/run/starter-kit-secrets/smb.credentials"
+  },
+  "plex": {
+    "account": "media-plex-05dd38dd"
+  },
+  "sshPublicKey": "ssh-ed25519 AAAATEST fixture-only",
+  "guestHostPublicKey": "ssh-ed25519 AAAAHOST fixture-only"
+}

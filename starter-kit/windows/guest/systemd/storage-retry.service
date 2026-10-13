@@ -1,0 +1,7 @@
+[Unit]
+Description=Verify storage and recover gated guest daemon
+After=network-online.target
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/starter-kit/storage.py retry --config /etc/starter-kit/config.json
+TimeoutStartSec=110

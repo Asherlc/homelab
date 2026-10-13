@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "releaseId",
+    "minimumWindowsBuild",
+    "artifacts",
+    "images",
+    "templateRevisions",
+    "files"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "releaseId": {
+      "type": "string"
+    },
+    "minimumWindowsBuild": {
+      "type": "integer",
+      "minimum": 22631
+    },
+    "artifacts": {
+      "type": "object",
+      "required": [
+        "plex",
+        "wrapper",
+        "appliance"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "plex": {
+          "type": "object",
+          "required": [
+            "filename",
+            "sha256",
+            "architecture"
+          ],
+          "properties": {
+            "filename": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            },
+            "architecture": {
+              "const": "amd64"
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^https://"
+            },
+            "publisher": {
+              "type": "string"
+            }
+          }
+        },
+        "wrapper": {
+          "type": "object",
+          "required": [
+            "filename",
+            "sha256",
+            "architecture"
+          ],
+          "properties": {
+            "filename": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            },
+            "architecture": {
+              "const": "x86"
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^https://"
+            },
+            "publisher": {
+              "type": "string"
+            }
+          }
+        },
+        "appliance": {
+          "type": "object",
+          "required": [
+            "filename",
+            "sha256",
+            "architecture"
+          ],
+          "properties": {
+            "filename": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            },
+            "architecture": {
+              "const": "amd64"
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^https://"
+            },
+            "publisher": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "images": {
+      "type": "object",
+      "required": [
+        "sonarr",
+        "radarr",
+        "prowlarr",
+        "seerr",
+        "qbittorrent",
+        "sabnzbd",
+        "configarr"
+      ],
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "@sha256:[0-9a-f]{64}$"
+      }
+    },
+    "templateRevisions": {
+      "type": "object",
+      "required": [
+        "trash",
+        "recyclarr"
+      ],
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{40}$"
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

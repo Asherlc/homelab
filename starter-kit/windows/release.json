@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "0.1.0-candidate.1",
+  "minimumWindowsBuild": 22631,
+  "validation": {
+    "windowsColdBoot": "pending",
+    "quickSync": "pending"
+  },
+  "artifacts": {
+    "plex": {
+      "filename": "PlexMediaServer.exe",
+      "version": "1.43.4.10903-e5521bd8c",
+      "url": "https://downloads.plex.tv/plex-media-server-new/1.43.4.10903-e5521bd8c/windows/PlexMediaServer-1.43.4.10903-e5521bd8c-x86_64.exe",
+      "sha256": "4543b1307d601f4e69cf6de81d4fd0eefd9e1f94cd9d6e36f342e40aa6326025",
+      "architecture": "amd64",
+      "publisher": "Plex, Inc."
+    },
+    "wrapper": {
+      "filename": "PmsServiceInstaller.msi",
+      "version": "1.2.300",
+      "sha256": null,
+      "architecture": "x86"
+    },
+    "appliance": {
+      "filename": "media-kit.vhdx",
+      "sha256": null,
+      "architecture": "amd64"
+    }
+  },
+  "images": {
+    "sonarr": "lscr.io/linuxserver/sonarr@sha256:0deb8db6c839ac475e9cd86277712772c40ba7f929a003d7e1de36c4b666bc13",
+    "radarr": "lscr.io/linuxserver/radarr@sha256:cfbc4fa09dc9d78f7cedc898f4ec48c6277cacedc523c4e159db6ff1c741959c",
+    "prowlarr": "lscr.io/linuxserver/prowlarr@sha256:f9151e5bc1025c6d0a630d503210cdcb6bb55a7cc098562609d96a408d838902",
+    "seerr": "ghcr.io/seerr-team/seerr@sha256:27602401178d54f1964442287b9f23f67a3fa2252645ee8065839ea1c3f69e45",
+    "qbittorrent": "lscr.io/linuxserver/qbittorrent@sha256:97333cc1ccf903e0bbcd8eb67e3332e4970e9c1ecabe145e499e9c0847ebcaed",
+    "sabnzbd": "lscr.io/linuxserver/sabnzbd@sha256:382f9bd4e3f6df2abf7bcc92edada0c5bd4d4ff26eb5416f257ac54989464fa1",
+    "configarr": "ghcr.io/raydak-labs/configarr@sha256:ec45316830df5b100e52fa034603b1c1cf49e93b74381376c29e96782aad9723"
+  },
+  "templateRevisions": {
+    "trash": "14a4166673996301e588a4f70d03b9cfb760b50f",
+    "recyclarr": "4ae377bb704fc7fd69a544ad04e91357e0b09f62"
+  },
+  "files": [
+    "Install.cmd",
+    "Install.ps1",
+    "Maintenance.ps1",
+    "README.md",
+    "VALIDATION.md",
+    "guest/api_setup.py",
+    "guest/backup.py",
+    "guest/bootstrap.py",
+    "guest/kit_secrets.py",
+    "guest/restore.py",
+    "guest/secrets.py",
+    "guest/storage.py",
+    "guest/systemd/data.mount",
+    "guest/systemd/docker.service.d/storage.conf",
+    "guest/systemd/docker.socket.d/storage.conf",
+    "guest/systemd/starter-kit-apps.service",
+    "guest/systemd/starter-kit-state.mount",
+    "guest/systemd/storage-retry.service",
+    "guest/systemd/storage-retry.timer",
+    "guest/templates/configarr.yml",
+    "guest/templates/qbittorrent.conf",
+    "guest/templates/sabnzbd.ini",
+    "modules/MediaKit.Artifacts.psm1",
+    "modules/MediaKit.Common.psm1",
+    "modules/MediaKit.HyperV.psm1",
+    "modules/MediaKit.Maintenance.psm1",
+    "modules/MediaKit.Secrets.psm1",
+    "modules/MediaKit.UserHive.psm1",
+    "modules/MediaKit.Windows.psm1",
+    "schemas/bootstrap.schema.json",
+    "schemas/install.schema.json",
+    "schemas/release.schema.json",
+    "vendor/pmsservice/NOTICES.md",
+    "vendor/pmsservice/licenses/FontAwesome-WPF.txt",
+    "vendor/pmsservice/licenses/LICENSE.md",
+    "vendor/pmsservice/licenses/Newtonsoft.Json-license.txt",
+    "vendor/pmsservice/licenses/mahapps-license.txt",
+    "vendor/pmsservice/licenses/msiext-license.txt",
+    "vendor/pmsservice/licenses/ookiidialogs-license.txt",
+    "vendor/pmsservice/redact-secrets.patch",
+    "vendor/pmsservice/source.lock.json"
+  ]
+}

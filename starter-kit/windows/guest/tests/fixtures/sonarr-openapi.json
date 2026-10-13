@@ -1,0 +1,301 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Sonarr",
+    "description": "Sonarr API docs - The v3 API docs apply to both v3 and v4 versions of Sonarr. Some functionality may only be available in v4 of the Sonarr application.",
+    "license": {
+      "name": "GPL-3.0",
+      "url": "https://github.com/Sonarr/Sonarr/blob/develop/LICENSE"
+    },
+    "version": "3.0.0"
+  },
+  "source": "official upstream OpenAPI retrieved 2026-10-13",
+  "components": {
+    "schemas": {
+      "DownloadClientResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Field"
+            },
+            "nullable": true
+          },
+          "implementationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "implementation": {
+            "type": "string",
+            "nullable": true
+          },
+          "configContract": {
+            "type": "string",
+            "nullable": true
+          },
+          "infoLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "$ref": "#/components/schemas/ProviderMessage"
+          },
+          "tags": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "presets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DownloadClientResource"
+            },
+            "nullable": true
+          },
+          "enable": {
+            "type": "boolean"
+          },
+          "protocol": {
+            "$ref": "#/components/schemas/DownloadProtocol"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "removeCompletedDownloads": {
+            "type": "boolean"
+          },
+          "removeFailedDownloads": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HostConfigResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "bindAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "port": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sslPort": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enableSsl": {
+            "type": "boolean"
+          },
+          "launchBrowser": {
+            "type": "boolean"
+          },
+          "authenticationMethod": {
+            "$ref": "#/components/schemas/AuthenticationType"
+          },
+          "authenticationRequired": {
+            "$ref": "#/components/schemas/AuthenticationRequiredType"
+          },
+          "allowedHosts": {
+            "type": "string",
+            "nullable": true
+          },
+          "analyticsEnabled": {
+            "type": "boolean"
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "passwordConfirmation": {
+            "type": "string",
+            "nullable": true
+          },
+          "oidcAuthority": {
+            "type": "string",
+            "nullable": true
+          },
+          "oidcClientId": {
+            "type": "string",
+            "nullable": true
+          },
+          "oidcClientSecret": {
+            "type": "string",
+            "nullable": true
+          },
+          "oidcUserIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "oidcScopes": {
+            "type": "string",
+            "nullable": true
+          },
+          "logLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "logSizeLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "consoleLogLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "branch": {
+            "type": "string",
+            "nullable": true
+          },
+          "apiKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "sslCertPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "sslKeyPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "sslCertPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "urlBase": {
+            "type": "string",
+            "nullable": true
+          },
+          "trustedNetworks": {
+            "type": "string",
+            "nullable": true
+          },
+          "instanceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "updateAutomatically": {
+            "type": "boolean"
+          },
+          "updateMechanism": {
+            "$ref": "#/components/schemas/UpdateMechanism"
+          },
+          "updateScriptPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "proxyEnabled": {
+            "type": "boolean"
+          },
+          "proxyType": {
+            "$ref": "#/components/schemas/ProxyType"
+          },
+          "proxyHostname": {
+            "type": "string",
+            "nullable": true
+          },
+          "proxyPort": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "proxyUsername": {
+            "type": "string",
+            "nullable": true
+          },
+          "proxyPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "proxyBypassFilter": {
+            "type": "string",
+            "nullable": true
+          },
+          "proxyBypassLocalAddresses": {
+            "type": "boolean"
+          },
+          "certificateValidation": {
+            "$ref": "#/components/schemas/CertificateValidationType"
+          },
+          "backupFolder": {
+            "type": "string",
+            "nullable": true
+          },
+          "backupInterval": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "backupRetention": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "trustCgnatIpAddresses": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RootFolderResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "path": {
+            "type": "string",
+            "nullable": true
+          },
+          "accessible": {
+            "type": "boolean"
+          },
+          "freeSpace": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "totalSpace": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "unmappedFolders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnmappedFolder"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

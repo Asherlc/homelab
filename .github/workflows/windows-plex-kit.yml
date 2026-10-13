@@ -1,0 +1,206 @@
+name: Windows Plex kit candidate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['starter-kit/windows/**', '.github/workflows/windows-plex-kit.yml']
+  pull_request:
+    paths: ['starter-kit/windows/**', '.github/workflows/windows-plex-kit.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-plex-kit-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  private-container-integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        downloader: [qbittorrent, sabnzbd]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Configure and verify pinned services on a private Docker network
+        run: python3 starter-kit/windows/guest/tests/integration.py --downloader ${{ matrix.downloader }}
+
+  linux-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Guest runtime and application tests
+        run: python3 -m unittest discover -s starter-kit/windows/guest/tests -v
+      - name: Candidate archive tests
+        run: python3 -m unittest discover -s starter-kit/windows/tests -p 'test_*.py' -v
+
+  windows-wrapper:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Ensure .NET Framework and WCF build components
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.Component.MSBuild -property installationPath
+          if (!$installation) { throw 'Visual Studio MSBuild is required.' }
+          $wcf = Join-Path $installation 'MSBuild\Microsoft\VisualStudio\v17.0\WCF\Microsoft.VisualStudio.ServiceModel.targets'
+          $framework = Join-Path ${env:ProgramFiles(x86)} 'Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\mscorlib.dll'
+          if (!(Test-Path $wcf) -or !(Test-Path $framework)) {
+            $setup = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\setup.exe'
+            $arguments = @('modify', '--installPath', ('"' + $installation + '"'), '--add', 'Microsoft.VisualStudio.Component.Wcf.Tooling', '--add', 'Microsoft.Net.Component.4.7.2.TargetingPack', '--quiet', '--norestart')
+            $process = Start-Process -FilePath $setup -ArgumentList $arguments -Wait -PassThru
+            if ($process.ExitCode -notin @(0, 3010)) { throw "Visual Studio component setup failed: $($process.ExitCode)" }
+          }
+      - name: Build patched PmsService with pinned source and WiX
+        shell: powershell
+        run: ./starter-kit/windows/build/Build-PmsService.ps1 -OutputDirectory artifacts
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: windows-wrapper
+          path: |
+            artifacts/PmsServiceInstaller.msi
+            artifacts/wrapper-build.json
+          if-no-files-found: error
+
+  windows-tests:
+    needs: windows-wrapper
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        shell: [powershell, pwsh]
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: windows-wrapper
+          path: artifacts
+      - name: Parse PowerShell sources and run Pester including native MSI logging
+        run: |
+          $ErrorActionPreference = 'Stop'
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          if ($PSVersionTable.PSVersion.Major -eq 5) {
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force | Out-Null
+          }
+          Install-Module Pester -RequiredVersion 5.7.1 -Scope CurrentUser -Force -SkipPublisherCheck
+          Import-Module Pester -RequiredVersion 5.7.1
+          Get-ChildItem starter-kit/windows -Recurse -File | Where-Object { $_.Extension -in @('.ps1', '.psm1') } | ForEach-Object {
+            $tokens = $null; $errors = $null
+            [Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count) { throw "PowerShell parsing failed: $($_.FullName)" }
+          }
+          $env:MEDIA_KIT_WRAPPER_MSI = (Resolve-Path artifacts/PmsServiceInstaller.msi).Path
+          $result = Invoke-Pester -Path starter-kit/windows/tests -Output Detailed -PassThru
+          if ($result.FailedCount -gt 0) { throw "$($result.FailedCount) Pester tests failed." }
+
+  linux-appliance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
+        with:
+          version: '1.14.2'
+      - name: Install appliance build tools
+        run: |
+          # This disposable image-builder does not use the preinstalled mobile/.NET SDKs.
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup
+          df -h /
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf xorriso curl gnupg
+      - name: Build and verify generalized VHDX
+        run: |
+          accelerator=tcg
+          if [ -e /dev/kvm ]; then
+            sudo chmod 0666 /dev/kvm
+            accelerator=kvm
+          fi
+          bash starter-kit/windows/build/build-appliance.sh --output artifacts --manifest starter-kit/windows/release.json --accelerator "$accelerator"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: linux-appliance
+          path: |
+            artifacts/media-kit.vhdx
+            artifacts/appliance-build.json
+          compression-level: 0
+          if-no-files-found: error
+
+  assemble-candidate:
+    needs: [linux-tests, private-container-integration, windows-wrapper, windows-tests, linux-appliance]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: windows-wrapper
+          path: artifacts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: linux-appliance
+          path: artifacts
+      - name: Bind actual candidate artifact hashes and fetch verified native Plex
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib, urllib.request
+          root = pathlib.Path('starter-kit/windows')
+          assets = pathlib.Path('artifacts')
+          path = root / 'release.json'
+          manifest = json.loads(path.read_text())
+          def digest(file):
+              h = hashlib.sha256()
+              with file.open('rb') as stream:
+                  for block in iter(lambda: stream.read(1024 * 1024), b''):
+                      h.update(block)
+              return h.hexdigest()
+          for name in ('wrapper', 'appliance'):
+              artifact = manifest['artifacts'][name]
+              artifact['sha256'] = digest(assets / artifact['filename'])
+          plex = manifest['artifacts']['plex']
+          if not plex['url'].startswith('https://downloads.plex.tv/'):
+              raise SystemExit('Native Plex must use the manifest-pinned official HTTPS download.')
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  raise ValueError('Unexpected native installer redirect')
+          with urllib.request.build_opener(NoRedirect).open(plex['url'], timeout=120) as response:
+              with (assets / plex['filename']).open('wb') as target:
+                  while block := response.read(1024 * 1024):
+                      target.write(block)
+          if digest(assets / plex['filename']) != plex['sha256']:
+              raise SystemExit('Native Plex SHA-256 mismatch.')
+          path.write_text(json.dumps(manifest, indent=2) + '\n')
+          report = {'candidate': manifest['releaseId'], 'sourceCommit': '${{ github.sha }}', 'nativePlex': plex['sha256'], 'wrapper': manifest['artifacts']['wrapper']['sha256'], 'appliance': manifest['artifacts']['appliance']['sha256'], 'targetAcceptance': 'pending: Windows cold boot without sign-in, LAN discovery, Quick Sync, update and backup/restore'}
+          (assets / 'candidate-build.json').write_text(json.dumps(report, indent=2) + '\n')
+          PY
+      - name: Assemble and verify the complete candidate ZIP
+        run: |
+          python3 starter-kit/windows/build/package.py build --root starter-kit/windows --assets artifacts --output artifacts/media-kit-windows.zip --include-appliance
+          python3 starter-kit/windows/build/package.py verify --archive artifacts/media-kit-windows.zip
+          sha256sum artifacts/media-kit-windows.zip artifacts/PmsServiceInstaller.msi artifacts/PlexMediaServer.exe artifacts/media-kit.vhdx > artifacts/SHA256SUMS
+          cp starter-kit/windows/release.json artifacts/release.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: media-kit-windows-candidate
+          path: |
+            artifacts/media-kit-windows.zip
+            artifacts/release.json
+            artifacts/SHA256SUMS
+            artifacts/candidate-build.json
+            artifacts/wrapper-build.json
+            artifacts/appliance-build.json
+          compression-level: 0
+          if-no-files-found: error
