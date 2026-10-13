@@ -3,7 +3,7 @@ name: Windows Plex kit candidate
 on:
   workflow_dispatch:
   push:
-    branches: [package-plex-for-sharing]
+    branches: [main]
     paths: ['starter-kit/windows/**', '.github/workflows/windows-plex-kit.yml']
   pull_request:
     paths: ['starter-kit/windows/**', '.github/workflows/windows-plex-kit.yml']
