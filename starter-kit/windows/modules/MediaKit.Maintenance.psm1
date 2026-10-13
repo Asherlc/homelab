@@ -1,5 +1,47 @@
 Set-StrictMode -Version 2.0
 function Get-KitRequestsUrl($Config) {return "http://$($Config.hostname).local:5055"}
+function ConvertFrom-KitCredentialPayload($Payload,$Config) {
+    Assert-KitFields $Payload @('installationId','releaseId','credentials')
+    if($Payload.installationId -ne $Config.installationId -or $Payload.releaseId -ne $Config.releaseId) {throw 'Credential handoff identity does not match this installation.'}
+    $apps=@('sonarr','radarr','prowlarr',$Config.downloader); Assert-KitFields $Payload.credentials $apps
+    $ports=@{sonarr=8989;radarr=7878;prowlarr=9696;qbittorrent=8080;sabnzbd=8080}; $result=@()
+    foreach($app in $apps) {
+        $entry=$Payload.credentials.$app; Assert-KitFields $entry @('username','password')
+        if($entry.username -isnot [string] -or $entry.password -isnot [string] -or -not $entry.username -or -not $entry.password -or $entry.username -match '[\x00-\x1f]' -or $entry.password -match '[\x00-\x1f]') {throw 'Credential handoff contains an invalid web login.'}
+        $result+=[pscustomobject]@{app=$app;username=$entry.username;password=$entry.password;url="http://$($Config.hostname).local:$($ports[$app])"}
+    }
+    return $result
+}
+function Show-KitCredentials($Config) {
+    $ctx=Get-KitContext
+    if($ctx.State.PSObject.Properties.Name -contains 'update') {throw 'Complete the pending update before viewing app credentials.'}
+    # This private value is consumed only by the modal viewer. Do not Write-Host,
+    # return it, pipe it to diagnostics, or use PowerShell transcription here.
+    $payload=Invoke-KitGuest $Config 'credentials'; $entries=@(ConvertFrom-KitCredentialPayload $payload $Config); $payload=$null
+    Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing
+    [Windows.Forms.Application]::EnableVisualStyles()
+    $form=New-Object Windows.Forms.Form; $form.Text='Media Kit app credentials'; $form.ClientSize=New-Object Drawing.Size(520,310); $form.StartPosition='CenterScreen'; $form.FormBorderStyle='FixedDialog'; $form.MaximizeBox=$false; $form.MinimizeBox=$false
+    $selector=New-Object Windows.Forms.ComboBox; $selector.Location=New-Object Drawing.Point(20,20); $selector.Size=New-Object Drawing.Size(480,28); $selector.DropDownStyle='DropDownList'
+    foreach($entry in $entries) {$selector.Items.Add($entry.app)|Out-Null}
+    $nameLabel=New-Object Windows.Forms.Label; $nameLabel.Text='Username'; $nameLabel.Location=New-Object Drawing.Point(20,65); $nameLabel.AutoSize=$true
+    $username=New-Object Windows.Forms.TextBox; $username.Location=New-Object Drawing.Point(20,85); $username.Size=New-Object Drawing.Size(480,25); $username.ReadOnly=$true
+    $passwordLabel=New-Object Windows.Forms.Label; $passwordLabel.Text='Password'; $passwordLabel.Location=New-Object Drawing.Point(20,120); $passwordLabel.AutoSize=$true
+    $password=New-Object Windows.Forms.TextBox; $password.Location=New-Object Drawing.Point(20,140); $password.Size=New-Object Drawing.Size(480,25); $password.ReadOnly=$true; $password.UseSystemPasswordChar=$true
+    $reveal=New-Object Windows.Forms.CheckBox; $reveal.Text='Reveal password'; $reveal.Location=New-Object Drawing.Point(20,175); $reveal.AutoSize=$true
+    $copy=New-Object Windows.Forms.Button; $copy.Text='Copy password'; $copy.Location=New-Object Drawing.Point(340,175); $copy.Size=New-Object Drawing.Size(160,28)
+    $url=New-Object Windows.Forms.LinkLabel; $url.Location=New-Object Drawing.Point(20,215); $url.Size=New-Object Drawing.Size(480,25)
+    $hint=New-Object Windows.Forms.Label; $hint.Text='Copied passwords clear after 30 seconds or when this window closes.'; $hint.Location=New-Object Drawing.Point(20,250); $hint.Size=New-Object Drawing.Size(480,40)
+    $clipboardState=@{Value=$null}; $timer=New-Object Windows.Forms.Timer; $timer.Interval=30000
+    $clearClipboard={if($clipboardState.Value) {try {if([Windows.Forms.Clipboard]::ContainsText() -and [Windows.Forms.Clipboard]::GetText() -ceq $clipboardState.Value) {[Windows.Forms.Clipboard]::Clear()}} catch {}; $clipboardState.Value=$null}; $timer.Stop()}.GetNewClosure()
+    $timer.Add_Tick($clearClipboard)
+    $copy.Add_Click({try {$clipboardState.Value=$password.Text; [Windows.Forms.Clipboard]::SetText($clipboardState.Value); $timer.Stop(); $timer.Start()} catch {[Windows.Forms.MessageBox]::Show('Clipboard is busy. Reveal the password and enter it directly.','Media Kit')|Out-Null}}.GetNewClosure())
+    $reveal.Add_CheckedChanged({$password.set_UseSystemPasswordChar(-not $reveal.Checked)}.GetNewClosure())
+    $selector.Add_SelectedIndexChanged({$entry=$entries[$selector.SelectedIndex]; $reveal.Checked=$false; $username.Text=$entry.username; $password.Text=$entry.password; $url.Text=$entry.url}.GetNewClosure())
+    $url.Add_LinkClicked({Start-Process -FilePath $url.Text}.GetNewClosure())
+    $form.Controls.AddRange(@($selector,$nameLabel,$username,$passwordLabel,$password,$reveal,$copy,$url,$hint)); $selector.SelectedIndex=0
+    try {$form.ShowDialog()|Out-Null}
+    finally {& $clearClipboard; $timer.Dispose(); $password.Text=''; $username.Text=''; foreach($entry in $entries) {$entry.password=$null}; $entries=$null; $form.Dispose()}
+}
 function Assert-KitArchiveEntry([string]$Name) {
     if(-not $Name -or $Name.StartsWith('/') -or $Name.StartsWith('\') -or $Name -match '^[A-Za-z]:' -or $Name -match '(^|[\\/])\.\.([\\/]|$)' -or $Name -match '[\x00-\x1f]' -or $Name.Contains(':')) {throw 'Unsafe archive entry.'}
     return $true
@@ -233,7 +275,7 @@ function Uninstall-Kit($Config) {
 }
 function New-KitShortcuts($Config,[string]$KitDirectory) {
     $folder=Join-Path ([Environment]::GetFolderPath('CommonDesktopDirectory')) 'Media Kit'; [IO.Directory]::CreateDirectory($folder) | Out-Null
-    foreach($action in @('OpenRequests','OpenPlex','Status','Update','Backup')) {
+    foreach($action in @('OpenRequests','OpenPlex','Credentials','Status','Update','Backup')) {
         $path=Join-Path $folder ($action+'.lnk'); $shell=New-Object -ComObject WScript.Shell
         try {
             $shortcut=$shell.CreateShortcut($path); $shortcut.TargetPath="$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"

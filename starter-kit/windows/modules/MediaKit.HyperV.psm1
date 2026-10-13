@@ -217,12 +217,20 @@ function Get-KitGuestCommand([string]$Command,[string]$BackupName='') {
         default {throw 'Unsupported guest operation.'}
     }
 }
+function Get-KitCredentialCommand($Config) {
+    Test-KitConfig $Config | Out-Null
+    # Only validated public identity is interpolated. Secret values travel over
+    # the existing pinned SSH stream, never in argv or a temporary JSON file.
+    $code='import json,sys;sys.path.insert(0,"/opt/starter-kit");import kit_secrets;c=json.loads(kit_secrets.read_private("/etc/starter-kit/config.json"));s=json.loads(kit_secrets.read_private("/etc/starter-kit/app-secrets.json"));assert c["installationId"]=="'+$Config.installationId+'" and c["releaseId"]=="'+$Config.releaseId+'" and s["installationId"]==c["installationId"];apps=["sonarr","radarr","prowlarr",c["downloader"]];print(json.dumps({"installationId":c["installationId"],"releaseId":c["releaseId"],"credentials":{a:{k:s["values"][a][k] for k in ["username","password"]} for a in apps}}))'
+    return "sudo python3 -c '$code'"
+}
 function Invoke-KitGuest($Config,[string]$Command,[string]$InputFile='',[string]$BackupName='') {
-    $dir=Get-KitSecretDirectory; $remote=Get-KitGuestCommand $Command $BackupName
+    $dir=Get-KitSecretDirectory
+    if($Command -eq 'credentials') {$remote=Get-KitCredentialCommand $Config} else {$remote=Get-KitGuestCommand $Command $BackupName}
     $args=@('-i',(Join-Path $dir 'client'),'-o',('UserKnownHostsFile='+(Join-Path $dir 'known_hosts')),'-o','StrictHostKeyChecking=yes','-o','BatchMode=yes','-o','ConnectTimeout=10','-o','LogLevel=ERROR',('mediakit@'+$Config.guestIP),$remote)
     $input=''; if($InputFile) {$input=[IO.File]::ReadAllText($InputFile)}
     $output=Invoke-KitNative 'ssh.exe' $args $input -TimeoutSeconds (Get-KitGuestTimeoutSeconds $Command)
-    if($Command -in @('validate','apply','status','backup','restore')) {
+    if($Command -in @('validate','apply','status','backup','restore','credentials')) {
         try {$result=$output | ConvertFrom-Json} catch {throw 'Guest returned an invalid status document.'}
         if($result.installationId -ne $Config.installationId -or $result.releaseId -ne $Config.releaseId) {throw 'Guest installation or release identity does not match.'}
         return $result

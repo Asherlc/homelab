@@ -47,7 +47,7 @@ source "qemu" "media_kit" {
   cd_label         = "CIDATA"
   ssh_username     = "mediakit-builder"
   ssh_private_key_file = var.private_key
-  ssh_timeout      = "60m"
+  ssh_timeout      = "20m"
   boot_wait        = "5s"
   boot_command = [
     "<esc><wait>c<wait>",

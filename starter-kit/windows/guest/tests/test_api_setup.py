@@ -24,12 +24,17 @@ class FixtureTransport:
         if '/config/host/' in path and method=='PUT': return dict(payload)
         if path.endswith('/system/status'): return {'version':'fixture-1'}
         if path.endswith('/auth/login'): return self.responses['qbittorrent']['login']
+        if path.endswith('/api/v2/app/version'): return 'v5.2.4'
         if path.endswith('/torrents/categories'): return copy.deepcopy(self.resources.setdefault((app,'categories'),self.responses['qbittorrent']['categories']))
         if path.endswith(('createCategory','editCategory')):
             self.resources[(app,'categories')][form['category']]={'name':form['category'],'savePath':form['savePath']}; return ''
         if path=='/api' and form:
             mode=form['mode']
             if mode=='version': return copy.deepcopy(self.responses['sabnzbd']['version'])
+            if mode=='get_cats':
+                config=self.resources.setdefault((app,'config'),copy.deepcopy(self.responses['sabnzbd']['categoryConfig']))
+                if not config['config'].get('categories'): self.resources[(app,'config')]=copy.deepcopy(self.responses['sabnzbd']['categoryConfig'])
+                return {'categories':[c['name'] for c in self.resources[(app,'config')]['config']['categories']]}
             if mode=='get_config': return copy.deepcopy(self.resources.setdefault((app,'config'),self.responses['sabnzbd']['categoryConfig']))
             if mode=='set_config':
                 categories=self.resources[(app,'config')]['config']['categories']; match=next((c for c in categories if c['name']==form['name']),None)
@@ -132,5 +137,23 @@ class APITests(unittest.TestCase):
         self.assertIn('categories',summary); self.assertIn('API Key Incorrect',summary); self.assertNotIn('SECRET',summary)
         t=FixtureTransport('qbittorrent'); t.responses['qbittorrent']['login']='Fails.'
         with self.assertRaisesRegex(ValueError,'qbittorrent.*login rejected'): api_setup.ready(t,'qbittorrent',attempts=1)
+    def test_sab_lazy_default_categories_initialized_through_supported_api(self):
+        import api_setup
+        t=FixtureTransport('sabnzbd'); t.resources[('sabnzbd','config')]={'config':{}}
+        api_setup.categories(t,'sabnzbd')
+        values=t.resources[('sabnzbd','config')]['config']['categories']
+        self.assertEqual(next(c for c in values if c['name']=='tv')['dir'],'/data/downloads/tv')
+        self.assertIn('*',[c['name'] for c in values])
+    def test_qbit_524_empty_success_requires_authenticated_version_readback(self):
+        import api_setup
+        t=FixtureTransport('qbittorrent'); t.responses['qbittorrent']['login']=None
+        api_setup.ready(t,'qbittorrent',attempts=1)
+        self.assertTrue(any(path=='/api/v2/app/version' and method=='GET' for app,method,path,payload in t.calls))
+        original=t.request
+        def denied(app,method,path,**kwargs):
+            if path=='/api/v2/app/version': raise ValueError('authenticated qbittorrent GET /api/v2/app/version HTTP 401 failed')
+            return original(app,method,path,**kwargs)
+        t.request=denied
+        with self.assertRaises(ValueError): api_setup.ready(t,'qbittorrent',attempts=1)
 
 if __name__=='__main__': unittest.main()

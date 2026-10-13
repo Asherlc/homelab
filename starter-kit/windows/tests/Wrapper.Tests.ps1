@@ -108,6 +108,12 @@ Describe 'Patched pinned PmsService source' {
         Get-Command Invoke-PmsServicePatch -ErrorAction Stop | Should -Not -BeNullOrEmpty
         { Invoke-PmsServicePatch -SourceDirectory $script:Source -PatchPath (Join-Path $script:VendorRoot 'redact-secrets.patch') } | Should -Throw
     }
+
+    It 'does not read an unbuilt service binary before WiX resolves project references' {
+        [xml]$installer = Get-Content -LiteralPath (Join-Path $script:Source 'PlexServiceInstaller/PlexServiceInstaller.wixproj') -Raw
+        @($installer.SelectNodes("//*[local-name()='Target' and @Name='BeforeBuild']/*[local-name()='GetAssemblyIdentity']")) | Should -HaveCount 0
+        $installer.SelectSingleNode("//*[local-name()='OutputName']").InnerText | Should -Be 'PmsServiceInstaller'
+    }
 }
 
 Describe 'PmsService build input integrity' {

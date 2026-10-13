@@ -1,6 +1,6 @@
 #requires -Version 5.1
 [CmdletBinding()]
-param([ValidateSet('Status','OpenRequests','OpenPlex','Backup','Restore','Update','Uninstall')][string]$Action='Status',[string]$StatePath=(Join-Path $env:ProgramData 'MediaKit\state.json'),[string]$Path,[string]$MatchingBackup)
+param([ValidateSet('Status','OpenRequests','OpenPlex','Credentials','Backup','Restore','Update','Uninstall')][string]$Action='Status',[string]$StatePath=(Join-Path $env:ProgramData 'MediaKit\state.json'),[string]$Path,[string]$MatchingBackup)
 $ErrorActionPreference='Stop'; Set-StrictMode -Version 2.0
 foreach($name in @('Common','Artifacts','Secrets','UserHive','Windows','HyperV','Maintenance')) {Import-Module (Join-Path $PSScriptRoot "modules\MediaKit.$name.psm1")}
 try {
@@ -24,6 +24,7 @@ try {
         }
         'OpenRequests' {Start-Process (Get-KitRequestsUrl $config)}
         'OpenPlex' {Open-KitPlexClaim $config}
+        'Credentials' {Show-KitCredentials $config}
         'Backup' {
             if(-not $Path) {$Path=Join-Path (Join-Path (Split-Path $StatePath -Parent) 'backups') ('media-kit-'+[DateTime]::UtcNow.ToString('yyyyMMddHHmmss')+'.zip')}
             $backup=New-KitBackup $config $Path; Write-Host "Protected backup saved: $backup. It excludes media files. Keep it on this Windows machine; DPAPI credentials remain machine-local."

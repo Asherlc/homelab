@@ -71,4 +71,13 @@ Describe 'Hyper-V seed and network decisions' {
         Get-KitGuestTimeoutSeconds 'restore' | Should -Be 1800
         Get-KitGuestTimeoutSeconds 'validate' | Should -Be 60
     }
+    It 'builds a private identity-checked SSH handoff without requesting API keys' {
+        $c=Get-Fixture; $command=Get-KitCredentialCommand $c
+        $command | Should -Match ([regex]::Escape($c.installationId))
+        $command | Should -Match 'read_private'
+        $command | Should -Match 'username'
+        $command | Should -Match 'password'
+        $command | Should -Not -Match 'apiKey'
+        $command | Should -Match 'downloader'
+    }
 }

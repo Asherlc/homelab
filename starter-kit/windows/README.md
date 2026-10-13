@@ -27,6 +27,8 @@ The kit creates a dedicated Plex service account, a separate SMB account, and a 
 
 Use the Requests shortcut for Seerr and the Plex shortcut for playback/server settings. Add provider/indexer accounts through the app setup links. Set Windows Settings → System → Power → Sleep to **Never** while plugged in so the dedicated server stays available. The installer keeps your existing Windows sleep policy.
 
+Open the **Credentials** shortcut and accept the administrator prompt to view the generated Sonarr, Radarr, Prowlarr and selected downloader web logins. Choose an app, open its link, and reveal or copy its password. Use the Prowlarr login to add indexers/providers, and the SABnzbd login to enter your Usenet server account when selected. Plex and Seerr use your own account sign-in. Passwords are concealed until revealed; copied passwords clear after 30 seconds or when the window closes. Credentials stay out of Status and console output.
+
 The Windows sign-in screen can remain displayed after a reboot. The VM and Plex service should start independently; the candidate must pass the checks in [VALIDATION.md](VALIDATION.md) on the actual PC before unattended operation is considered verified.
 
 ## Maintenance
@@ -35,6 +37,7 @@ Run `Maintenance.ps1` through Windows PowerShell with an action:
 
 ```powershell
 .\Maintenance.ps1 -Action Status
+.\Maintenance.ps1 -Action Credentials
 .\Maintenance.ps1 -Action Backup
 .\Maintenance.ps1 -Action Update
 .\Maintenance.ps1 -Action Restore

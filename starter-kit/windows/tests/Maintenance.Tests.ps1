@@ -85,4 +85,18 @@ Describe 'Safe maintenance' {
             }
         } finally {foreach($n in @('Get-Service','Start-Service','Stop-Service')) {Remove-Item "Function:\$n"}}
     }
+    It 'filters the credential handoff to selected web logins and rejects keys or mismatched identity' {
+        $c=Get-Fixture; $entries=[ordered]@{}
+        foreach($app in @('sonarr','radarr','prowlarr',$c.downloader)) {$entries[$app]=[pscustomobject]@{username='mediaadmin';password='dummy-private-password'}}
+        $p=[pscustomobject]@{installationId=$c.installationId;releaseId=$c.releaseId;credentials=[pscustomobject]$entries}
+        $private=ConvertFrom-KitCredentialPayload $p $c
+        @($private).Count | Should -Be 4
+        $private[0].url | Should -Be "http://$($c.hostname).local:8989"
+        $private[0].password | Should -Be 'dummy-private-password'
+        ($private|ConvertTo-Json -Depth 5) | Should -Not -Match 'apiKey'
+        $p.credentials.sonarr|Add-Member -NotePropertyName apiKey -NotePropertyValue 'dummy-key'
+        {ConvertFrom-KitCredentialPayload $p $c} | Should -Throw
+        $p.credentials.sonarr.PSObject.Properties.Remove('apiKey'); $p.releaseId='other'
+        {ConvertFrom-KitCredentialPayload $p $c} | Should -Throw
+    }
 }

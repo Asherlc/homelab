@@ -54,7 +54,11 @@ def ready(t,app,attempts=12):
         try:
             if app=='qbittorrent':
                 result=t.request(app,'POST','/api/v2/auth/login',form={'username':t.secrets[app]['username'],'password':t.secrets[app]['password']})
-                if result!='Ok.': raise ValueError('login rejected')
+                # qBit 5.2.4 returns empty HTTP200; older APIs return Ok.
+                # Always prove the cookie/session on an authenticated read.
+                if result not in ['Ok.',None,'']: raise ValueError('login rejected')
+                version=t.request(app,'GET','/api/v2/app/version')
+                if not isinstance(version,str) or not re.fullmatch(r'v?[0-9]+(?:\.[0-9]+){1,3}[A-Za-z0-9._-]*',version): raise ValueError('login rejected')
             elif app=='sabnzbd':
                 result=t.request(app,'POST','/api',form={'mode':'version'})
                 if not isinstance(result,dict) or not result.get('version'): raise ValueError()
@@ -103,6 +107,9 @@ def categories(t,downloader):
             if current.get(name,{}).get('savePath')!=path:
                 t.request(downloader,'POST','/api/v2/torrents/'+('editCategory' if name in current else 'createCategory'),form={'category':name,'savePath':path})
     else:
+        # SAB initializes its default category registry lazily. get_config alone
+        # returns an empty config for a clean INI until get_cats initializes it.
+        t.request(downloader,'POST','/api',form={'mode':'get_cats'})
         response=t.request(downloader,'POST','/api',form={'mode':'get_config','section':'categories'})
         if not isinstance(response.get('config',{}).get('categories'),list): raise ValueError('invalid SAB configuration response '+response_summary(response))
         for name in ['tv','movies']:
