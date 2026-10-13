@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import time
 import urllib.parse
+import urllib.error
 import urllib.request
 
 PORTS={'sonarr':8989,'radarr':7878,'prowlarr':9696,'seerr':5055,'qbittorrent':8080,'sabnzbd':8080}
@@ -33,7 +34,8 @@ class HTTPTransport:
                 if not raw: return None
                 try: return json.loads(raw)
                 except ValueError: return raw
-        except Exception: raise ValueError('authenticated application request failed') from None
+        except urllib.error.HTTPError as error: raise ValueError('authenticated '+app+' '+method+' '+path+' HTTP '+str(error.code)+' failed') from None
+        except Exception: raise ValueError('authenticated '+app+' '+method+' '+path+' request failed') from None
 
 def ready(t,app,attempts=12):
     for attempt in range(attempts):

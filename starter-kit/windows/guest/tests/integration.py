@@ -7,6 +7,7 @@ space for release-pinned images. No provider downloads or existing stack touched
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -16,10 +17,16 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import bootstrap
 import kit_secrets
 from test_core import CONTRACT,GUEST
+SECRET_VALUES=[]
+
+def sanitize(text):
+    for secret in SECRET_VALUES:
+        if secret: text=text.replace(secret,'[REDACTED]')
+    return '\n'.join('[credential-bearing line omitted]' if re.search(r'(?i)(temporary password|password.+[:=]|api.?key.+[:=]|token.+[:=])',line) else line for line in text.splitlines())
 
 def invoke(args):
     result=subprocess.run(args,capture_output=True,text=True,timeout=600)
-    if result.returncode: raise RuntimeError('isolated container command failed')
+    if result.returncode: raise RuntimeError('isolated container command failed: '+sanitize(result.stderr or result.stdout)[-5000:])
     return result.stdout
 
 def compose(path,*args): return invoke(['docker','compose','-p',path.name,'-f',str(path/'compose.json'),*args])
@@ -28,10 +35,12 @@ def driver(path,release,action):
     return invoke(['docker','run','--rm','--name',path.name+'-driver','--platform','linux/amd64','--network',path.name+'-media','--user','0:0','--entrypoint','python3','--volume',str(GUEST)+':/source:ro','--volume',str(path)+':/fixture',release['images']['sabnzbd'],'/source/tests/container_probe.py',action])
 
 def run(downloader):
+    global SECRET_VALUES
     path=Path(tempfile.mkdtemp(prefix='media-kit-test-')); path.chmod(0o700)
     config=dict(CONTRACT,downloader=downloader); release=json.loads((GUEST.parent/'release.json').read_text())
     bootstrap.validate_release(release,config)
     secrets={app:{'username':'mediaadmin','password':kit_secrets.token(),'apiKey':os.urandom(16).hex()} for app in bootstrap.PORTS}
+    SECRET_VALUES=[value for record in secrets.values() for value in record.values()]
     for name,value in [('secrets.json',secrets),('config.json',config),('release.json',release)]: kit_secrets.atomic_write(path/name,json.dumps(value))
     doc=bootstrap.compose(config,release,'127.0.0.1')
     for app,service in doc['services'].items():
@@ -53,10 +62,7 @@ def run(downloader):
     except Exception:
         # App logs may contain credentials. Redact before diagnostics.
         try:
-            logs=compose(path,'logs','--tail','60')
-            for record in secrets.values():
-                for value in record.values(): logs=logs.replace(value,'[REDACTED]')
-            print(logs,file=sys.stderr)
+            print(sanitize(compose(path,'logs','--tail','60')),file=sys.stderr)
         except Exception: pass
         raise
     finally:

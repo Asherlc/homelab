@@ -99,15 +99,27 @@ class CoreTests(unittest.TestCase):
         def fail(c): raise ValueError('wrong mount')
         with self.assertRaises(ValueError): storage.recover(CONTRACT,lambda args:events.append(args),fail)
         self.assertTrue(any('stop' in e and 'docker.service' in e for e in events))
-    def test_fresh_seerr_token_seed_and_existing_settings_preserved(self):
+    def test_fresh_seerr_initializes_own_settings_and_existing_settings_preserved(self):
         import bootstrap
         from unittest.mock import patch
         secret={app:{'username':'user','password':'unique','apiKey':'unique-'+app} for app in bootstrap.PORTS}
         with patch.object(os,'chown',lambda *a:None): bootstrap.write_initial_configs(CONTRACT,secret,self.root)
-        p=self.root/'seerr/settings.json'; self.assertEqual(json.loads(p.read_text())['main']['apiKey'],'unique-seerr')
+        p=self.root/'seerr/settings.json'; self.assertFalse(p.exists())
         p.write_text('{"existing":true}')
         with patch.object(os,'chown',lambda *a:None): bootstrap.write_initial_configs(CONTRACT,secret,self.root)
         self.assertEqual(json.loads(p.read_text()),{'existing':True})
+    def test_native_seerr_key_is_adopted_once_and_changed_key_rejected(self):
+        import bootstrap,kit_secrets
+        state=self.root/'state'; settings=state/'seerr/settings.json'; settings.parent.mkdir(mode=0o700,parents=True)
+        settings.write_text(json.dumps({'main':{'apiKey':'native-unique-application-key','mediaServerType':4},'public':{'initialized':False}})); settings.chmod(0o644)
+        path=self.root/'app-secrets.json'; secrets={'seerr':{'apiKey':'unused-initial-placeholder','username':'user','password':'private'}}
+        kit_secrets.create_once(path,CONTRACT['installationId'],secrets)
+        adopted=bootstrap.adopt_seerr_credentials(CONTRACT,secrets,state,path,attempts=1)
+        self.assertEqual(adopted['seerr']['apiKey'],'native-unique-application-key')
+        self.assertEqual(json.loads(kit_secrets.read_private(path))['values'],adopted)
+        self.assertEqual(bootstrap.adopt_seerr_credentials(CONTRACT,adopted,state,path,attempts=1),adopted)
+        settings.write_text(json.dumps({'main':{'apiKey':'different-application-key'}}))
+        with self.assertRaises(ValueError): bootstrap.adopt_seerr_credentials(CONTRACT,adopted,state,path,attempts=1)
     def test_cleanup_seed_preserves_cloud_identity_and_ssh(self):
         import bootstrap
         cloud=self.root/'cloud'; instance=cloud/'instances/iid-once'; instance.mkdir(parents=True)

@@ -111,6 +111,24 @@ Describe 'Patched pinned PmsService source' {
 }
 
 Describe 'PmsService build input integrity' {
+    It 'verifies the locked patch after a real Windows CRLF checkout conversion' {
+        $lock = Get-Content -LiteralPath (Join-Path $script:VendorRoot 'source.lock.json') -Raw | ConvertFrom-Json
+        $text = [IO.File]::ReadAllText((Join-Path $script:VendorRoot $lock.patch.filename)).Replace("`r`n", "`n")
+        $checkout = Join-Path $TestDrive 'windows-checkout.patch'
+        [IO.File]::WriteAllText($checkout, $text.Replace("`n", "`r`n"), (New-Object Text.UTF8Encoding $false))
+        $canonical = Join-Path $TestDrive 'verified-security.patch'
+        [IO.File]::WriteAllBytes($canonical, (Get-PmsServicePatchBytes -Path $checkout -Expected $lock.patch.sha256))
+        (Get-FileHash -LiteralPath $canonical -Algorithm SHA256).Hash.ToLowerInvariant() | Should -Be $lock.patch.sha256
+    }
+
+    It 'still rejects a genuine patch edit when normalizing checkout line endings' {
+        $lock = Get-Content -LiteralPath (Join-Path $script:VendorRoot 'source.lock.json') -Raw | ConvertFrom-Json
+        $text = [IO.File]::ReadAllText((Join-Path $script:VendorRoot $lock.patch.filename))
+        $checkout = Join-Path $TestDrive 'edited-checkout.patch'
+        [IO.File]::WriteAllText($checkout, ($text + "`nunauthorized patch change`n"), (New-Object Text.UTF8Encoding $false))
+        { Get-PmsServicePatchBytes -Path $checkout -Expected $lock.patch.sha256 } | Should -Throw '*SHA-256*'
+    }
+
     It 'rejects a corrupt pinned source archive before creating a build source directory' {
         $archive = Join-Path $TestDrive 'corrupt-source.zip'
         Set-Content -LiteralPath $archive -Value 'not the pinned source'

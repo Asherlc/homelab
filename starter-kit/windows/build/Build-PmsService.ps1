@@ -28,6 +28,20 @@ function Save-PmsServiceInput {
     Assert-PmsServiceHash -Path $Path -Expected $Artifact.sha256
 }
 
+function Get-PmsServicePatchBytes {
+    param([string]$Path, [string]$Expected)
+    # The committed patch is locked as UTF-8/LF text. Git for Windows may
+    # materialize CRLF before build; normalize only that representation before
+    # checking the same immutable digest and applying those verified bytes.
+    $text = [IO.File]::ReadAllText($Path).Replace("`r`n", "`n")
+    $bytes = [Text.Encoding]::UTF8.GetBytes($text)
+    $algorithm = [Security.Cryptography.SHA256]::Create()
+    try { $actual = [BitConverter]::ToString($algorithm.ComputeHash($bytes)).Replace('-', '').ToLowerInvariant() }
+    finally { $algorithm.Dispose() }
+    if ($actual -ne $Expected) { throw 'PmsService security patch failed canonical UTF-8/LF SHA-256 verification.' }
+    return ,$bytes
+}
+
 function Invoke-PmsServicePatch {
     param([Parameter(Mandatory)][string]$SourceDirectory, [Parameter(Mandatory)][string]$PatchPath)
     $source = (Resolve-Path -LiteralPath $SourceDirectory).Path
@@ -61,9 +75,11 @@ function Initialize-PmsServiceSource {
     $lock = Get-Content -LiteralPath (Join-Path $VendorDirectory 'source.lock.json') -Raw | ConvertFrom-Json
     Assert-PmsServiceHash -Path $Archive -Expected $lock.archive.sha256
     $patchPath = Join-Path $VendorDirectory $lock.patch.filename
-    Assert-PmsServiceHash -Path $patchPath -Expected $lock.patch.sha256
+    $patchBytes = Get-PmsServicePatchBytes -Path $patchPath -Expected $lock.patch.sha256
     if (Test-Path -LiteralPath $Destination) { throw 'Build source destination already exists; choose a clean work directory.' }
     New-Item -ItemType Directory -Path $Destination | Out-Null
+    $canonicalPatch = Join-Path $Destination 'verified-security.patch'
+    [IO.File]::WriteAllBytes($canonicalPatch, $patchBytes)
     Expand-Archive -LiteralPath $Archive -DestinationPath $Destination
     $source = Join-Path $Destination $lock.archive.root
     foreach ($dll in $lock.bundledDlls) {
@@ -72,7 +88,7 @@ function Initialize-PmsServiceSource {
     foreach ($archiveSource in $lock.bundledSourceArchives) {
         Assert-PmsServiceHash -Path (Join-Path $source $archiveSource.filename) -Expected $archiveSource.sha256
     }
-    Invoke-PmsServicePatch -SourceDirectory $source -PatchPath $patchPath
+    Invoke-PmsServicePatch -SourceDirectory $source -PatchPath $canonicalPatch
     return $source
 }
 

@@ -86,11 +86,6 @@ def write_initial_configs(c,secrets,state=STATE):
                 for key,value in values.items(): ET.SubElement(node,key).text=value
                 kit_secrets.atomic_write(path,ET.tostring(node,encoding='unicode'))
                 os.chown(path,1000,1000)
-        if app=='seerr':
-            path=folder/'settings.json'
-            if not path.exists():
-                kit_secrets.atomic_write(path,json.dumps({'main':{'apiKey':secrets[app]['apiKey']},'public':{'initialized':False},'plex':{'ip':c['hostIP'],'port':32400}}))
-                os.chown(path,1000,1000)
         if app==c['downloader']:
             if app=='qbittorrent':
                 path=folder/'qBittorrent/qBittorrent.conf'
@@ -102,6 +97,31 @@ def write_initial_configs(c,secrets,state=STATE):
                 path=folder/'sabnzbd.ini'
                 content=(SOURCE/'templates/sabnzbd.ini').read_text().replace('{{username}}',secrets[app]['username']).replace('{{password}}',secrets[app]['password']).replace('{{api_key}}',secrets[app]['apiKey'])
             if not path.exists(): kit_secrets.atomic_write(path,content); os.chown(path.parent,1000,1000); os.chown(path,1000,1000)
+
+def adopt_seerr_credentials(c,secrets,state=STATE,secret_path=BASE/'app-secrets.json',attempts=30):
+    path=Path(state)/'seerr/settings.json'
+    live_key=None
+    for attempt in range(attempts):
+        try:
+            parent=path.parent.lstat()
+            if not stat.S_ISDIR(parent.st_mode) or parent.st_uid not in [os.geteuid(),1000] or parent.st_mode & 0o077: raise ValueError('requests settings folder must be private')
+            fd=os.open(path,os.O_RDONLY|getattr(os,'O_NOFOLLOW',0))
+            with os.fdopen(fd,'r') as f:
+                info=os.fstat(f.fileno())
+                if not stat.S_ISREG(info.st_mode) or info.st_uid not in [parent.st_uid,os.geteuid()] or info.st_mode & 0o002: raise ValueError('unsafe requests settings file')
+                record=json.load(f)
+            live_key=record.get('main',{}).get('apiKey')
+            if not isinstance(live_key,str) or not re.fullmatch(r'[A-Za-z0-9+/=_-]{16,256}',live_key): raise ValueError('requests key not initialized')
+            break
+        except (OSError,ValueError):
+            if attempt+1>=attempts: raise ValueError('requests native key readiness failed') from None
+            time.sleep(2)
+    if secrets['seerr'].get('keySource')=='application':
+        if secrets['seerr']['apiKey']!=live_key: raise ValueError('requests native key changed; review protected credentials')
+        return secrets
+    secrets['seerr']['apiKey']=live_key; secrets['seerr']['keySource']='application'
+    kit_secrets.atomic_write(secret_path,json.dumps({'installationId':c['installationId'],'values':secrets},sort_keys=True))
+    return secrets
 
 def interface_name(mac):
     expected=':'.join(mac[i:i+2] for i in range(0,12,2)).lower()
@@ -193,6 +213,7 @@ def _apply_locked(c,release):
     for name in ['downloads/tv','downloads/movies','downloads/incomplete','media/tv','media/movies']: (Path('/data')/name).mkdir(parents=True,exist_ok=True)
     kit_secrets.atomic_write(BASE/'compose.json',json.dumps(compose(c,release,'127.0.0.1')))
     storage.run(['systemctl','start','docker.service']); docker('up','-d')
+    secrets=adopt_seerr_credentials(c,secrets)
     import api_setup
     transport=api_setup.HTTPTransport(secrets)
     result=api_setup.configure_apps(c,transport)

@@ -23,6 +23,7 @@ if action=='seed':
     kit_secrets.atomic_write(path/'state/configarr/config.yml',rendered)
     kit_secrets.atomic_write(path/'state/configarr/secrets.yml','SONARR_API_KEY: '+secrets['sonarr']['apiKey']+'\nRADARR_API_KEY: '+secrets['radarr']['apiKey']+'\n')
 elif action=='configure':
+    secrets=bootstrap.adopt_seerr_credentials(config,secrets,path/'state',path/'app-secrets.json')
     t=api_setup.HTTPTransport(secrets,in_container=True)
     api_setup.configure_apps(config,t,attempts=30)
     first={app:t.request(app,'GET','/api/v3/downloadclient')[0]['id'] for app in ['sonarr','radarr']}
@@ -32,6 +33,7 @@ elif action=='configure':
         if len(clients)!=1 or clients[0]['id']!=first[app]: raise ValueError('managed downloader identity changed on resume')
     print(json.dumps({'downloader':config['downloader'],'authenticatedSetupAndResume':True}))
 elif action=='verify':
+    secrets=json.loads(kit_secrets.read_private(path/'app-secrets.json'))['values']
     t=api_setup.HTTPTransport(secrets,in_container=True); api_setup.verify_preferences(t); health=api_setup.verify_apps(config,t)
     if not all(health['checks'].values()): raise ValueError('integration health failed')
     print(json.dumps({'downloader':config['downloader'],'profileNamingAndCutoffReadback':True,'checks':health['checks'],'pendingSteps':health['pendingSteps']}))
