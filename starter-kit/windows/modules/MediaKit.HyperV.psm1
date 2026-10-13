@@ -7,6 +7,25 @@ function Select-KitSubnet([string[]]$ExistingRoutes) {
     }
     throw 'No free private subnet is available. Remove a conflicting VPN route or choose a supported network.'
 }
+function Set-KitHostLanPrivate($Config,[int]$TimeoutSeconds=60) {
+    $switch=Get-VMSwitch -Name $Config.externalSwitchName -ErrorAction Stop
+    if($switch.Notes -ne "MediaKit:$($Config.installationId)" -or [string]$switch.SwitchType -ne 'External') {throw 'LAN switch ownership does not match this installation.'}
+    $name="vEthernet ($($Config.externalSwitchName))"; $timer=[Diagnostics.Stopwatch]::StartNew()
+    while($timer.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
+        $adapter=Get-NetAdapter -Name $name -ErrorAction SilentlyContinue
+        if($adapter) {
+            $profiles=@(Get-NetConnectionProfile -InterfaceIndex $adapter.ifIndex -ErrorAction SilentlyContinue)
+            if($profiles.Count -gt 1) {throw 'The owned LAN interface has ambiguous network profiles; review Windows Network settings before continuing.'}
+            if($profiles.Count -eq 1) {
+                if([string]$profiles[0].NetworkCategory -eq 'DomainAuthenticated') {throw 'The selected LAN uses a managed domain profile. A home Private network is required; review the network policy before continuing.'}
+                if([string]$profiles[0].NetworkCategory -ne 'Private') {Set-NetConnectionProfile -InterfaceIndex $adapter.ifIndex -NetworkCategory Private -ErrorAction Stop}
+                return
+            }
+        }
+        Start-Sleep -Seconds 2
+    }
+    throw "Windows has not classified the owned LAN interface '$name'. Set this home network to Private in Windows Network settings, then rerun Install.cmd."
+}
 function New-KitNetwork($Config) {
     $ctx=Get-KitContext; $marker="MediaKit:$($Config.installationId)"
     $adapter=Get-NetAdapter -Name $Config.externalAdapterName -ErrorAction Stop
@@ -25,6 +44,9 @@ function New-KitNetwork($Config) {
         }
         Register-KitResource 'switch' $spec.name
     }
+    # The Plex rule allows only Private networks. Classify this one owned host
+    # LAN interface before proceeding, preserving every unrelated interface.
+    Set-KitHostLanPrivate $Config
     $nic=Get-NetAdapter -Name "vEthernet ($($Config.internalSwitchName))" -ErrorAction Stop
     $addresses=@(Get-NetIPAddress -InterfaceIndex $nic.ifIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue)
     $wrong=@($addresses | Where-Object {$_.IPAddress -ne $Config.hostIP -and $_.IPAddress -notlike '169.254.*'})

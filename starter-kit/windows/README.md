@@ -23,6 +23,8 @@ The source checkout's manifest is a build input. Install from the completed ZIP 
 
 The kit creates a dedicated Plex service account, a separate SMB account, and a private host/VM link. Generated credentials stay on the installation machine. It keeps media on the Windows disk and stores the supporting applications' databases in the VM's separate data disk.
 
+Setup marks the host interface on its own wired LAN switch as **Private** so home devices can reach Plex through the Private-network firewall rule. It leaves other host interfaces unchanged. If Windows is still identifying that network and setup pauses, open Windows Settings → Network & internet, set the installer-owned `vEthernet (MediaKit-LAN-…)` home network to Private, and rerun `Install.cmd`. Managed domain networks require separate policy review.
+
 ## Everyday use
 
 Use the Requests shortcut for Seerr and the Plex shortcut for playback/server settings. Add provider/indexer accounts through the app setup links. Set Windows Settings → System → Power → Sleep to **Never** while plugged in so the dedicated server stays available. The installer keeps your existing Windows sleep policy.

@@ -80,4 +80,32 @@ Describe 'Hyper-V seed and network decisions' {
         $command | Should -Not -Match 'apiKey'
         $command | Should -Match 'downloader'
     }
+    It 'classifies only the installer-owned host LAN interface as Private' {
+        function global:Get-VMSwitch {param($Name)}
+        function global:Get-NetAdapter {param($Name)}
+        function global:Get-NetConnectionProfile {param($InterfaceIndex)}
+        function global:Set-NetConnectionProfile {param($InterfaceIndex,$NetworkCategory)}
+        try {
+            $c=Get-Fixture
+            InModuleScope MediaKit.HyperV -Parameters @{Config=$c} {
+                param($Config)
+                Mock Get-VMSwitch {[pscustomobject]@{Notes="MediaKit:$($Config.installationId)";SwitchType='External'}}
+                Mock Get-NetAdapter {
+                    param($Name)
+                    if($Name -eq "vEthernet ($($Config.externalSwitchName))") {return [pscustomobject]@{ifIndex=41}}
+                    throw 'Foreign interface lookup is forbidden'
+                }
+                Mock Get-NetConnectionProfile {[pscustomobject]@{InterfaceIndex=41;NetworkCategory='Public'}}
+                $script:changedInterfaces=@()
+                Mock Set-NetConnectionProfile {param($InterfaceIndex,$NetworkCategory) $script:changedInterfaces+=@{Index=$InterfaceIndex;Category=$NetworkCategory}}
+                Set-KitHostLanPrivate $Config -TimeoutSeconds 1
+                $script:changedInterfaces.Count | Should -Be 1
+                $script:changedInterfaces[0].Index | Should -Be 41
+                $script:changedInterfaces[0].Category | Should -Be 'Private'
+                Mock Get-VMSwitch {[pscustomobject]@{Notes='foreign';SwitchType='External'}}
+                {Set-KitHostLanPrivate $Config -TimeoutSeconds 1} | Should -Throw '*ownership*'
+                $script:changedInterfaces.Count | Should -Be 1
+            }
+        } finally {foreach($n in @('Get-VMSwitch','Get-NetAdapter','Get-NetConnectionProfile','Set-NetConnectionProfile')) {Remove-Item "Function:\$n"}}
+    }
 }
