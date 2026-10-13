@@ -114,6 +114,13 @@ Describe 'Patched pinned PmsService source' {
         @($installer.SelectNodes("//*[local-name()='Target' and @Name='BeforeBuild']/*[local-name()='GetAssemblyIdentity']")) | Should -HaveCount 0
         $installer.SelectSingleNode("//*[local-name()='OutputName']").InnerText | Should -Be 'PmsServiceInstaller'
     }
+
+    It 'uses the WiX NetFx extension detector without declaring its framework property twice' {
+        [xml]$product = Get-Content -LiteralPath (Join-Path $script:Source 'PlexServiceInstaller/Product.wxs') -Raw
+        @($product.SelectNodes("//*[local-name()='Property' and @Id='WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED']")) | Should -HaveCount 0
+        @($product.SelectNodes("//*[local-name()='PropertyRef' and @Id='WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED']")) | Should -HaveCount 1
+        $product.SelectSingleNode("//*[local-name()='Condition']").InnerText | Should -Match 'WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED'
+    }
 }
 
 Describe 'PmsService build input integrity' {

@@ -8,7 +8,8 @@ Copyright (c) 2014 Chris Murphy. PmsService is distributed under the MIT license
 the complete upstream license is retained in `licenses/LICENSE.md`. The
 Media Kit modifications remove complete claim-link logging, hide and secure
 both MSI password aliases, remove a broken postbuild copy and premature assembly
-lookup used for dynamic MSI naming, remove the upstream
+lookup used for dynamic MSI naming, use WiX's .NET detector without the duplicate
+upstream property declaration, remove the upstream
 temporary signing identity, and identify the fork as MSI 1.2.300 / assembly
 1.2.300.1. The Windows service name remains `PlexService`.
 
