@@ -2,6 +2,7 @@
 import copy
 import http.cookiejar
 import json
+import re
 from pathlib import Path
 import time
 import urllib.parse
@@ -10,6 +11,16 @@ import urllib.request
 
 PORTS={'sonarr':8989,'radarr':7878,'prowlarr':9696,'seerr':5055,'qbittorrent':8080,'sabnzbd':8080}
 PENDING=['Plex claim and Movies/TV libraries','Seerr Plex sign-in and library selection','Indexer/provider credentials']
+
+def response_summary(value,depth=0):
+    if isinstance(value,dict) and depth<3:
+        safe={'config','categories','misc','status','error','version','category','name','dir','savePath'}
+        description='object['+','.join(key+':'+response_summary(item,depth+1) for key,item in value.items() if key in safe)+']'
+        errors={'API Key Required','API Key Incorrect','API Key missing','API Key incorrect','Not implemented','Access denied','Configuration locked'}
+        if value.get('error') in errors: description+=' '+value['error']
+        return description
+    if isinstance(value,list): return 'list('+str(len(value))+')'
+    return type(value).__name__
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self,*args,**kwargs): raise ValueError('unexpected app redirect')
@@ -38,19 +49,23 @@ class HTTPTransport:
         except Exception: raise ValueError('authenticated '+app+' '+method+' '+path+' request failed') from None
 
 def ready(t,app,attempts=12):
+    last='request unavailable'
     for attempt in range(attempts):
         try:
             if app=='qbittorrent':
                 result=t.request(app,'POST','/api/v2/auth/login',form={'username':t.secrets[app]['username'],'password':t.secrets[app]['password']})
-                if result!='Ok.': raise ValueError()
+                if result!='Ok.': raise ValueError('login rejected')
             elif app=='sabnzbd':
                 result=t.request(app,'POST','/api',form={'mode':'version'})
                 if not isinstance(result,dict) or not result.get('version'): raise ValueError()
             else: t.request(app,'GET','/api/'+('v1' if app=='prowlarr' else 'v3')+'/system/status')
             return
-        except Exception:
+        except Exception as error:
+            message=str(error)
+            if message=='login rejected': last=message
+            elif re.fullmatch(r'authenticated [a-z]+ (GET|POST|PUT) /api/[A-Za-z0-9/_-]+ HTTP [0-9]{3} failed',message): last=message
             if attempt+1<attempts: time.sleep(min(2,attempt+1))
-    raise ValueError('service readiness failed') from None
+    raise ValueError('service readiness failed '+app+' '+last) from None
 
 def schema_payload(schemas,implementation,fields):
     matches=[s for s in schemas if s.get('implementation')==implementation]
@@ -89,7 +104,7 @@ def categories(t,downloader):
                 t.request(downloader,'POST','/api/v2/torrents/'+('editCategory' if name in current else 'createCategory'),form={'category':name,'savePath':path})
     else:
         response=t.request(downloader,'POST','/api',form={'mode':'get_config','section':'categories'})
-        if not isinstance(response.get('config',{}).get('categories'),list): raise ValueError('invalid SAB configuration response')
+        if not isinstance(response.get('config',{}).get('categories'),list): raise ValueError('invalid SAB configuration response '+response_summary(response))
         for name in ['tv','movies']:
             t.request(downloader,'POST','/api',form={'mode':'set_config','section':'categories','name':name,'dir':'/data/downloads/'+name,'pp':'3','script':'Default','priority':'0'})
 

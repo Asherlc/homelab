@@ -22,6 +22,9 @@ function Assert-PmsServiceHash {
 function Save-PmsServiceInput {
     param($Artifact, [string]$Path)
     if (!(Test-Path -LiteralPath $Path -PathType Leaf)) {
+        # Function-local preference avoids Windows PowerShell's per-chunk
+        # download progress overhead without changing the calling session.
+        $ProgressPreference = 'SilentlyContinue'
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         Invoke-WebRequest -Uri $Artifact.url -OutFile $Path -UseBasicParsing
     }

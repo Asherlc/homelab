@@ -42,6 +42,7 @@ source "qemu" "media_kit" {
   efi_boot         = true
   efi_firmware_code = var.efi_code
   efi_firmware_vars = var.efi_vars
+  qemuargs         = [["-serial", "file:${var.output_dir}/factory-serial.log"]]
   cd_files         = ["${var.seed_dir}/user-data", "${var.seed_dir}/meta-data"]
   cd_label         = "CIDATA"
   ssh_username     = "mediakit-builder"
@@ -50,7 +51,7 @@ source "qemu" "media_kit" {
   boot_wait        = "5s"
   boot_command = [
     "<esc><wait>c<wait>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud ---<enter><wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud console=ttyS0,115200n8 console=tty0 ---<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]

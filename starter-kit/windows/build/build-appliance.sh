@@ -25,7 +25,8 @@ output_dir="$(cd "$output_dir" && pwd)"
 manifest_path="$(python3 -c 'import pathlib,sys;print(pathlib.Path(sys.argv[1]).resolve())' "$manifest_path")"
 build_temp="$(mktemp -d)"
 chmod 0700 "$build_temp"
-trap 'rm -rf "$build_temp"' EXIT
+serial_pid=""
+trap 'if [[ -n "$serial_pid" ]]; then kill "$serial_pid" 2>/dev/null || true; fi; rm -rf "$build_temp"' EXIT
 ssh-keygen -q -t ed25519 -N '' -f "$build_temp/builder-key"
 mkdir "$build_temp/seed"
 python3 - "$build_dir" "$build_temp" <<'PY'
@@ -67,7 +68,23 @@ cd "$build_dir"
 packer init appliance.pkr.hcl
 args=(-var "output_dir=$build_temp/output" -var "seed_dir=$build_temp/seed" -var "private_key=$build_temp/builder-key" -var "guest_dir=$build_temp/guest/" -var "manifest_path=$manifest_path" -var "accelerator=$accelerator")
 packer validate "${args[@]}" appliance.pkr.hcl
+# Stream factory boot progress; this seed contains only ephemeral public build keys.
+python3 -u - "$build_temp/output/factory-serial.log" <<'PY' &
+from pathlib import Path
+import sys,time
+path=Path(sys.argv[1]); offset=0
+while True:
+ if path.exists():
+  with path.open('r',errors='replace') as source:
+   source.seek(offset); block=source.read(); offset=source.tell()
+   if block: print(block,end='',flush=True)
+ time.sleep(5)
+PY
+serial_pid=$!
 packer build -on-error=abort "${args[@]}" appliance.pkr.hcl
+kill "$serial_pid" 2>/dev/null || true
+wait "$serial_pid" 2>/dev/null || true
+serial_pid=""
 qemu-img check "$build_temp/output/media-kit.qcow2"
 python3 "$build_dir/smoke-appliance.py" --image "$build_temp/output/media-kit.qcow2" --accelerator "$accelerator" --report "$output_dir/appliance-smoke.json"
 qemu-img convert -f qcow2 -O vhdx -o subformat=dynamic "$build_temp/output/media-kit.qcow2" "$output_dir/media-kit.vhdx"

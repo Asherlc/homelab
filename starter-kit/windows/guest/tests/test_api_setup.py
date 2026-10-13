@@ -126,5 +126,11 @@ class APITests(unittest.TestCase):
             return original(app,*args,**kwargs)
         t.request=unavailable
         self.assertFalse(api_setup.verify_apps(CONTRACT,t)['checks']['seerr'])
+    def test_safe_api_diagnostics_show_structure_and_login_rejection(self):
+        import api_setup
+        summary=api_setup.response_summary({'error':'API Key Incorrect','apiKey':'SECRET-TOKEN','config':{'categories':None}})
+        self.assertIn('categories',summary); self.assertIn('API Key Incorrect',summary); self.assertNotIn('SECRET',summary)
+        t=FixtureTransport('qbittorrent'); t.responses['qbittorrent']['login']='Fails.'
+        with self.assertRaisesRegex(ValueError,'qbittorrent.*login rejected'): api_setup.ready(t,'qbittorrent',attempts=1)
 
 if __name__=='__main__': unittest.main()
