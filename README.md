@@ -14,10 +14,12 @@ Encrypted files are safe to store on GitHub!
 - [Backup & Recovery Guide](docs/BACKUP_README.md)
 - [Quick Reference](docs/QUICK_REFERENCE.md)
 - [SOPS Encryption Guide](docs/SOPS_GUIDE.md)
+- [Windows Plex Starter Kit Installation](starter-kit/windows/README.md)
+- [Windows Candidate Acceptance Checks](starter-kit/windows/VALIDATION.md)
 - [Windows Plex Starter Kit Design](docs/superpowers/specs/2026-10-13-windows-plex-installer-design.md)
 - [Windows Plex Installer Implementation Plan](docs/superpowers/plans/2026-10-13-windows-plex-installer.md)
 
-The Windows Plex starter kit has an approved design and an implementation plan awaiting review. Its documentation covers native Windows Plex, the Hyper-V media stack, startup before Windows sign-in, shared storage, backups, and the planned installation flow. Installation instructions will accompany the tested release.
+The Windows Plex starter kit includes an installer, a Hyper-V appliance build, backups, and maintenance tools for a dedicated Windows 11 Pro server. The candidate build produces a complete ZIP that can be shared without repository access. Follow the installation guide and complete the target-machine acceptance checks before relying on unattended operation.
 
 ## 🚀 Quick Start
 

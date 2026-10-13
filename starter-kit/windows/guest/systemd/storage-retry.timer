@@ -1,0 +1,9 @@
+[Unit]
+Description=Bounded storage recovery and ongoing health checks
+[Timer]
+OnBootSec=45
+OnUnitInactiveSec=30
+AccuracySec=5
+Unit=storage-retry.service
+[Install]
+WantedBy=timers.target

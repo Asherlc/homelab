@@ -40,3 +40,9 @@ terraform/.terraform.lock.hcl
 terraform/crash.log
 terraform/.env
 *.env.plain
+
+# Windows starter kit generated build/test files
+starter-kit/windows/artifacts/
+starter-kit/windows/**/__pycache__/
+starter-kit/windows/**/*.pyc
+testResults.xml

@@ -1,0 +1,25 @@
+{
+  "provenance": {
+    "kind": "Documented response fixtures, not live-container captures",
+    "retrieved": "2026-10-13",
+    "qbittorrent": "https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-5.0)",
+    "sabnzbd": "https://sabnzbd.org/wiki/configuration/4.5/api"
+  },
+  "qbittorrent": {
+    "login": "Ok.",
+    "categories": {
+      "existing": {"name": "existing", "savePath": "/data/downloads/existing"}
+    }
+  },
+  "sabnzbd": {
+    "version": {"version": "4.5.0"},
+    "categoryConfig": {
+      "config": {
+        "categories": [
+          {"name": "*", "order": 0, "pp": "", "script": "Default", "dir": "", "newzbin": "", "priority": 0},
+          {"name": "existing", "order": 1, "pp": "3", "script": "Default", "dir": "/data/downloads/existing", "newzbin": "", "priority": 0}
+        ]
+      }
+    }
+  }
+}

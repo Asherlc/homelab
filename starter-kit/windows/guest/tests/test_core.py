@@ -1,0 +1,135 @@
+import copy
+import importlib.util
+import json
+import os
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+
+GUEST = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(GUEST))
+CONTRACT = json.loads((GUEST/'tests/fixtures/bootstrap.json').read_text())
+
+class CoreTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+    def tearDown(self):
+        self.tmp.cleanup()
+    def test_strict_config_before_mutation(self):
+        import bootstrap
+        bootstrap.validate(CONTRACT)
+        for field, value in [('hostIP',CONTRACT['guestIP']),('prefixLength',True),('timezone','../UTC'),('downloader','both'),('extra',1)]:
+            c=copy.deepcopy(CONTRACT); c[field]=value
+            with self.assertRaises(ValueError): bootstrap.validate(c)
+        for host,guest in [('127.0.0.1','127.0.0.2'),('0.0.0.1','0.0.0.2'),('169.254.0.1','169.254.0.2')]:
+            c=copy.deepcopy(CONTRACT); c.update(hostIP=host,guestIP=guest)
+            with self.assertRaises(ValueError): bootstrap.validate(c)
+        for part, key, value in [('network','internalMac','xxxx'),('smb','credentialsRef','/tmp/pass'),('smb','share','bad/name')]:
+            c=copy.deepcopy(CONTRACT); c[part][key]=value
+            with self.assertRaises(ValueError): bootstrap.validate(c)
+    def test_secret_create_once_stable_private_identity(self):
+        import kit_secrets
+        p=self.root/'secret.json'
+        a=kit_secrets.create_once(p,CONTRACT['installationId'],{'key':'first'})
+        b=kit_secrets.create_once(p,CONTRACT['installationId'],{'key':'second'})
+        self.assertEqual(a,b); self.assertEqual(p.stat().st_mode & 0o777,0o600)
+        with self.assertRaises(ValueError): kit_secrets.create_once(p,'other',{})
+        p.chmod(0o644)
+        with self.assertRaises(ValueError): kit_secrets.read_private(p)
+    def test_credentials_reject_symlink_and_public_file(self):
+        import kit_secrets
+        p=self.root/'credentials'; p.write_text('username=u\npassword=p\ndomain=d\n'); p.chmod(0o600)
+        self.assertEqual(kit_secrets.read_credentials(p)['username'],'u')
+        link=self.root/'link'; link.symlink_to(p)
+        with self.assertRaises(ValueError): kit_secrets.read_credentials(link)
+        p.chmod(0o644)
+        with self.assertRaises(ValueError): kit_secrets.read_credentials(p)
+    def test_mount_source_marker_and_real_write_probe(self):
+        import storage
+        data=self.root/'data'; data.mkdir(); state=self.root/'state'; state.mkdir()
+        (data/storage.MARKER).write_text(json.dumps({'schemaVersion':1,'installationId':CONTRACT['installationId']}))
+        good={'target':str(data),'fstype':'cifs','source':'//172.29.240.1/MediaKit-05dd38dd','options':'rw'}
+        sm={'target':str(state),'fstype':'ext4','source':'/dev/sdb','options':'rw','label':'MEDIAKIT_STATE'}
+        self.assertTrue(storage.verify(CONTRACT,data,state,lambda p:good if p==data else sm))
+        for attr,value in [('source','//wrong/share'),('fstype','ext4'),('options','ro')]:
+            bad=dict(good); bad[attr]=value
+            with self.assertRaises(ValueError): storage.verify(CONTRACT,data,state,lambda p:bad if p==data else sm)
+        (data/storage.MARKER).write_text('{}')
+        with self.assertRaises(ValueError): storage.verify(CONTRACT,data,state,lambda p:good if p==data else sm)
+        self.assertEqual(list(data.glob('.write-probe-*')),[])
+    def test_state_uuid_and_unowned_populated_appstate_rejected(self):
+        import storage
+        data=self.root/'data'; data.mkdir(); state=self.root/'state'; state.mkdir()
+        (data/storage.MARKER).write_text(json.dumps({'schemaVersion':1,'installationId':CONTRACT['installationId']}))
+        good={'target':str(data),'fstype':'cifs','source':'//172.29.240.1/MediaKit-05dd38dd','options':'rw'}
+        sm={'target':str(state),'fstype':'ext4','source':'/dev/sdb','options':'rw','label':'MEDIAKIT_STATE','uuid':'wrong'}
+        with self.assertRaises(ValueError): storage.verify(CONTRACT,data,state,lambda p:good if p==data else sm,expected_uuid='right')
+        (state/'unowned-db').write_text('foreign')
+        with self.assertRaises(ValueError): storage.verify(CONTRACT,data,state,lambda p:good if p==data else sm)
+    def test_disk_format_only_explicit_empty_second_disk(self):
+        import storage
+        disks=[{'name':'sda','type':'disk','size':34359738368,'mountpoints':[None],'children':[{'mountpoints':['/']}]},{'name':'sdb','type':'disk','size':34359738368,'mountpoints':[None],'fstype':None,'pttype':None,'children':[]}]
+        self.assertEqual(storage.select_empty_state_disk(disks),'/dev/sdb')
+        for key,value in [('fstype','ntfs'),('children',[{}]),('size',100),('pttype','gpt')]:
+            bad=copy.deepcopy(disks); bad[1][key]=value
+            with self.assertRaises(ValueError): storage.select_empty_state_disk(bad)
+    def test_compose_one_downloader_no_public_bind_before_setup(self):
+        import bootstrap
+        images={k:'example/'+k+':1@sha256:'+'a'*64 for k in ['sonarr','radarr','prowlarr','seerr','qbittorrent','sabnzbd','configarr']}
+        release={'schemaVersion':1,'releaseId':CONTRACT['releaseId'],'images':images,'templateRevisions':{'trash':'b'*40,'recyclarr':'c'*40}}
+        for downloader in ['qbittorrent','sabnzbd']:
+            c=dict(CONTRACT,downloader=downloader)
+            services=bootstrap.compose(c,release,'127.0.0.1')['services']
+            self.assertIn(downloader,services); self.assertNotIn('sabnzbd' if downloader=='qbittorrent' else 'qbittorrent',services)
+            for app in ['sonarr','radarr',downloader]: self.assertIn('/data:/data',services[app]['volumes'])
+            self.assertTrue(services['sonarr']['ports'][0].startswith('127.0.0.1:'))
+        release['images']['sonarr']='latest'
+        with self.assertRaises(ValueError): bootstrap.compose(CONTRACT,release,'127.0.0.1')
+    def test_retry_mounts_then_verify_then_starts_and_stops_on_failure(self):
+        import storage
+        events=[]
+        storage.recover(CONTRACT,lambda args:events.append(args),lambda c:events.append(['verify']))
+        verify_index=events.index(['verify'])
+        self.assertTrue(any('data.mount' in e and 'start' in e for e in events[:verify_index]))
+        self.assertTrue(any('docker.service' in e and 'start' in e for e in events[verify_index+1:]))
+        events=[]
+        def fail(c): raise ValueError('wrong mount')
+        with self.assertRaises(ValueError): storage.recover(CONTRACT,lambda args:events.append(args),fail)
+        self.assertTrue(any('stop' in e and 'docker.service' in e for e in events))
+    def test_fresh_seerr_token_seed_and_existing_settings_preserved(self):
+        import bootstrap
+        from unittest.mock import patch
+        secret={app:{'username':'user','password':'unique','apiKey':'unique-'+app} for app in bootstrap.PORTS}
+        with patch.object(os,'chown',lambda *a:None): bootstrap.write_initial_configs(CONTRACT,secret,self.root)
+        p=self.root/'seerr/settings.json'; self.assertEqual(json.loads(p.read_text())['main']['apiKey'],'unique-seerr')
+        p.write_text('{"existing":true}')
+        with patch.object(os,'chown',lambda *a:None): bootstrap.write_initial_configs(CONTRACT,secret,self.root)
+        self.assertEqual(json.loads(p.read_text()),{'existing':True})
+    def test_cleanup_seed_preserves_cloud_identity_and_ssh(self):
+        import bootstrap
+        cloud=self.root/'cloud'; instance=cloud/'instances/iid-once'; instance.mkdir(parents=True)
+        for name in ['user-data.txt','user-data.txt.i','vendor-data.txt','obj.pkl','cloud-config.txt','meta-data.json','boot-finished']: (instance/name).write_text('fixture')
+        (cloud/'instance').symlink_to(instance)
+        seed=cloud/'seed/nocloud'; seed.mkdir(parents=True); (seed/'user-data').write_text('secret'); (seed/'meta-data').write_text('identity')
+        bootstrap.cleanup_seed(cloud,self.root/'cloud-init.disabled')
+        self.assertFalse((instance/'user-data.txt').exists()); self.assertFalse((seed/'user-data').exists())
+        self.assertTrue((instance/'meta-data.json').exists()); self.assertTrue((instance/'boot-finished').exists()); self.assertTrue((cloud/'instance').is_symlink()); self.assertTrue((seed/'meta-data').exists())
+        self.assertFalse((instance/'obj.pkl').exists()); self.assertFalse((instance/'cloud-config.txt').exists()); self.assertTrue((self.root/'cloud-init.disabled').exists())
+    def test_status_retains_copy_import_storage_guidance(self):
+        import bootstrap, kit_secrets, api_setup
+        from unittest.mock import patch
+        kit_secrets.create_once(self.root/'app-secrets.json',CONTRACT['installationId'],{})
+        (self.root/'setup-state.json').write_text(json.dumps({'installationId':CONTRACT['installationId'],'storageGuidance':['Copy imports use extra disk space while seeding']}))
+        with patch.object(bootstrap,'BASE',self.root),patch.object(bootstrap.storage,'verify',lambda c:True),patch.object(api_setup,'verify_apps',lambda c,t:{'checks':{'connections':True},'pendingSteps':[]}),patch.object(bootstrap,'interface_name',side_effect=ValueError()):
+            status=bootstrap.status(CONTRACT)
+        self.assertEqual(status['storageGuidance'],['Copy imports use extra disk space while seeding'])
+    def test_running_apps_do_not_mark_incomplete_apply_successful(self):
+        import bootstrap,kit_secrets,api_setup
+        from unittest.mock import patch
+        kit_secrets.create_once(self.root/'app-secrets.json',CONTRACT['installationId'],{})
+        with patch.object(bootstrap,'BASE',self.root),patch.object(bootstrap.storage,'verify',lambda c:True),patch.object(api_setup,'verify_apps',lambda c,t:{'checks':{'connections':True},'pendingSteps':[]}),patch.object(bootstrap,'interface_name',side_effect=ValueError()):
+            self.assertEqual(bootstrap.status(CONTRACT)['phase'],'blocked')
+
+if __name__=='__main__': unittest.main()
