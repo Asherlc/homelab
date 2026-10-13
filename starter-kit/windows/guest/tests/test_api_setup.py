@@ -18,7 +18,10 @@ class FixtureTransport:
             choices=[impl,'Radarr'] if app=='prowlarr' else [impl]
             names=['prowlarrUrl','baseUrl','apiKey','syncCategories'] if app=='prowlarr' else ['host','port','useSsl','urlBase','username','password','apiKey','tvCategory','movieCategory','category','tvDirectory','movieDirectory','recentTvPriority','olderTvPriority','recentMoviePriority','olderMoviePriority']
             return [{'implementation':i,'configContract':i+'Settings','fields':[{'name':n,'value':None} for n in names]} for i in choices]
-        if path.endswith('/config/host'): return {'id':1,'apiKey':self.secrets[app]['apiKey']}
+        if path.endswith('/config/host'):
+            if method=='PUT': raise ValueError('HTTP405: documented host config PUT requires resource ID')
+            return {'id':1,'apiKey':self.secrets[app]['apiKey']}
+        if '/config/host/' in path and method=='PUT': return dict(payload)
         if path.endswith('/system/status'): return {'version':'fixture-1'}
         if path.endswith('/auth/login'): return self.responses['qbittorrent']['login']
         if path.endswith('/torrents/categories'): return copy.deepcopy(self.resources.setdefault((app,'categories'),self.responses['qbittorrent']['categories']))
@@ -35,6 +38,7 @@ class FixtureTransport:
             return {'status':True}
         if path.endswith('/test'): return []
         if path.endswith('/config/mediamanagement'): return {'id':1,'copyUsingHardlinks':True}
+        if '/config/mediamanagement/' in path and method=='PUT': return dict(payload)
         if app=='seerr' and path.endswith('/settings/public'): return {'initialized':False}
         if app=='seerr': raise ValueError('SECRET TOKEN must not leak')
         key=(app,path.rsplit('/',1)[0] if method=='PUT' else path)

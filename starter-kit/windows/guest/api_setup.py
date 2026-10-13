@@ -77,7 +77,7 @@ def protect_arr(t,app):
     prefix='/api/'+('v1' if app=='prowlarr' else 'v3')
     cfg=t.request(app,'GET',prefix+'/config/host')
     cfg.update({'authenticationMethod':'forms','authenticationRequired':'enabled','username':t.secrets[app]['username'],'password':t.secrets[app]['password'],'passwordConfirmation':t.secrets[app]['password'],'analyticsEnabled':False})
-    t.request(app,'PUT',prefix+'/config/host',payload=cfg)
+    t.request(app,'PUT',prefix+'/config/host/'+str(cfg['id']),payload=cfg)
 
 def categories(t,downloader):
     if downloader=='qbittorrent':
@@ -124,7 +124,7 @@ def configure_apps(config,transport,attempts=12):
 def set_hardlinks(t,app,enabled):
     cfg=t.request(app,'GET','/api/v3/config/mediamanagement')
     cfg['copyUsingHardlinks']=bool(enabled)
-    t.request(app,'PUT','/api/v3/config/mediamanagement',payload=cfg)
+    t.request(app,'PUT','/api/v3/config/mediamanagement/'+str(cfg['id']),payload=cfg)
     return {'hardlinks':enabled,'guidance':None if enabled else 'SMB hardlinks unavailable; copy imports use extra disk space while torrents seed'}
 
 def verify_preferences(t):
