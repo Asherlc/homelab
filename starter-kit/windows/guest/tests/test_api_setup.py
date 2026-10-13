@@ -41,7 +41,13 @@ class FixtureTransport:
                 if not match: match={'name':form['name'],'order':len(categories),'newzbin':''}; categories.append(match)
                 match.update({k:form[k] for k in ['dir','pp','script','priority']})
             return {'status':True}
-        if path.endswith('/test'): return '{}'
+        if path.endswith('/test'):
+            # ProviderControllerBase validates unique names against the resource
+            # ID even for a connection test. Resume must use the existing ID.
+            providers=self.resources.get((app,path[:-5]),[])
+            if any(p.get('name')==payload.get('name') and p.get('id')!=payload.get('id') for p in providers):
+                raise ValueError('HTTP 400: provider name should be unique')
+            return '{}'
         if path.endswith('/config/mediamanagement'): return {'id':1,'copyUsingHardlinks':True}
         if '/config/mediamanagement/' in path and method=='PUT': return dict(payload)
         if app=='seerr' and path.endswith('/settings/public'): return {'initialized':False}

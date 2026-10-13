@@ -81,7 +81,16 @@ def schema_payload(schemas,implementation,fields):
     return result
 
 def test_provider(t,app,path,desired):
-    result=t.request(app,'POST',path,payload=desired)
+    tested=dict(desired)
+    if not tested.get('id'):
+        records=t.request(app,'GET',path.removesuffix('/test'))
+        if not isinstance(records,list): raise ValueError('invalid managed-resource response')
+        matches=[r for r in records if r.get('name')==tested['name']]
+        if len(matches)>1: raise ValueError('ambiguous managed resource')
+        # Connection tests also enforce name uniqueness. A saved provider must
+        # carry its existing ID so the validator excludes that same record.
+        if matches: tested['id']=matches[0]['id']
+    result=t.request(app,'POST',path,payload=tested)
     # Arr ProviderControllerBase returns the literal string "{}" on HTTP200.
     # Depending on content negotiation, transport decodes an empty object or
     # a JSON string containing that object. HTTP400 validation remains fatal.

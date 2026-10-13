@@ -129,12 +129,30 @@ def interface_name(mac):
     if len(matches)!=1: raise ValueError('assigned MAC interface not found')
     return matches[0]
 
+def install_network(c,internal,external,directory=Path('/etc/netplan'),runner=storage.run):
+    directory=Path(directory); owned=directory/'90-starter-kit.yaml'; seed=directory/'50-cloud-init.yaml'
+    previous={}
+    for file in [owned,seed]:
+        if file.is_symlink(): raise ValueError('unsafe network configuration file')
+        if file.exists(): previous[file]=(file.read_text(),file.stat().st_mode & 0o777)
+    net={'network':{'version':2,'ethernets':{internal:{'match':{'macaddress':':'.join(c['network']['internalMac'][i:i+2] for i in range(0,12,2))},'set-name':internal,'addresses':[c['guestIP']+'/'+str(c['prefixLength'])],'dhcp4':False,'dhcp6':False,'link-local':[]},external:{'match':{'macaddress':':'.join(c['network']['externalMac'][i:i+2] for i in range(0,12,2))},'set-name':external,'dhcp4':True}}}}
+    try:
+        kit_secrets.atomic_write(owned,json.dumps(net))
+        # Dedicated appliance seed and persistent config would otherwise match
+        # the same MACs using different IDs. Retire only that known seed file.
+        seed.unlink(missing_ok=True)
+        runner(['netplan','generate'])
+    except Exception:
+        for file in [owned,seed]:
+            if file in previous: kit_secrets.atomic_write(file,previous[file][0],previous[file][1])
+            else: file.unlink(missing_ok=True)
+        raise
+
 def install_system(c,state_uuid):
     data=Path('/data'); data.mkdir(mode=0o700,exist_ok=True); data.chmod(0o700)
     STATE.mkdir(mode=0o700,parents=True,exist_ok=True); STATE.chmod(0o700)
     internal=interface_name(c['network']['internalMac']); external=interface_name(c['network']['externalMac'])
-    net={'network':{'version':2,'ethernets':{internal:{'match':{'macaddress':':'.join(c['network']['internalMac'][i:i+2] for i in range(0,12,2))},'addresses':[c['guestIP']+'/'+str(c['prefixLength'])],'dhcp4':False,'dhcp6':False,'link-local':[]},external:{'match':{'macaddress':':'.join(c['network']['externalMac'][i:i+2] for i in range(0,12,2))},'dhcp4':True}}}}
-    kit_secrets.atomic_write('/etc/netplan/90-starter-kit.yaml',json.dumps(net))
+    install_network(c,internal,external)
     kit_secrets.atomic_write('/etc/avahi/avahi-daemon.conf','[server]\nhost-name='+c['hostname']+'\nallow-interfaces='+external+'\nuse-ipv6=no\n[publish]\npublish-addresses=yes\npublish-workstation=no\n[reflector]\nenable-reflector=no\n',0o644)
     for template in (SOURCE/'systemd').rglob('*'):
         if not template.is_file(): continue

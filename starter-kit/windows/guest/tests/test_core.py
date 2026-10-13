@@ -88,6 +88,32 @@ class CoreTests(unittest.TestCase):
             self.assertTrue(services['sonarr']['ports'][0].startswith('127.0.0.1:'))
         release['images']['sonarr']='latest'
         with self.assertRaises(ValueError): bootstrap.compose(CONTRACT,release,'127.0.0.1')
+    def test_network_retires_cloud_seed_after_validated_replacement(self):
+        import bootstrap
+        directory=self.root/'netplan'; directory.mkdir()
+        seed=directory/'50-cloud-init.yaml'; seed.write_text('network: {version: 2}')
+        unrelated=directory/'20-unrelated.yaml'; unrelated.write_text('preserve me')
+        calls=[]
+        def generate(args):
+            self.assertFalse(seed.exists())
+            current=json.loads((directory/'90-starter-kit.yaml').read_text())
+            interfaces=current['network']['ethernets']
+            self.assertEqual(set(interfaces),{'kit-private','kit-lan'})
+            self.assertEqual(interfaces['kit-lan']['set-name'],'kit-lan')
+            self.assertEqual(interfaces['kit-private']['addresses'],[CONTRACT['guestIP']+'/'+str(CONTRACT['prefixLength'])])
+            calls.append(args)
+        bootstrap.install_network(CONTRACT,'kit-private','kit-lan',directory,generate)
+        self.assertEqual(calls,[['netplan','generate']]); self.assertFalse(seed.exists())
+        self.assertEqual(unrelated.read_text(),'preserve me')
+        self.assertEqual((directory/'90-starter-kit.yaml').stat().st_mode & 0o777,0o600)
+    def test_invalid_network_replacement_restores_previous_files(self):
+        import bootstrap
+        directory=self.root/'netplan'; directory.mkdir()
+        seed=directory/'50-cloud-init.yaml'; seed.write_text('seed network'); seed.chmod(0o600)
+        owned=directory/'90-starter-kit.yaml'; owned.write_text('previous network'); owned.chmod(0o600)
+        def invalid(args): raise ValueError('netplan generation rejected replacement')
+        with self.assertRaises(ValueError): bootstrap.install_network(CONTRACT,'kit-private','kit-lan',directory,invalid)
+        self.assertEqual(seed.read_text(),'seed network'); self.assertEqual(owned.read_text(),'previous network')
     def test_retry_mounts_then_verify_then_starts_and_stops_on_failure(self):
         import storage
         events=[]

@@ -90,11 +90,23 @@ test "$(stat -c %a /data)" = 700
 sudo test -s /boot/efi/EFI/BOOT/BOOTX64.EFI
 sudo sbverify --list /boot/efi/EFI/BOOT/BOOTX64.EFI
 sudo python3 -m compileall -q /opt/starter-kit
+sudo python3 - <<'NETWORK'
+import json,sys
+from pathlib import Path
+sys.path.insert(0,'/opt/starter-kit')
+import bootstrap
+config={'network':{'internalMac':'00155D123401','externalMac':'5254007f1101'},'guestIP':'172.29.240.2','prefixLength':30}
+bootstrap.install_network(config,'kit-private','lan0')
+assert not Path('/etc/netplan/50-cloud-init.yaml').exists()
+network=json.loads(Path('/etc/netplan/90-starter-kit.yaml').read_text())['network']['ethernets']
+assert network['lan0']['set-name']=='lan0' and network['kit-private']['set-name']=='kit-private'
+NETWORK
 """
             run(*ssh, "bash -s", input=checks, timeout=300)
             Path(report).write_text(json.dumps({"freshFirmwareBoot": "passed", "perInstanceCloudInit": "passed",
                 "macMatchedNetwork": "passed", "pinnedSshIdentity": "passed", "factoryIdentityRemoved": "passed",
-                "dockerDisabledUntilProvisioned": "passed", "signedFallbackPresent": "passed"}, indent=2) + "\n")
+                "dockerDisabledUntilProvisioned": "passed", "signedFallbackPresent": "passed",
+                "persistentNetworkGeneration": "passed"}, indent=2) + "\n")
             print("Fresh firmware, per-instance cloud-init, trusted SSH and factory cleanup passed.")
         except Exception:
             serial = scratch / "serial.log"
