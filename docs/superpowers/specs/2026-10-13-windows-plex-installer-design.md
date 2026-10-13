@@ -2,7 +2,7 @@
 
 Date: 2026-10-13
 
-Status: Design for review. Implementation and machine validation have not started.
+Status: Design approved in conversation. Implementation plan prepared for review; product code and machine validation have not started.
 
 ## Intended outcome
 
