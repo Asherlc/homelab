@@ -7,8 +7,9 @@ SOURCE="$REPO_DIR/configs/qbittorrent/qBittorrent.conf"
 TARGET="/srv/appdata/qbittorrent/qBittorrent/qBittorrent.conf"
 
 if ! sudo cmp -s "$SOURCE" "$TARGET"; then
+    sudo docker stop qbittorrent >/dev/null
     sudo install -D -m 0644 -o 1000 -g 1000 "$SOURCE" "$TARGET"
-    sudo docker restart qbittorrent >/dev/null
+    sudo docker start qbittorrent >/dev/null
     echo "qBittorrent configuration applied and container restarted"
 fi
 
@@ -22,6 +23,13 @@ done
 
 if [[ -z "${preferences:-}" ]]; then
     echo "qBittorrent Web API did not become ready" >&2
+    exit 1
+fi
+
+if ! jq -e '.excluded_file_names_enabled and
+    (.excluded_file_names | split("\n") | index("*.exe") != null)' \
+    <<<"$preferences" >/dev/null; then
+    echo "qBittorrent executable exclusions are not active" >&2
     exit 1
 fi
 

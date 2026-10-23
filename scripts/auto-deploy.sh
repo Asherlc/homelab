@@ -75,6 +75,8 @@ if [ -x "$REPO_DIR/scripts/qbittorrent-apply-config.sh" ]; then
 fi
 
 # Keep the weekly storage-report timer managed as infrastructure code.
+sudo python3 "$REPO_DIR/scripts/download-safety-apply.py"
+
 for unit in \
     homelab-storage-maintenance.service \
     homelab-storage-maintenance.timer \
