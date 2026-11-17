@@ -184,6 +184,21 @@ curl -s http://192.168.1.197:8266/api/v2/get-nodes | jq '.[] | {
   }'
 ```
 
+## Homebridge
+
+Homebridge uses a pinned official Docker image with Node 24, compatible with the
+plugins listed in `configs/homebridge/package.json`. The image installs those
+dependencies on startup. Update the manifest in git when adding or updating a
+plugin; do not rely on packages installed only inside a container. Keep runtime
+state, especially `persist/` and `accessories/`, on the server so existing HomeKit
+pairings survive container recreation.
+
+After an upgrade, verify that all configured plugins load, the Zigbee and Nest
+child bridges listen on ports 31840 and 53913, and Zigbee2MQTT connects through
+MQTT. A responding web UI on port 8581 does not establish accessory connectivity.
+Use Homebridge's backups to recover plugin versions if the dependency manifest
+is lost; preserve pairing state rather than removing and re-pairing bridges.
+
 ## 🔑 Encryption Key
 
 **Location:** `~/.homelab-secure/homelab-git-crypt.key`

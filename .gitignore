@@ -11,6 +11,11 @@
 **/logs/
 
 # Temporary files
+# Homebridge runtime state stays on the server; track configuration and plugins.
+configs/homebridge/*
+!configs/homebridge/config.json
+!configs/homebridge/package.json
+
 *.tmp
 *.temp
 *.swp
