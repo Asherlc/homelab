@@ -233,7 +233,7 @@ services:
 
   tdarr:
     container_name: tdarr
-    image: ghcr.io/haveagitgat/tdarr:2.63.01
+    image: ghcr.io/haveagitgat/tdarr:3.08.00
     restart: unless-stopped
     environment:
       - PUID=1000
@@ -378,7 +378,7 @@ services:
 
   authentik-server:
     container_name: authentik-server
-    image: ghcr.io/goauthentik/server:2025.2.4
+    image: ghcr.io/goauthentik/server:2025.4.4
     restart: unless-stopped
     command: server
     environment:
@@ -394,6 +394,8 @@ services:
       AUTHENTIK_AVATARS: none
     volumes:
       - /srv/appdata/authentik/media:/media
+      # Also expose the storage path used by Authentik 2025.12+.
+      - /srv/appdata/authentik/media:/data/media
       - /srv/appdata/authentik/custom-templates:/templates
       - /srv/appdata/authentik/media/public/custom.css:/web/dist/custom.css:ro
       - /srv/appdata/authentik/media/flow_background_custom.png:/web/dist/assets/images/flow_background.jpg:ro
@@ -407,7 +409,7 @@ services:
 
   authentik-worker:
     container_name: authentik-worker
-    image: ghcr.io/goauthentik/server:2025.2.4
+    image: ghcr.io/goauthentik/server:2025.4.4
     restart: unless-stopped
     command: worker
     environment:
@@ -425,6 +427,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/appdata/authentik/media:/media
+      # Also expose the storage path used by Authentik 2025.12+.
+      - /srv/appdata/authentik/media:/data/media
       - /srv/appdata/authentik/certs:/certs
       - /srv/appdata/authentik/custom-templates:/templates
       - /srv/appdata/authentik/media/public/custom.css:/web/dist/custom.css:ro
@@ -456,7 +460,7 @@ services:
 
   traefik:
     container_name: traefik
-    image: traefik:v3.0
+    image: traefik:v3.7.19
     restart: unless-stopped
     ports:
       - "80:80"
@@ -514,18 +518,19 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     mem_limit: 512m
 
-  # Promtail - Log collector (Docker + journald)
-  promtail:
-    container_name: promtail
-    image: grafana/promtail:latest
+  # Alloy - Log collector using the existing Promtail configuration
+  alloy:
+    container_name: alloy
+    image: grafana/alloy:v1.22.0
     restart: unless-stopped
     volumes:
-      - /opt/homelab-config/configs/promtail/promtail.yml:/etc/promtail/config.yml:ro
+      - /opt/homelab-config/configs/promtail/promtail.yml:/etc/alloy/promtail.yml:ro
+      - /srv/appdata/alloy:/var/lib/alloy/data
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/log/journal:/var/log/journal:ro
       - /run/log/journal:/run/log/journal:ro
       - /etc/machine-id:/etc/machine-id:ro
-    command: -config.file=/etc/promtail/config.yml
+    command: run --config.format=promtail --storage.path=/var/lib/alloy/data /etc/alloy/promtail.yml
     mem_limit: 128m
     depends_on:
       - loki
@@ -533,7 +538,7 @@ services:
   # Portainer - Docker management UI
   portainer:
     container_name: portainer
-    image: portainer/portainer-ce:2.40.0
+    image: portainer/portainer-ce:2.45.3
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -543,7 +548,7 @@ services:
   # Watchtower - Auto-update containers with watchtower.enable label
   watchtower:
     container_name: watchtower
-    image: containrrr/watchtower:latest
+    image: nickfedor/watchtower:1.24.0
     restart: unless-stopped
     environment:
       - TZ=US/Pacific
