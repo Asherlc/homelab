@@ -189,7 +189,9 @@ curl -s http://192.168.1.197:8266/api/v2/get-nodes | jq '.[] | {
 Homebridge uses a pinned official Docker image with Node 24, compatible with the
 plugins listed in `configs/homebridge/package.json`. The image installs those
 dependencies on startup. Update the manifest in git when adding or updating a
-plugin; do not rely on packages installed only inside a container. Keep runtime
+plugin; do not rely on packages installed only inside a container. Homebridge
+uses the router's DNS to resolve local DHCP names such as `purple-air.home`.
+Keep runtime
 state, especially `persist/` and `accessories/`, on the server so existing HomeKit
 pairings survive container recreation.
 
