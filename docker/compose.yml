@@ -263,6 +263,7 @@ services:
     image: ghcr.io/ajnart/homarr:latest
     restart: unless-stopped
     environment:
+      - HOSTNAME=0.0.0.0
       - PUID=1000
       - PGID=1000
       - TZ=US/Pacific
@@ -361,21 +362,6 @@ services:
       POSTGRES_DB: authentik
     mem_limit: 128m
 
-  authentik-redis:
-    container_name: authentik-redis
-    image: docker.io/library/redis:alpine
-    command: --save 60 1 --loglevel warning --maxmemory 32mb --maxmemory-policy allkeys-lru
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 3s
-    volumes:
-      - /srv/appdata/authentik/redis:/data
-    mem_limit: 64m
-
   authentik-server:
     container_name: authentik-server
     image: ghcr.io/goauthentik/server:2026.8.5
@@ -384,7 +370,6 @@ services:
     environment:
       AUTHENTIK_SECRET_KEY: 8af5729cf61470ea4087a6a51a1e5f2091e026e2cd0acfab31e7d6be6d2ea0cbacc7228c346e218928aeb39b34499958cecb
       AUTHENTIK_HOST: https://authentik.asherlc.com
-      AUTHENTIK_REDIS__HOST: authentik-redis
       AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
       AUTHENTIK_POSTGRESQL__USER: authentik
       AUTHENTIK_POSTGRESQL__NAME: authentik
@@ -403,7 +388,6 @@ services:
     mem_limit: 600m
     depends_on:
       - authentik-postgresql
-      - authentik-redis
 
   authentik-worker:
     container_name: authentik-worker
@@ -413,12 +397,11 @@ services:
     environment:
       AUTHENTIK_SECRET_KEY: 8af5729cf61470ea4087a6a51a1e5f2091e026e2cd0acfab31e7d6be6d2ea0cbacc7228c346e218928aeb39b34499958cecb
       AUTHENTIK_HOST: https://authentik.asherlc.com
-      AUTHENTIK_REDIS__HOST: authentik-redis
       AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
       AUTHENTIK_POSTGRESQL__USER: authentik
       AUTHENTIK_POSTGRESQL__NAME: authentik
       AUTHENTIK_POSTGRESQL__PASSWORD: authentik-db-password-change-me
-      AUTHENTIK_WORKER__CONCURRENCY: 1
+      AUTHENTIK_WORKER__THREADS: 1
       AUTHENTIK_LOG_LEVEL: error
       AUTHENTIK_AVATARS: none
     user: root
@@ -432,7 +415,6 @@ services:
     mem_limit: 512m
     depends_on:
       - authentik-postgresql
-      - authentik-redis
 
   authentik-postgres-backup:
     container_name: authentik-postgres-backup
